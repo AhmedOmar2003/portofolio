@@ -47,8 +47,19 @@ export default function Navbar({ logoUrl }: NavbarProps) {
             </div>
           ) : (
             <>
-              <span>Ahmed</span>
-              <span className="text-green-500">.</span>
+              {/* Premium Pen Nib / Design Icon */}
+              <svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="38" height="38" rx="10" fill="#052e16" />
+                {/* Pen nib shape */}
+                <path d="M19 8L28 17L19 30L10 17L19 8Z" stroke="#4ade80" strokeWidth="1.5" strokeLinejoin="round" fill="none"/>
+                {/* Inner nib detail */}
+                <path d="M19 13L24 18L19 26L14 18L19 13Z" fill="#4ade80" opacity="0.2" />
+                {/* Nib center line */}
+                <line x1="19" y1="18" x2="19" y2="30" stroke="#4ade80" strokeWidth="1.5" strokeLinecap="round" />
+                {/* Nib tip dot */}
+                <circle cx="19" cy="30" r="1.5" fill="#4ade80" />
+              </svg>
+              <span className="text-zinc-50 font-bold text-lg tracking-tight">AE<span className="text-green-500">.</span></span>
             </>
           )}
         </Link>
