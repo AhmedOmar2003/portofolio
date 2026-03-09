@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
 import { ArrowUpRight, Sparkles } from 'lucide-react';
+import Image from 'next/image';
 
 interface HeroProps {
   title?: string;
@@ -88,67 +89,56 @@ export default function Hero({ title, subtitle }: HeroProps) {
           </motion.div>
         </motion.div>
 
-        {/* Visual / Abstract Representation */}
+        {/* Profile Photo */}
         <motion.div
           initial={{ opacity: 0, scale: 0.9, filter: 'blur(10px)' }}
           animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
           transition={{ duration: 1.2, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-          className="lg:col-span-5 relative w-full aspect-square flex items-center justify-center pointer-events-none"
+          className="lg:col-span-5 relative w-full flex items-center justify-center"
         >
-          <div className="relative w-full max-w-[400px] aspect-[4/5] perspective-1000">
-            {/* Main Glass Floating Card */}
-            <motion.div 
-              animate={{ 
-                y: [-8, 8, -8],
-                rotateX: [2, -2, 2],
-                rotateY: [-2, 2, -2]
-              }}
-              transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute inset-0 bg-gradient-to-br from-zinc-800/40 to-zinc-900/40 backdrop-blur-2xl border border-zinc-700/50 rounded-3xl shadow-2xl shadow-black/50 overflow-hidden flex flex-col"
+          <div className="relative w-full max-w-[380px]">
+
+            {/* Glow behind photo */}
+            <div className="absolute inset-0 rounded-3xl bg-green-500/10 blur-3xl scale-110 pointer-events-none" />
+
+            {/* Photo frame with floating animation */}
+            <motion.div
+              animate={{ y: [-6, 6, -6] }}
+              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+              className="relative rounded-3xl overflow-hidden border border-zinc-700/60 shadow-2xl shadow-black/60"
+              style={{ aspectRatio: '3/4' }}
             >
-              <div className="p-6 border-b border-zinc-800/50 flex gap-2">
-                <div className="w-3 h-3 rounded-full bg-zinc-700" />
-                <div className="w-3 h-3 rounded-full bg-zinc-700" />
-                <div className="w-3 h-3 rounded-full bg-zinc-700" />
-              </div>
-              <div className="flex-1 p-6 flex flex-col gap-6">
-                <div className="w-full h-32 bg-zinc-800/50 rounded-xl border border-zinc-700/30 overflow-hidden relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-green-500/10 to-transparent translate-x-[-100%] animate-[shimmer_3s_infinite]" />
-                </div>
-                <div className="flex gap-4 h-24">
-                  <div className="w-1/2 h-full bg-zinc-800/50 rounded-xl border border-zinc-700/30" />
-                  <div className="w-1/2 h-full rounded-xl flex flex-col gap-3">
-                    <div className="w-full h-1/3 bg-zinc-800/80 rounded-lg" />
-                    <div className="w-2/3 h-1/3 bg-zinc-800/60 rounded-lg" />
-                  </div>
-                </div>
-              </div>
+              {/* Green gradient overlay at bottom */}
+              <div className="absolute inset-0 bg-gradient-to-t from-green-950/40 via-transparent to-transparent z-10 pointer-events-none" />
+              <Image
+                src="/profile.png"
+                alt="Ahmed Essam Maher"
+                fill
+                className="object-cover object-top"
+                priority
+              />
             </motion.div>
 
-            {/* Floating Elements Details */}
-            <motion.div 
-              animate={{ y: [15, -15, 15], rotate: [0, 5, 0] }}
-              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-              className="absolute -right-8 top-12 w-24 h-24 bg-green-500/10 backdrop-blur-3xl border border-green-500/20 rounded-full shadow-[0_0_30px_rgba(5,242,108,0.1)] flex items-center justify-center p-4"
-            >
-              <div className="w-full h-full border border-green-500/40 rounded-full border-dashed animate-[spin_10s_linear_infinite]" />
-            </motion.div>
-
-            <motion.div 
-              animate={{ y: [-10, 10, -10], x: [-5, 5, -5] }}
+            {/* Floating availability badge */}
+            <motion.div
+              animate={{ y: [-8, 8, -8], x: [-4, 4, -4] }}
               transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute -left-10 bottom-16 px-6 py-4 bg-zinc-900/80 backdrop-blur-xl border border-zinc-800 rounded-2xl shadow-xl flex items-center gap-3"
+              className="absolute -left-8 bottom-16 px-5 py-3 bg-zinc-900/90 backdrop-blur-xl border border-zinc-800 rounded-2xl shadow-xl flex items-center gap-3 z-20"
             >
-              <div className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_10px_rgba(5,242,108,0.5)]" />
-              <div className="w-16 h-1.5 bg-zinc-700 rounded-full overflow-hidden">
-                <motion.div 
-                  initial={{ width: 0 }}
-                  animate={{ width: "100%" }}
-                  transition={{ duration: 2, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
-                  className="h-full bg-green-500 rounded-full"
-                />
-              </div>
+              <div className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_10px_rgba(5,242,108,0.6)] animate-pulse" />
+              <span className="text-sm text-zinc-200 font-medium">Available for work</span>
             </motion.div>
+
+            {/* Floating projects badge */}
+            <motion.div
+              animate={{ y: [10, -10, 10], rotate: [0, 3, 0] }}
+              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+              className="absolute -right-6 top-12 px-4 py-3 bg-zinc-900/90 backdrop-blur-xl border border-green-500/30 rounded-2xl shadow-xl flex flex-col gap-1 z-20"
+            >
+              <span className="text-2xl font-bold text-green-500 leading-none">20+</span>
+              <span className="text-xs text-zinc-400">Projects Done</span>
+            </motion.div>
+
           </div>
         </motion.div>
 
