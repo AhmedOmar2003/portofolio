@@ -18,6 +18,7 @@ export default function Navbar({ logoUrl }: NavbarProps) {
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [prevPathname, setPrevPathname] = useState(pathname);
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -25,10 +26,11 @@ export default function Navbar({ logoUrl }: NavbarProps) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Close mobile menu on route change
-  useEffect(() => {
+  // Close mobile menu on route change according to React 18 "state update during render" pattern
+  if (pathname !== prevPathname) {
     setIsMobileMenuOpen(false);
-  }, [pathname]);
+    setPrevPathname(pathname);
+  }
 
   const navLinks = [
     { href: '/', label: t('home') },

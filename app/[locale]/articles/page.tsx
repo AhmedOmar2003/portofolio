@@ -3,6 +3,8 @@ import { getTranslations } from 'next-intl/server';
 import { createClient } from '@/utils/supabase/server';
 import { Link } from '@/i18n/routing';
 
+export const revalidate = 3600;
+
 export default async function ArticlesPage(props: { params: Promise<{ locale: string }> }) {
   const { locale } = await props.params;
   const t = await getTranslations({ locale, namespace: 'Navigation' });

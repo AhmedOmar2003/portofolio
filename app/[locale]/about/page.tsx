@@ -3,6 +3,8 @@ import { getTranslations } from 'next-intl/server';
 import { createClient } from '@/utils/supabase/server';
 import Image from 'next/image';
 
+export const revalidate = 3600;
+
 export default async function AboutPage(props: { params: Promise<{ locale: string }> }) {
   const { locale } = await props.params;
 

@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
+import Image from 'next/image';
 import { Link } from '@/i18n/routing';
 
 interface ProjectCardProps {
@@ -37,7 +38,13 @@ export default function ProjectCard({ title, category, year, description, slug, 
               {imageUrl ? (
                 <>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={imageUrl} alt={title} className="w-full h-full object-cover transition-transform duration-1000 ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:scale-110 will-change-transform" />
+                  <Image 
+                    src={imageUrl} 
+                    alt={title} 
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    className="object-cover transition-transform duration-1000 ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:scale-110 will-change-transform" 
+                  />
                 </>
               ) : (
                 <div className="absolute inset-0 bg-gradient-to-tr from-zinc-800 to-zinc-800/50 flex flex-col items-center justify-center relative overflow-hidden">

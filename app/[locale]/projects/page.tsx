@@ -3,6 +3,8 @@ import ProjectCard from '@/components/ui/ProjectCard';
 import { getTranslations } from 'next-intl/server';
 import { createClient } from '@/utils/supabase/server';
 
+export const revalidate = 3600;
+
 export default async function ProjectsPage(props: { params: Promise<{ locale: string }> }) {
   const { locale } = await props.params;
   const t = await getTranslations({ locale, namespace: 'Navigation' });

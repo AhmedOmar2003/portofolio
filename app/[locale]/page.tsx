@@ -5,6 +5,8 @@ import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/routing';
 import { createClient } from '@/utils/supabase/server';
 
+export const revalidate = 3600; // Cache page and Supabase requests for 1 hour for performance
+
 export default async function HomePage(props: { params: Promise<{ locale: string }> }) {
   const { locale } = await props.params;
 

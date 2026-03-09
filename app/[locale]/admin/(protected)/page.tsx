@@ -1,6 +1,6 @@
 import { createClient } from '@/utils/supabase/server'
 import Link from 'next/link'
-import { ArrowRight, Briefcase, FileText, Users, Mail, Eye, Activity } from 'lucide-react'
+import { ArrowRight, Briefcase, Users, Mail, Eye, Activity } from 'lucide-react'
 
 export default async function AdminOverviewPage() {
   const supabase = await createClient()
@@ -8,14 +8,12 @@ export default async function AdminOverviewPage() {
   // Fetch all stats concurrently for speed
   const [
     { count: projectsCount }, 
-    { count: articlesCount },
     { count: unreadMessagesCount },
     { data: recentMessages },
     { count: totalViews },
     { data: uniqueVisitors }
   ] = await Promise.all([
     supabase.from('projects').select('*', { count: 'exact', head: true }),
-    supabase.from('articles').select('*', { count: 'exact', head: true }),
     supabase.from('contact_messages').select('*', { count: 'exact', head: true }).eq('status', 'new'),
     supabase.from('contact_messages').select('*').order('created_at', { ascending: false }).limit(5),
     supabase.from('page_views').select('*', { count: 'exact', head: true }),
