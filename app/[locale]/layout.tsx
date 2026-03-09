@@ -5,6 +5,7 @@ import { Geist, Geist_Mono, Cairo } from 'next/font/google';
 import '../globals.css';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
+import WhatsAppButton from '@/components/ui/WhatsAppButton';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -74,6 +75,7 @@ export default async function LocaleLayout({
             {children}
           </div>
           <Footer socialLinks={socialLinksParams} />
+          <WhatsAppButton />
         </NextIntlClientProvider>
       </body>
     </html>
