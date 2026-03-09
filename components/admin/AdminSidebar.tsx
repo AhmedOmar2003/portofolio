@@ -10,7 +10,9 @@ import {
   FileText, 
   MessageSquare, 
   Settings,
-  LogOut
+  LogOut,
+  Mail,
+  Search
 } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
@@ -26,6 +28,8 @@ export default function AdminSidebar({ locale }: { locale: string }) {
     { name: 'Projects', href: `/${locale}/admin/projects`, icon: Briefcase },
     { name: 'Services', href: `/${locale}/admin/services`, icon: Layers },
     { name: 'Articles', href: `/${locale}/admin/articles`, icon: FileText },
+    { name: 'Inbox', href: `/${locale}/admin/messages`, icon: Mail },
+    { name: 'SEO & Perf', href: `/${locale}/admin/seo`, icon: Search },
     { name: 'Contact Methods', href: `/${locale}/admin/contact`, icon: MessageSquare },
     { name: 'Settings', href: `/${locale}/admin/settings`, icon: Settings },
   ]

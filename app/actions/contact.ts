@@ -1,5 +1,7 @@
 'use server';
 
+import { createClient } from '@/utils/supabase/server';
+
 export async function sendContactEmail(formData: FormData) {
   const name = formData.get('name') as string;
   const email = formData.get('email') as string;
@@ -54,6 +56,19 @@ export async function sendContactEmail(formData: FormData) {
       const errorData = await res.json();
       console.error('Resend API Error:', errorData);
       return { success: false, error: 'Failed to send email. Please try again.' };
+    }
+
+    // After successful email, save to Supabase
+    const supabase = await createClient();
+    const { error: dbError } = await supabase
+      .from('contact_messages')
+      .insert([
+        { name, email, subject, message }
+      ]);
+      
+    if (dbError) {
+      console.error('Supabase Error saving contact message:', dbError);
+      // We still return true because the email itself was sent successfully
     }
 
     return { success: true, message: 'Message sent successfully!' };
