@@ -6,6 +6,7 @@ import '../globals.css';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
+import IntroSequence from '@/components/home/IntroSequence';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -70,6 +71,7 @@ export default async function LocaleLayout({
         className={`${geistSans.variable} ${cairo.variable} ${geistMono.variable} antialiased bg-zinc-950 text-zinc-50 font-sans flex flex-col min-h-screen`}
       >
         <NextIntlClientProvider messages={messages}>
+          <IntroSequence />
           <Navbar logoUrl={logoUrl} />
           <div className="flex-grow">
             {children}
