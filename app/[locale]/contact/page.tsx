@@ -1,6 +1,7 @@
 import SectionHeading from '@/components/ui/SectionHeading';
 import { getTranslations } from 'next-intl/server';
 import { createClient } from '@/utils/supabase/server';
+import ContactForm from '@/components/contact/ContactForm';
 
 export default async function ContactPage(props: { params: Promise<{ locale: string }> }) {
   const { locale } = await props.params;
@@ -72,32 +73,7 @@ export default async function ContactPage(props: { params: Promise<{ locale: str
             </div>
           </div>
           
-          <div className="bg-zinc-900 border border-zinc-800 p-8 rounded-3xl">
-            <h3 className="text-xl font-bold text-zinc-50 mb-6">Send a Message</h3>
-            <form className="space-y-6">
-              <div className="grid grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-zinc-400">Name</label>
-                  <input type="text" className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all text-zinc-50" placeholder="John Doe" />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-zinc-400">Email</label>
-                  <input type="email" className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all text-zinc-50" placeholder="john@example.com" />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-zinc-400">Subject</label>
-                <input type="text" className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all text-zinc-50" placeholder="Project Inquiry" />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-zinc-400">Message</label>
-                <textarea rows={5} className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all text-zinc-50 resize-none" placeholder="How can I help you?"></textarea>
-              </div>
-              <button type="button" className="w-full py-4 bg-green-500 text-zinc-950 font-bold rounded-xl hover:bg-green-400 transition-colors">
-                Send Message
-              </button>
-            </form>
-          </div>
+          <ContactForm />
           
         </div>
       </div>
