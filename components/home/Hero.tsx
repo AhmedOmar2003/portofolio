@@ -2,8 +2,9 @@
 
 import { useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
-import { ArrowUpRight, Sparkles } from 'lucide-react';
+import { ArrowUpRight, Mail } from 'lucide-react';
 import Image from 'next/image';
+import { Link } from '@/i18n/routing';
 
 interface HeroProps {
   title?: string;
@@ -58,12 +59,12 @@ export default function Hero({ title, subtitle }: HeroProps) {
           animate="visible"
           className="lg:col-span-7 flex flex-col items-start"
         >
-          <motion.div variants={itemVariants} className="inline-flex items-center gap-2 mb-8 px-4 py-2 bg-zinc-900/50 backdrop-blur-sm border border-zinc-800/80 rounded-full shadow-lg shadow-black/20">
-            <Sparkles className="w-4 h-4 text-green-500" />
-            <span className="text-xs font-medium text-zinc-300 tracking-wide uppercase">UX/UI & Digital Product Designer</span>
+          <motion.div variants={itemVariants} className="inline-flex items-center gap-2 mb-6 sm:mb-8 px-4 py-2 bg-zinc-900/60 backdrop-blur-sm border border-zinc-800/80 rounded-full shadow-lg shadow-black/20">
+            <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+            <span className="text-xs font-medium text-zinc-300 tracking-wide uppercase">UX/UI &amp; Digital Product Designer</span>
           </motion.div>
 
-          <motion.h1 variants={itemVariants} className="text-5xl sm:text-7xl lg:text-[5.5rem] font-bold tracking-tight mb-8 leading-[1.05]">
+          <motion.h1 variants={itemVariants} className="text-4xl sm:text-6xl lg:text-[5rem] xl:text-[5.5rem] font-bold tracking-tight mb-5 sm:mb-8 leading-[1.05]">
             {titleParts.length > 1 ? (
               <>
                 <span className="text-zinc-50 block mb-2">{titleParts[0]}</span>
@@ -74,18 +75,28 @@ export default function Hero({ title, subtitle }: HeroProps) {
             )}
           </motion.h1>
 
-          <motion.p variants={itemVariants} className="text-lg sm:text-xl text-zinc-400 font-light mb-12 max-w-2xl leading-relaxed whitespace-pre-wrap">
+          <motion.p variants={itemVariants} className="text-base sm:text-lg lg:text-xl text-zinc-400 font-light mb-8 sm:mb-12 max-w-2xl leading-relaxed whitespace-pre-wrap">
             {subtitle || t('positioning')}
           </motion.p>
 
-          <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-center gap-5 w-full sm:w-auto">
-            <button className="w-full sm:w-auto px-8 py-4 bg-zinc-50 text-zinc-950 font-semibold rounded-full hover:bg-zinc-200 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 shadow-[0_0_40px_rgba(255,255,255,0.1)] flex items-center justify-center gap-2 group">
+          <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 w-full sm:w-auto">
+            {/* Primary CTA — View Projects */}
+            <Link
+              href="/projects"
+              className="btn btn-primary text-sm sm:text-base w-full sm:w-auto"
+            >
               {t('ctaPrimary')}
-              <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-            </button>
-            <button className="w-full sm:w-auto px-8 py-4 bg-zinc-900/40 text-zinc-300 backdrop-blur-md border border-zinc-800 font-medium rounded-full hover:bg-zinc-800/60 hover:text-zinc-50 hover:border-zinc-700 transition-all duration-300 flex items-center justify-center">
+              <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200" />
+            </Link>
+
+            {/* Secondary CTA — Contact Me */}
+            <Link
+              href="/contact"
+              className="btn btn-secondary text-sm sm:text-base w-full sm:w-auto"
+            >
+              <Mail className="w-4 h-4" />
               {t('ctaSecondary')}
-            </button>
+            </Link>
           </motion.div>
         </motion.div>
 
