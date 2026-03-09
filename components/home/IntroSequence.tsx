@@ -13,6 +13,64 @@ export default function IntroSequence() {
     const hasSeenIntro = sessionStorage.getItem('hasSeenIntro');
     if (!hasSeenIntro) {
       setShowIntro(true);
+      
+      // Initialize lightweight, zero-dependency Web Audio chime
+      const playIntroSound = () => {
+        try {
+          const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+          if (!AudioContext) return;
+          
+          const ctx = new AudioContext();
+          const masterGain = ctx.createGain();
+          
+          // Very low volume overall
+          masterGain.gain.value = 0.06;
+          masterGain.connect(ctx.destination);
+
+          const playNote = (freq: number, type: OscillatorType, delay: number, duration: number) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            
+            osc.type = type;
+            osc.frequency.value = freq;
+            
+            gain.gain.setValueAtTime(0, ctx.currentTime + delay);
+            gain.gain.linearRampToValueAtTime(1, ctx.currentTime + delay + 0.05);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + duration);
+            
+            osc.connect(gain);
+            gain.connect(masterGain);
+            
+            osc.start(ctx.currentTime + delay);
+            osc.stop(ctx.currentTime + delay + duration + 0.1);
+          };
+
+          // Play a soft, ambient "glassy" tech UI chord
+          playNote(523.25, 'sine', 0, 2.5);       // C5 Root
+          playNote(523.25, 'triangle', 0, 2.5);   // C5 Root texture
+          playNote(783.99, 'sine', 0.15, 2.0);    // G5 Perfect 5th
+          playNote(987.77, 'sine', 0.3, 3.0);     // B5 Major 7th (Airy/Unresolved feel)
+
+          // Handle strict browser autoplay policies natively
+          if (ctx.state === 'suspended') {
+            const resumeAudio = () => {
+              // Only resume if the intro sequence is still actively rendering
+              if (document.getElementById('intro-sequence-container')) {
+                ctx.resume();
+              } else {
+                ctx.close().catch(() => {});
+              }
+              ['click', 'keydown', 'touchstart'].forEach(e => document.removeEventListener(e, resumeAudio));
+            };
+            ['click', 'keydown', 'touchstart'].forEach(e => document.addEventListener(e, resumeAudio));
+          }
+        } catch (e) {
+          console.error("Audio playback failed", e);
+        }
+      };
+
+      // Trigger the sound as soon as the component visually mounts
+      playIntroSound();
     }
   }, []);
 
@@ -30,6 +88,7 @@ export default function IntroSequence() {
     <AnimatePresence>
       {showIntro && (
         <motion.div
+          id="intro-sequence-container"
           key="intro-sequence"
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
