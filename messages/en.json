@@ -1,0 +1,32 @@
+{
+  "Navigation": {
+    "home": "Home",
+    "about": "About",
+    "projects": "Projects",
+    "services": "Services",
+    "articles": "Articles",
+    "contact": "Contact"
+  },
+  "Hero": {
+    "greeting": "I am",
+    "title": "Ahmed Essam Maher.",
+    "positioning": "I design digital products that solve real human problems.",
+    "ctaPrimary": "View Projects",
+    "ctaSecondary": "Contact Me"
+  },
+  "Footer": {
+    "title": "Let's work together",
+    "description": "I'm always open to discussing product design work or partnership opportunities.",
+    "rights": "All rights reserved",
+    "designBy": "Designed & Built by Ahmed Essam Maher",
+    "social": "Connect"
+  },
+  "HomePage": {
+    "featuredProjects": "Featured Work",
+    "featuredProjectsSub": "A selection of my recent product design case studies.",
+    "services": "My Expertise",
+    "servicesSub": "How I can help you build better digital products.",
+    "viewAllProjects": "View All Projects",
+    "viewAllArticles": "Read All Articles"
+  }
+}
