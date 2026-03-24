@@ -123,77 +123,64 @@ export default function Hero({ title, subtitle, projectCount, serviceCount }: He
           initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.96, y: 24 }}
           animate={shouldReduceMotion ? undefined : { opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 0.85, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-          className="relative"
+          className="relative mx-auto w-full max-w-[560px] lg:mx-0"
         >
-          <div className="surface-panel relative overflow-hidden rounded-[2rem] p-5 md:p-6">
-            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />
-            <div className="grid gap-5 md:grid-cols-[1.2fr_0.8fr]">
-              <div className="relative min-h-[430px] overflow-hidden rounded-[1.6rem] border border-white/10 bg-[radial-gradient(circle_at_top,_rgba(141,246,200,0.18),_transparent_42%),linear-gradient(180deg,_rgba(255,255,255,0.06),_rgba(255,255,255,0.02))]">
-                <div className="absolute inset-0 bg-[linear-gradient(rgba(148,163,184,0.12)_1px,transparent_1px),linear-gradient(90deg,rgba(148,163,184,0.12)_1px,transparent_1px)] bg-[size:44px_44px] opacity-25" />
-                <div className="absolute inset-x-8 top-8 z-10 flex items-center justify-between rounded-full border border-white/12 bg-black/20 px-4 py-3 backdrop-blur-xl">
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.3em] text-slate-400">{t('introLabel')}</p>
-                    <p className="mt-1 text-sm font-medium text-white">{t('availability')}</p>
-                  </div>
-                  <span className="flex h-10 w-10 items-center justify-center rounded-full border border-emerald-300/30 bg-emerald-300/10 text-[#8df6c8]">
-                    <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
-                  </span>
-                </div>
+          <div className="relative aspect-[0.9]">
+            <motion.div
+              animate={shouldReduceMotion ? undefined : { y: [-8, 8, -8] }}
+              transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+              className="absolute inset-x-10 bottom-10 top-10 overflow-hidden rounded-[2.2rem] border border-white/10 bg-slate-950/60 shadow-[0_40px_120px_rgba(2,8,23,0.55)]"
+            >
+              <Image
+                src="/profile.png"
+                alt="Ahmed Essam Maher portrait"
+                fill
+                priority
+                className="object-cover object-top"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#04070f] via-transparent to-transparent" />
+            </motion.div>
 
-                <motion.div
-                  animate={
-                    shouldReduceMotion
-                      ? undefined
-                      : {
-                          y: [-10, 8, -10],
-                        }
-                  }
-                  transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
-                  className="absolute inset-x-0 bottom-0 top-28"
-                >
-                  <div className="absolute inset-x-10 bottom-8 top-0 overflow-hidden rounded-[1.8rem] border border-white/10 bg-slate-950/55 shadow-[0_40px_120px_rgba(2,8,23,0.55)]">
-                    <Image
-                      src="/profile.png"
-                      alt="Ahmed Essam Maher portrait"
-                      fill
-                      priority
-                      className="object-cover object-top"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#04070f] via-transparent to-transparent" />
-                  </div>
-                </motion.div>
+            <motion.div
+              animate={shouldReduceMotion ? undefined : { y: [0, -10, 0] }}
+              transition={{ duration: 6.5, repeat: Infinity, ease: 'easeInOut' }}
+              className="absolute left-0 top-8 max-w-[270px] rounded-[1.75rem] border border-white/12 bg-[rgba(10,16,27,0.8)] px-5 py-5 backdrop-blur-xl"
+            >
+              <p className="text-xs uppercase tracking-[0.3em] text-slate-400">{t('introLabel')}</p>
+              <div className="mt-3 flex items-start justify-between gap-4">
+                <p className="text-sm font-medium leading-7 text-white">{t('availability')}</p>
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-emerald-300/30 bg-emerald-300/10 text-[#8df6c8]">
+                  <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+                </span>
               </div>
+            </motion.div>
 
-              <div className="grid gap-5">
-                <motion.div
-                  animate={shouldReduceMotion ? undefined : { y: [0, -10, 0] }}
-                  transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
-                  className="rounded-[1.5rem] border border-white/10 bg-white/[0.04] p-5 backdrop-blur-xl"
-                >
-                  <p className="mb-4 text-xs uppercase tracking-[0.28em] text-slate-400">{t('snapshotLabel')}</p>
-                  <div className="space-y-3">
-                    <div className="rounded-2xl border border-white/8 bg-black/15 p-4">
-                      <p className="text-sm text-slate-400">{t('snapshotResearch')}</p>
-                      <p className="mt-2 text-base font-medium text-white">{t('snapshotResearchValue')}</p>
-                    </div>
-                    <div className="rounded-2xl border border-white/8 bg-black/15 p-4">
-                      <p className="text-sm text-slate-400">{t('snapshotSystems')}</p>
-                      <p className="mt-2 text-base font-medium text-white">{t('snapshotSystemsValue')}</p>
-                    </div>
-                  </div>
-                </motion.div>
+            <motion.div
+              animate={shouldReduceMotion ? undefined : { y: [0, 10, 0] }}
+              transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
+              className="absolute right-0 top-24 max-w-[220px] rounded-[1.5rem] border border-white/10 bg-[rgba(10,16,27,0.72)] px-5 py-4 backdrop-blur-xl"
+            >
+              <p className="text-[0.7rem] uppercase tracking-[0.24em] text-slate-400">{t('snapshotResearch')}</p>
+              <p className="mt-3 text-sm font-medium leading-6 text-white">{t('snapshotResearchValue')}</p>
+            </motion.div>
 
-                <motion.div
-                  animate={shouldReduceMotion ? undefined : { y: [0, 10, 0] }}
-                  transition={{ duration: 6.5, repeat: Infinity, ease: 'easeInOut' }}
-                  className="rounded-[1.5rem] border border-[#8df6c8]/20 bg-gradient-to-br from-[#8df6c8]/12 via-transparent to-[#6ad7ff]/10 p-5"
-                >
-                  <p className="mb-3 text-xs uppercase tracking-[0.28em] text-slate-300">{t('impactLabel')}</p>
-                  <h2 className="text-2xl font-semibold tracking-[-0.04em] text-white">{t('impactTitle')}</h2>
-                  <p className="mt-3 text-sm leading-7 text-slate-300">{t('impactDescription')}</p>
-                </motion.div>
-              </div>
-            </div>
+            <motion.div
+              animate={shouldReduceMotion ? undefined : { y: [0, -8, 0] }}
+              transition={{ duration: 6.8, repeat: Infinity, ease: 'easeInOut', delay: 0.4 }}
+              className="absolute -left-2 bottom-16 max-w-[220px] rounded-[1.5rem] border border-white/10 bg-[rgba(10,16,27,0.72)] px-5 py-4 backdrop-blur-xl"
+            >
+              <p className="text-[0.7rem] uppercase tracking-[0.24em] text-slate-400">{t('snapshotSystems')}</p>
+              <p className="mt-3 text-sm font-medium leading-6 text-white">{t('snapshotSystemsValue')}</p>
+            </motion.div>
+
+            <motion.div
+              animate={shouldReduceMotion ? undefined : { y: [0, 12, 0] }}
+              transition={{ duration: 7.2, repeat: Infinity, ease: 'easeInOut' }}
+              className="absolute bottom-4 right-2 max-w-[260px] rounded-[1.6rem] border border-[#8df6c8]/20 bg-gradient-to-br from-[#8df6c8]/12 via-[rgba(10,16,27,0.8)] to-[#6ad7ff]/10 px-5 py-5 backdrop-blur-xl"
+            >
+              <p className="text-[0.7rem] uppercase tracking-[0.24em] text-slate-300">{t('impactLabel')}</p>
+              <p className="mt-3 text-base font-semibold leading-7 text-white">{t('impactTitle')}</p>
+            </motion.div>
           </div>
 
           <div className="mt-5 flex items-center gap-3 text-sm text-slate-400">
