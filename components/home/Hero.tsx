@@ -156,24 +156,6 @@ export default function Hero({ title, subtitle, projectCount, serviceCount }: He
             </motion.div>
 
             <motion.div
-              animate={shouldReduceMotion ? undefined : { y: [0, 10, 0] }}
-              transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
-              className="absolute right-0 top-24 max-w-[220px] rounded-[1.5rem] border border-white/10 bg-[rgba(10,16,27,0.72)] px-5 py-4 backdrop-blur-xl"
-            >
-              <p className="text-[0.7rem] uppercase tracking-[0.24em] text-slate-400">{t('snapshotResearch')}</p>
-              <p className="mt-3 text-sm font-medium leading-6 text-white">{t('snapshotResearchValue')}</p>
-            </motion.div>
-
-            <motion.div
-              animate={shouldReduceMotion ? undefined : { y: [0, -8, 0] }}
-              transition={{ duration: 6.8, repeat: Infinity, ease: 'easeInOut', delay: 0.4 }}
-              className="absolute -left-2 bottom-16 max-w-[220px] rounded-[1.5rem] border border-white/10 bg-[rgba(10,16,27,0.72)] px-5 py-4 backdrop-blur-xl"
-            >
-              <p className="text-[0.7rem] uppercase tracking-[0.24em] text-slate-400">{t('snapshotSystems')}</p>
-              <p className="mt-3 text-sm font-medium leading-6 text-white">{t('snapshotSystemsValue')}</p>
-            </motion.div>
-
-            <motion.div
               animate={shouldReduceMotion ? undefined : { y: [0, 12, 0] }}
               transition={{ duration: 7.2, repeat: Infinity, ease: 'easeInOut' }}
               className="absolute bottom-4 right-2 max-w-[260px] rounded-[1.6rem] border border-[#8df6c8]/20 bg-gradient-to-br from-[#8df6c8]/12 via-[rgba(10,16,27,0.8)] to-[#6ad7ff]/10 px-5 py-5 backdrop-blur-xl"
