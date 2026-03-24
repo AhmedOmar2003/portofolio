@@ -31,6 +31,13 @@ export async function generateMetadata(): Promise<Metadata> {
     description:
       settings?.hero_subtitle_en ||
       'I design digital products that solve real problems through product thinking, elegant interfaces, and accessible systems.',
+    icons: {
+      icon: [
+        { url: '/icon.svg', type: 'image/svg+xml' },
+      ],
+      shortcut: '/icon.svg',
+      apple: '/apple-icon.svg',
+    },
   };
 }
 
