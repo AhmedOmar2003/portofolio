@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server'
-import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import { z } from 'zod'
 import { cookies } from 'next/headers'
 
@@ -59,45 +58,11 @@ export async function POST(request: Request) {
     )
   }
 
-  const supabase = createSupabaseClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  return NextResponse.json(
     {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false,
-      },
-    }
+      error:
+        'Admin login credentials are not loaded. Add ADMIN_LOGIN_EMAIL and ADMIN_LOGIN_PASSWORD to the project .env.local, then restart the Next.js server.',
+    },
+    { status: 500 }
   )
-
-  const { data, error } = await supabase.rpc('verify_admin_login', {
-    login_email: parsed.data.email,
-    login_password: parsed.data.password,
-  })
-
-  if (error) {
-    return NextResponse.json(
-      {
-        error:
-          `Admin login is not configured yet. Either set ADMIN_LOGIN_EMAIL and ADMIN_LOGIN_PASSWORD in the environment, or finish the Supabase SQL setup. Supabase returned: ${error.message}`,
-      },
-      { status: 500 }
-    )
-  }
-
-  if (!data) {
-    return NextResponse.json(
-      { error: 'Incorrect admin email or password.' },
-      { status: 401 }
-    )
-  }
-
-  const cookieStore = await cookies()
-  cookieStore.set(
-    ADMIN_SESSION_COOKIE,
-    createAdminSessionToken(parsed.data.email),
-    getAdminSessionCookieOptions()
-  )
-
-  return NextResponse.json({ ok: true })
 }
