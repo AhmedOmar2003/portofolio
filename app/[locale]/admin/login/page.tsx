@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { ArrowRight, Loader2, LockKeyhole } from 'lucide-react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
 import BrandMark from '@/components/ui/BrandMark'
@@ -112,6 +113,15 @@ export default function AdminLoginPage() {
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4" />}
               {loading ? 'Signing in...' : 'Sign in to dashboard'}
             </button>
+
+            <div className="pt-1 text-center">
+              <Link
+                href="/en/admin/forgot-password"
+                className="text-sm font-medium text-slate-400 transition hover:text-white"
+              >
+                Forgot password?
+              </Link>
+            </div>
           </form>
         </div>
       </section>
