@@ -1,12 +1,15 @@
 'use client';
 
-import { useLocale } from 'next-intl';
-import { usePathname, useRouter } from '@/i18n/routing';
-import { useTransition } from 'react';
 import clsx from 'clsx';
+import { Languages } from 'lucide-react';
+import { useTransition } from 'react';
+import { useLocale, useTranslations } from 'next-intl';
+
+import { usePathname, useRouter } from '@/i18n/routing';
 
 export default function LanguageToggle() {
   const locale = useLocale();
+  const t = useTranslations('Navigation');
   const router = useRouter();
   const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
@@ -20,21 +23,19 @@ export default function LanguageToggle() {
 
   return (
     <button
+      type="button"
       onClick={toggleLocale}
       disabled={isPending}
+      aria-label={t('toggleLanguage')}
       className={clsx(
-        "relative inline-flex h-8 items-center justify-center rounded-full bg-zinc-900 border border-zinc-800 px-3 text-sm font-medium transition-colors hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-zinc-950",
-        isPending && "opacity-50 cursor-not-allowed"
+        'inline-flex h-11 items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 text-sm font-medium text-slate-100 transition hover:border-white/20 hover:bg-white/[0.08]',
+        isPending && 'cursor-not-allowed opacity-60'
       )}
-      aria-label="Toggle language"
     >
-      <span className={clsx("transition-colors", locale === 'en' ? 'text-green-500' : 'text-zinc-400')}>
-        EN
-      </span>
-      <span className="mx-1.5 text-zinc-600">|</span>
-      <span className={clsx("transition-colors font-arabic", locale === 'ar' ? 'text-green-500' : 'text-zinc-400')}>
-        AR
-      </span>
+      <Languages className="h-4 w-4 text-[#8df6c8]" aria-hidden="true" />
+      <span className={clsx(locale === 'en' ? 'text-white' : 'text-slate-400')}>EN</span>
+      <span className="text-slate-600">/</span>
+      <span className={clsx(locale === 'ar' ? 'text-white' : 'text-slate-400')}>AR</span>
     </button>
   );
 }

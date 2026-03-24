@@ -1,10 +1,13 @@
 'use client';
 
 import { useState } from 'react';
+import { AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+
 import { sendContactEmail } from '@/app/actions/contact';
-import { Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 
 export default function ContactForm() {
+  const t = useTranslations('ContactForm');
   const [isPending, setIsPending] = useState(false);
   const [status, setStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
@@ -13,96 +16,118 @@ export default function ContactForm() {
     setIsPending(true);
     setStatus(null);
 
-    const formData = new FormData(e.currentTarget);
+    const form = e.currentTarget;
+    const formData = new FormData(form);
     const result = await sendContactEmail(formData);
 
     if (result.success) {
-      setStatus({ type: 'success', message: result.message! });
-      (e.target as HTMLFormElement).reset(); // Clear form on success
+      setStatus({ type: 'success', message: result.message || t('success') });
+      form.reset();
     } else {
-      setStatus({ type: 'error', message: result.error! });
+      setStatus({ type: 'error', message: result.error || t('error') });
     }
 
     setIsPending(false);
   }
 
   return (
-    <div className="bg-zinc-900 border border-zinc-800 p-8 rounded-3xl">
-      <h3 className="text-xl font-bold text-zinc-50 mb-6">Send a Message</h3>
-      
-      {status && (
-        <div 
-          className={`p-4 rounded-xl mb-6 flex items-start gap-3 text-sm font-medium ${
-            status.type === 'success' ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'
-          }`}
-        >
-          {status.type === 'success' ? <CheckCircle2 className="w-5 h-5 shrink-0" /> : <AlertCircle className="w-5 h-5 shrink-0" />}
-          <p className="pt-0.5">{status.message}</p>
-        </div>
-      )}
+    <div className="surface-panel rounded-[1.9rem] p-6 sm:p-8">
+      <div className="mb-6">
+        <span className="eyebrow mb-4">{t('eyebrow')}</span>
+        <h3 className="text-2xl font-semibold tracking-[-0.04em] text-white">{t('title')}</h3>
+        <p className="mt-3 text-base leading-7 text-slate-300">{t('subtitle')}</p>
+      </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid grid-cols-2 gap-6">
+      <div aria-live="polite" aria-atomic="true">
+        {status ? (
+          <div
+            role="status"
+            className={`mb-6 flex items-start gap-3 rounded-2xl border px-4 py-4 text-sm ${
+              status.type === 'success'
+                ? 'border-emerald-400/20 bg-emerald-400/10 text-emerald-200'
+                : 'border-rose-400/20 bg-rose-400/10 text-rose-200'
+            }`}
+          >
+            {status.type === 'success' ? (
+              <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0" aria-hidden="true" />
+            ) : (
+              <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" aria-hidden="true" />
+            )}
+            <p>{status.message}</p>
+          </div>
+        ) : null}
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <div className="grid gap-5 sm:grid-cols-2">
           <div className="space-y-2">
-            <label htmlFor="name" className="text-sm font-medium text-zinc-400">Name</label>
-            <input 
-              type="text" 
-              name="name" 
+            <label htmlFor="name" className="text-sm font-medium text-slate-300">
+              {t('name')}
+            </label>
+            <input
               id="name"
+              name="name"
+              type="text"
               required
               disabled={isPending}
-              className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all text-zinc-50 disabled:opacity-50" 
-              placeholder="John Doe" 
+              placeholder={t('namePlaceholder')}
+              className="w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3.5 text-white placeholder:text-slate-500 disabled:opacity-60"
             />
           </div>
+
           <div className="space-y-2">
-            <label htmlFor="email" className="text-sm font-medium text-zinc-400">Email</label>
-            <input 
-              type="email" 
-              name="email" 
+            <label htmlFor="email" className="text-sm font-medium text-slate-300">
+              {t('email')}
+            </label>
+            <input
               id="email"
+              name="email"
+              type="email"
               required
               disabled={isPending}
-              className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all text-zinc-50 disabled:opacity-50" 
-              placeholder="john@example.com" 
+              placeholder={t('emailPlaceholder')}
+              className="w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3.5 text-white placeholder:text-slate-500 disabled:opacity-60"
             />
           </div>
         </div>
+
         <div className="space-y-2">
-          <label htmlFor="subject" className="text-sm font-medium text-zinc-400">Subject (Optional)</label>
-          <input 
-            type="text" 
-            name="subject" 
+          <label htmlFor="subject" className="text-sm font-medium text-slate-300">
+            {t('subject')}
+          </label>
+          <input
             id="subject"
+            name="subject"
+            type="text"
             disabled={isPending}
-            className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all text-zinc-50 disabled:opacity-50" 
-            placeholder="Project Inquiry" 
+            placeholder={t('subjectPlaceholder')}
+            className="w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3.5 text-white placeholder:text-slate-500 disabled:opacity-60"
           />
         </div>
+
         <div className="space-y-2">
-          <label htmlFor="message" className="text-sm font-medium text-zinc-400">Message</label>
-          <textarea 
-            name="message"
+          <label htmlFor="message" className="text-sm font-medium text-slate-300">
+            {t('message')}
+          </label>
+          <textarea
             id="message"
-            rows={5} 
+            name="message"
+            rows={6}
             required
             disabled={isPending}
-            className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all text-zinc-50 resize-none disabled:opacity-50" 
-            placeholder="How can I help you?"
-          ></textarea>
+            placeholder={t('messagePlaceholder')}
+            className="w-full resize-none rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3.5 text-white placeholder:text-slate-500 disabled:opacity-60"
+          />
         </div>
-        <button 
-          type="submit" 
-          disabled={isPending}
-          className="btn btn-primary w-full py-4 text-base rounded-xl flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed"
-        >
+
+        <button type="submit" disabled={isPending} className="btn btn-primary w-full justify-center py-4 text-sm sm:text-base">
           {isPending ? (
             <>
-              <Loader2 className="w-5 h-5 animate-spin mr-2" />
-              Sending...
+              <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+              {t('sending')}
             </>
           ) : (
-            'Send Message'
+            t('submit')
           )}
         </button>
       </form>

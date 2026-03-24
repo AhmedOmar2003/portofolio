@@ -1,73 +1,105 @@
-import SectionHeading from '@/components/ui/SectionHeading';
+import { ArrowUpRight } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
-import { createClient } from '@/utils/supabase/server';
+
 import { Link } from '@/i18n/routing';
+import SectionHeading from '@/components/ui/SectionHeading';
+import { createClient } from '@/utils/supabase/server';
 
 export const revalidate = 3600;
 
+function formatDate(dateValue: string | null | undefined, locale: string) {
+  if (!dateValue) {
+    return '';
+  }
+
+  return new Date(dateValue).toLocaleDateString(locale === 'ar' ? 'ar-EG' : 'en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
+}
+
 export default async function ArticlesPage(props: { params: Promise<{ locale: string }> }) {
   const { locale } = await props.params;
-  const t = await getTranslations({ locale, namespace: 'Navigation' });
+  const t = await getTranslations({ locale, namespace: 'ArticlesPage' });
   const supabase = await createClient();
 
-  const { data: articlesData, error: articlesError } = await supabase
-    .from('articles')
-    .select('*')
-    .order('created_at', { ascending: false });
+  const { data: articlesData, error: articlesError } = await supabase.from('articles').select('*').order('created_at', { ascending: false });
 
   if (articlesError) {
     console.error('[Articles Page] Supabase error:', articlesError);
   }
 
-  const articlesList = (articlesData || []).map(a => ({
-    slug: a.slug,
-    title: locale === 'ar' ? a.title_ar : a.title_en,
-    excerpt: locale === 'ar' ? a.excerpt_ar : a.excerpt_en,
-    category: a.category || '',
-    date: (a.published_at || a.created_at) ? new Date(a.published_at || a.created_at).toLocaleDateString(locale === 'ar' ? 'ar-EG' : 'en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '',
-    readTime: `${a.read_time_minutes || 5} ${locale === 'ar' ? 'دقائق قراءة' : 'min read'}`,
+  const articlesList = (articlesData || []).map((article) => ({
+    slug: article.slug,
+    title: locale === 'ar' ? article.title_ar : article.title_en,
+    excerpt: locale === 'ar' ? article.excerpt_ar : article.excerpt_en,
+    category: article.category || t('categoryFallback'),
+    date: formatDate(article.published_at || article.created_at, locale),
+    readTime: `${article.read_time_minutes || 5} ${locale === 'ar' ? 'دقائق قراءة' : 'min read'}`,
   }));
 
-  const finalArticles = articlesList.length > 0 ? articlesList : [
-    { slug: '#', title: "The Role of Empathy in Designing Scalable SaaS Products", date: "Oct 12, 2025", category: "Product Thinking", readTime: "5 min read", excerpt: '' },
-    { slug: '#', title: "Why Your Design System is Failing (And How to Fix It)", date: "Sep 28, 2025", category: "Design Systems", readTime: "8 min read", excerpt: '' },
-    { slug: '#', title: "Designing for Cognitive Load: A Practical Guide", date: "Aug 15, 2025", category: "UX Research", readTime: "6 min read", excerpt: '' },
-  ];
+  const finalArticles =
+    articlesList.length > 0
+      ? articlesList
+      : [
+          {
+            slug: '#',
+            title: t('sampleTitle1'),
+            excerpt: t('sampleExcerpt1'),
+            category: t('sampleCategory1'),
+            date: 'Oct 12, 2025',
+            readTime: '5 min read',
+          },
+          {
+            slug: '#',
+            title: t('sampleTitle2'),
+            excerpt: t('sampleExcerpt2'),
+            category: t('sampleCategory2'),
+            date: 'Sep 28, 2025',
+            readTime: '8 min read',
+          },
+        ];
 
   return (
-    <main className="min-h-screen bg-zinc-950 pt-32 pb-24">
-      <div className="container mx-auto px-6 md:px-12 max-w-4xl">
-        <SectionHeading title={t('articles')} subtitle="Insights, thoughts, and best practices on product design, user experience, and building scalable systems." />
-        
-        <div className="mt-16 flex flex-col gap-6">
-          {finalArticles.map((article, idx) => (
-            <Link key={idx} href={article.slug !== '#' ? `/articles/${article.slug}` : '#'}>
-              <article className="p-8 bg-zinc-900 border border-zinc-800 rounded-3xl hover:bg-zinc-800/50 transition-colors group cursor-pointer flex flex-col md:flex-row md:items-center justify-between gap-6">
-                <div className="space-y-4 max-w-2xl">
-                  <div className="flex items-center gap-3 text-sm">
-                    <span className="text-green-500 font-medium">{article.category}</span>
-                    <span className="text-zinc-600">•</span>
-                    <span className="text-zinc-500">{article.date}</span>
-                  </div>
-                  <h3 className="text-xl md:text-2xl font-bold text-zinc-50 group-hover:text-green-500 transition-colors" dir={locale === 'ar' ? 'rtl' : 'ltr'}>
-                    {article.title}
-                  </h3>
-                  {article.excerpt && (
-                    <p className="text-zinc-400 font-light leading-relaxed line-clamp-2" dir={locale === 'ar' ? 'rtl' : 'ltr'}>{article.excerpt}</p>
-                  )}
-                </div>
-                <div className="shrink-0 flex items-center justify-between md:flex-col md:items-end md:justify-center gap-4">
-                  <span className="text-sm text-zinc-500">{article.readTime}</span>
-                  <span className="w-10 h-10 rounded-full border border-zinc-800 group-hover:border-green-500 group-hover:bg-green-500/10 flex items-center justify-center text-zinc-400 group-hover:text-green-500 transition-colors">
-                    →
-                  </span>
-                </div>
-              </article>
-            </Link>
-          ))}
-        </div>
+    <main className="px-6 pb-24 pt-32 md:px-10 lg:px-12 lg:pt-36">
+      <div className="mx-auto max-w-[1380px]">
+        <section className="section-shell px-6 py-8 md:px-10 md:py-10">
+          <SectionHeading overline={t('eyebrow')} title={t('title')} subtitle={t('subtitle')} />
+        </section>
+
+        <section className="py-12">
+          <div className="grid gap-6 lg:grid-cols-2">
+            {finalArticles.map((article, index) => {
+              const href = article.slug !== '#' ? `/articles/${article.slug}` : '/articles';
+
+              return (
+                <Link key={`${article.title}-${index}`} href={href} className="group block h-full">
+                  <article className="section-shell flex h-full flex-col justify-between px-6 py-8 transition duration-300 group-hover:-translate-y-1 group-hover:border-white/14">
+                    <div>
+                      <div className="mb-5 flex flex-wrap items-center gap-3 text-sm">
+                        <span className="rounded-full border border-[#8df6c8]/20 bg-[#8df6c8]/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-[#8df6c8]">
+                          {article.category}
+                        </span>
+                        <span className="text-slate-500">{article.date}</span>
+                        <span className="text-slate-500">{article.readTime}</span>
+                      </div>
+
+                      <h2 className="text-2xl font-semibold tracking-[-0.04em] text-white sm:text-[2rem]">{article.title}</h2>
+                      <p className="mt-4 text-base leading-8 text-slate-300">{article.excerpt}</p>
+                    </div>
+
+                    <div className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-[#8df6c8]">
+                      {t('cta')}
+                      <ArrowUpRight className="h-4 w-4 transition duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden="true" />
+                    </div>
+                  </article>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
       </div>
     </main>
   );
 }
-

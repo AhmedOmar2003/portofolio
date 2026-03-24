@@ -1,76 +1,89 @@
-import { createClient } from '@/utils/supabase/server';
-import { notFound } from 'next/navigation';
-import { Link } from '@/i18n/routing';
+import Image from 'next/image';
 import { ArrowLeft } from 'lucide-react';
+import { notFound } from 'next/navigation';
+
+import { Link } from '@/i18n/routing';
+import { createClient } from '@/utils/supabase/server';
+
+function splitParagraphs(content?: string | null) {
+  return (content || '')
+    .split('\n')
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
 
 export default async function ArticleDetailPage(props: { params: Promise<{ slug: string; locale: string }> }) {
   const { slug, locale } = await props.params;
   const supabase = await createClient();
 
-  const { data: article } = await supabase
-    .from('articles')
-    .select('*')
-    .eq('slug', slug)
-    .single();
+  const { data: article } = await supabase.from('articles').select('*').eq('slug', slug).single();
 
-  if (!article) notFound();
+  if (!article) {
+    notFound();
+  }
 
   const title = locale === 'ar' ? article.title_ar : article.title_en;
   const content = locale === 'ar' ? article.content_ar : article.content_en;
   const excerpt = locale === 'ar' ? article.excerpt_ar : article.excerpt_en;
   const publishedDate = article.published_at
-    ? new Date(article.published_at).toLocaleDateString(locale === 'ar' ? 'ar-EG' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+    ? new Date(article.published_at).toLocaleDateString(locale === 'ar' ? 'ar-EG' : 'en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      })
     : '';
+  const paragraphs = splitParagraphs(content);
 
   return (
-    <main className="min-h-screen bg-zinc-950 pt-32 pb-24">
-      <div className="container mx-auto px-6 md:px-12 max-w-3xl">
-        <Link href="/articles" className="inline-flex items-center gap-2 text-zinc-400 hover:text-green-500 mb-12 transition-colors">
-          <ArrowLeft size={16} className={locale === 'ar' ? 'rotate-180' : ''} />
-          <span>{locale === 'ar' ? 'العودة للمقالات' : 'Back to Articles'}</span>
+    <main className="px-6 pb-24 pt-32 md:px-10 lg:px-12 lg:pt-36">
+      <div className="mx-auto max-w-[1180px]">
+        <Link
+          href="/articles"
+          className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2.5 text-sm text-slate-300 transition hover:border-white/20 hover:text-white"
+        >
+          <ArrowLeft className={`h-4 w-4 ${locale === 'ar' ? 'rotate-180' : ''}`} aria-hidden="true" />
+          {locale === 'ar' ? 'العودة إلى المقالات' : 'Back to articles'}
         </Link>
 
-        {/* Article Header */}
-        <header className="mb-16 space-y-6">
-          <div className="flex items-center gap-3 text-sm">
-            {article.category && (
-              <span className="px-3 py-1 bg-green-500/10 border border-green-500/20 text-green-500 rounded-full text-xs font-medium">
-                {article.category}
-              </span>
-            )}
-            {publishedDate && <span className="text-zinc-500">{publishedDate}</span>}
-            {article.read_time_minutes && (
-              <>
-                <span className="text-zinc-700">•</span>
-                <span className="text-zinc-500">{article.read_time_minutes} {locale === 'ar' ? 'دقائق قراءة' : 'min read'}</span>
-              </>
+        <article className="section-shell overflow-hidden px-6 py-8 md:px-10 md:py-10">
+          <header className="mx-auto max-w-3xl space-y-6">
+            <div className="flex flex-wrap items-center gap-3 text-sm">
+              {article.category ? (
+                <span className="rounded-full border border-[#8df6c8]/20 bg-[#8df6c8]/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-[#8df6c8]">
+                  {article.category}
+                </span>
+              ) : null}
+              {publishedDate ? <span className="text-slate-500">{publishedDate}</span> : null}
+              {article.read_time_minutes ? (
+                <span className="text-slate-500">
+                  {article.read_time_minutes} {locale === 'ar' ? 'دقائق قراءة' : 'min read'}
+                </span>
+              ) : null}
+            </div>
+
+            <h1 className="text-balance text-4xl font-semibold tracking-[-0.05em] text-white sm:text-5xl lg:text-[4.2rem] lg:leading-[1.02]">
+              {title}
+            </h1>
+
+            {excerpt ? <p className="text-lg leading-8 text-slate-300 sm:text-xl">{excerpt}</p> : null}
+          </header>
+
+          {article.cover_image_url ? (
+            <div className="mx-auto mt-10 max-w-5xl">
+              <div className="relative aspect-[16/9] overflow-hidden rounded-[2rem] border border-white/10">
+                <Image src={article.cover_image_url} alt={title} fill className="object-cover" />
+              </div>
+            </div>
+          ) : null}
+
+          <div className="mx-auto mt-12 max-w-3xl space-y-5 text-lg leading-9 text-slate-300">
+            {paragraphs.length > 0 ? (
+              paragraphs.map((paragraph, index) => <p key={`${paragraph}-${index}`}>{paragraph}</p>)
+            ) : (
+              <p className="italic text-slate-500">{locale === 'ar' ? 'لا يوجد محتوى بعد.' : 'No content yet.'}</p>
             )}
           </div>
-
-          <h1 className="text-4xl md:text-5xl font-bold text-zinc-50 tracking-tight leading-tight" dir={locale === 'ar' ? 'rtl' : 'ltr'}>
-            {title}
-          </h1>
-
-          {excerpt && (
-            <p className="text-xl text-zinc-400 font-light leading-relaxed border-l-2 border-green-500 pl-5" dir={locale === 'ar' ? 'rtl' : 'ltr'}>
-              {excerpt}
-            </p>
-          )}
-        </header>
-
-        {/* Article Content */}
-        <div 
-          className="prose prose-invert prose-green max-w-none text-zinc-300 leading-relaxed space-y-6"
-          dir={locale === 'ar' ? 'rtl' : 'ltr'}
-        >
-          {content ? (
-            content.split('\n').map((para: string, idx: number) => 
-              para.trim() ? <p key={idx} className="text-zinc-300 text-lg font-light leading-relaxed">{para}</p> : null
-            )
-          ) : (
-            <p className="text-zinc-500 italic">{locale === 'ar' ? 'لا يوجد محتوى بعد.' : 'No content yet.'}</p>
-          )}
-        </div>
+        </article>
       </div>
     </main>
   );
