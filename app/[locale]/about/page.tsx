@@ -58,7 +58,13 @@ export default async function AboutPage() {
             <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.01))]">
               {aboutData?.profile_image_url ? (
                 <div className="relative aspect-[4/5]">
-                  <Image src={aboutData.profile_image_url} alt="Ahmed Essam Maher portrait" fill className="object-cover" />
+                  <Image
+                    src={aboutData.profile_image_url}
+                    alt="Ahmed Essam Maher portrait"
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 48vw, 36vw"
+                    className="object-cover"
+                  />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#04070f] via-transparent to-transparent" />
                 </div>
               ) : (

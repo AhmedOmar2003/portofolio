@@ -131,7 +131,7 @@ export default async function ProjectCaseStudyPage(props: { params: Promise<{ sl
           <div className="mt-10">
             {heroImage ? (
               <div className="relative aspect-[16/9] overflow-hidden rounded-[2rem] border border-white/10 bg-black/20">
-                <Image src={heroImage} alt={title} fill priority className="object-cover" />
+                <Image src={heroImage} alt={title} fill priority sizes="(max-width: 768px) 100vw, (max-width: 1280px) 92vw, 1200px" className="object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#04070f] via-transparent to-transparent" />
               </div>
             ) : (
@@ -201,7 +201,7 @@ export default async function ProjectCaseStudyPage(props: { params: Promise<{ sl
                   key={`${image}-${index}`}
                   className="relative aspect-[4/3] overflow-hidden rounded-[1.75rem] border border-white/10 bg-black/10"
                 >
-                  <Image src={image} alt={`${title} gallery image ${index + 1}`} fill className="object-cover" />
+                  <Image src={image} alt={`${title} gallery image ${index + 1}`} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />
                 </div>
               ))}
             </div>

@@ -46,7 +46,7 @@ export default async function ArticleDetailPage(props: { params: Promise<{ slug:
         </Link>
 
         <article className="section-shell overflow-hidden px-6 py-8 md:px-10 md:py-10">
-          <header className="mx-auto max-w-3xl space-y-6">
+          <header className="mx-auto max-w-3xl space-y-5 sm:space-y-6">
             <div className="flex flex-wrap items-center gap-3 text-sm">
               {article.category ? (
                 <span className="rounded-full border border-[#8df6c8]/20 bg-[#8df6c8]/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-[#8df6c8]">
@@ -61,22 +61,28 @@ export default async function ArticleDetailPage(props: { params: Promise<{ slug:
               ) : null}
             </div>
 
-            <h1 className="text-balance text-4xl font-semibold tracking-[-0.05em] text-white sm:text-5xl lg:text-[4.2rem] lg:leading-[1.02]">
+            <h1 className="text-balance text-[2.5rem] font-semibold tracking-[-0.06em] text-white sm:text-5xl lg:text-[4.2rem] lg:leading-[1.02]">
               {title}
             </h1>
 
-            {excerpt ? <p className="text-lg leading-8 text-slate-300 sm:text-xl">{excerpt}</p> : null}
+            {excerpt ? <p className="text-base leading-7 text-slate-300 sm:text-xl sm:leading-8">{excerpt}</p> : null}
           </header>
 
           {article.cover_image_url ? (
             <div className="mx-auto mt-10 max-w-5xl">
               <div className="relative aspect-[16/9] overflow-hidden rounded-[2rem] border border-white/10">
-                <Image src={article.cover_image_url} alt={title} fill className="object-cover" />
+                <Image
+                  src={article.cover_image_url}
+                  alt={title}
+                  fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1280px) 86vw, 960px"
+                  className="object-cover"
+                />
               </div>
             </div>
           ) : null}
 
-          <div className="mx-auto mt-12 max-w-3xl space-y-5 text-lg leading-9 text-slate-300">
+          <div className="mx-auto mt-10 max-w-3xl space-y-5 text-base leading-8 text-slate-300 sm:mt-12 sm:text-lg sm:leading-9">
             {paragraphs.length > 0 ? (
               paragraphs.map((paragraph, index) => <p key={`${paragraph}-${index}`}>{paragraph}</p>)
             ) : (
