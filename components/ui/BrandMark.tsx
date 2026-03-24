@@ -1,3 +1,5 @@
+import { DraftingCompass } from 'lucide-react'
+
 type BrandMarkProps = {
   className?: string
   compact?: boolean
@@ -10,29 +12,15 @@ export default function BrandMark({ className = '', compact = false }: BrandMark
       aria-hidden="true"
     >
       <div className="absolute inset-[1px] rounded-[1.15rem] bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.16),transparent_34%),linear-gradient(180deg,rgba(10,16,30,0.82),rgba(4,7,15,0.98))]" />
-      <svg
-        viewBox="0 0 64 64"
-        className="relative z-10 h-[72%] w-[72%]"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        role="img"
-        aria-label="AE brand mark"
-      >
-        <path d="M14 48L26.5 17L39 48" stroke="url(#brand-stroke)" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M20.5 33.5H32.5" stroke="url(#brand-stroke)" strokeWidth="4" strokeLinecap="round" />
-        <path d="M41 17.5V48" stroke="url(#brand-stroke)" strokeWidth="4.5" strokeLinecap="round" />
-        <path d="M41 17.5H52" stroke="url(#brand-stroke)" strokeWidth="4" strokeLinecap="round" />
-        <path d="M41 32.5H49" stroke="url(#brand-stroke)" strokeWidth="4" strokeLinecap="round" />
-        <path d="M41 48H52" stroke="url(#brand-stroke)" strokeWidth="4" strokeLinecap="round" />
-        <circle cx="52" cy="17.5" r="3" fill="#8DF6C8" fillOpacity="0.9" />
-        <defs>
-          <linearGradient id="brand-stroke" x1="14" y1="17" x2="52" y2="48" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#EAFBF4" />
-            <stop offset="0.45" stopColor="#8DF6C8" />
-            <stop offset="1" stopColor="#6AD7FF" />
-          </linearGradient>
-        </defs>
-      </svg>
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_32%_28%,rgba(141,246,200,0.14),transparent_24%),radial-gradient(circle_at_70%_74%,rgba(106,215,255,0.12),transparent_22%)]" />
+      <span className="absolute left-[18%] top-[20%] h-1.5 w-1.5 rounded-full bg-[#8df6c8]/80 shadow-[0_0_12px_rgba(141,246,200,0.6)]" />
+      <span className="absolute bottom-[20%] right-[18%] h-1.5 w-1.5 rounded-full bg-[#6ad7ff]/80 shadow-[0_0_12px_rgba(106,215,255,0.55)]" />
+      <div className="relative z-10 flex h-full w-full items-center justify-center">
+        <DraftingCompass
+          className={`${compact ? 'h-[1.35rem] w-[1.35rem]' : 'h-[1.8rem] w-[1.8rem]'} text-[#dffdf1] drop-shadow-[0_0_16px_rgba(141,246,200,0.22)]`}
+          strokeWidth={2}
+        />
+      </div>
     </div>
   )
 }
