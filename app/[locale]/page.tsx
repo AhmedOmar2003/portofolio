@@ -260,14 +260,14 @@ export default async function HomePage() {
                 ) : null}
               </div>
 
-              <div className="flex flex-col gap-3 lg:items-end">
+              <div className="flex w-full flex-col gap-3 sm:w-auto lg:items-end">
                 {primaryContact ? (
-                  <a href={formatContactHref(primaryContact)} className="btn btn-primary justify-center text-sm sm:text-base">
+                  <a href={formatContactHref(primaryContact)} className="btn btn-primary w-full justify-center text-sm sm:w-[18rem] sm:text-base">
                     {t('contactPrimary')}
                     <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
                   </a>
                 ) : null}
-                <Link href="/contact" className="btn btn-secondary justify-center text-sm sm:text-base">
+                <Link href="/contact" className="btn btn-secondary w-full justify-center text-sm sm:w-[18rem] sm:text-base">
                   {t('contactSecondary')}
                 </Link>
               </div>
