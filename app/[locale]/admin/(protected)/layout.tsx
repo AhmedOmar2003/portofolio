@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 
 import AdminSidebar from '@/components/admin/AdminSidebar'
-import { createClient } from '@/utils/supabase/server'
+import { getAdminSession } from '@/utils/admin-auth'
 
 export default async function ProtectedAdminLayout({
   children,
@@ -11,10 +11,9 @@ export default async function ProtectedAdminLayout({
   params: Promise<{ locale: string }>
 }) {
   const { locale } = await params
-  const supabase = await createClient()
-  const { data, error } = await supabase.auth.getUser()
+  const session = await getAdminSession()
 
-  if (error || !data?.user) {
+  if (!session) {
     redirect(`/${locale}/admin/login`)
   }
 
@@ -29,7 +28,7 @@ export default async function ProtectedAdminLayout({
               <h2 className="mt-1 text-lg font-semibold text-white">Portfolio Management Dashboard</h2>
             </div>
             <div className="rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-sm text-slate-300">
-              {data.user.email}
+              {session.email}
             </div>
           </div>
         </header>

@@ -17,12 +17,10 @@ import {
 } from 'lucide-react'
 
 import BrandMark from '@/components/ui/BrandMark'
-import { createClient } from '@/utils/supabase/client'
 
 export default function AdminSidebar({ locale }: { locale: string }) {
   const pathname = usePathname()
   const router = useRouter()
-  const supabase = createClient()
 
   const navItems = [
     { name: 'Overview', hint: 'Portfolio status', href: `/${locale}/admin`, icon: LayoutDashboard },
@@ -37,7 +35,9 @@ export default function AdminSidebar({ locale }: { locale: string }) {
   ]
 
   const handleLogout = async () => {
-    await supabase.auth.signOut()
+    await fetch('/api/admin-auth/logout', {
+      method: 'POST',
+    })
     router.push(`/${locale}/admin/login`)
     router.refresh()
   }
