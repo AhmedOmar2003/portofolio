@@ -10,7 +10,7 @@ import { createClient } from '@/utils/supabase/client'
 type MessageState = { type: 'success' | 'error'; text: string } | null
 
 export default function ForgotPasswordPage() {
-  const supabase = createClient()
+  const [supabase] = useState(() => createClient())
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState<MessageState>(null)

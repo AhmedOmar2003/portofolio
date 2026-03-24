@@ -12,7 +12,7 @@ type MessageState = { type: 'success' | 'error'; text: string } | null
 
 export default function ResetPasswordPage() {
   const router = useRouter()
-  const supabase = createClient()
+  const [supabase] = useState(() => createClient())
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [loading, setLoading] = useState(false)
@@ -21,43 +21,106 @@ export default function ResetPasswordPage() {
   const [message, setMessage] = useState<MessageState>(null)
 
   useEffect(() => {
+    let isActive = true
+
     const bootRecovery = async () => {
-      const hash = typeof window !== 'undefined' ? window.location.hash : ''
+      try {
+        const url = new URL(window.location.href)
+        const hashParams = new URLSearchParams(url.hash.replace(/^#/, ''))
+        const searchParams = url.searchParams
 
-      if (hash) {
-        const params = new URLSearchParams(hash.replace(/^#/, ''))
-        const accessToken = params.get('access_token')
-        const refreshToken = params.get('refresh_token')
+        const accessToken = hashParams.get('access_token')
+        const refreshToken = hashParams.get('refresh_token')
+        const code = searchParams.get('code')
+        const tokenHash = searchParams.get('token_hash')
+        const type = searchParams.get('type')
 
-        if (accessToken && refreshToken) {
+        let recoveryError: string | null = null
+
+        if (code) {
+          const { error } = await supabase.auth.exchangeCodeForSession(code)
+          if (error) {
+            recoveryError = 'This recovery link is invalid or expired. Request a new one.'
+          }
+        } else if (tokenHash && type === 'recovery') {
+          const { error } = await supabase.auth.verifyOtp({
+            token_hash: tokenHash,
+            type: 'recovery',
+          })
+
+          if (error) {
+            recoveryError = 'This recovery link is invalid or expired. Request a new one.'
+          }
+        } else if (accessToken && refreshToken) {
           const { error } = await supabase.auth.setSession({
             access_token: accessToken,
             refresh_token: refreshToken,
           })
 
           if (error) {
-            setMessage({ type: 'error', text: 'This recovery link is invalid or expired. Request a new one.' })
-            setCheckingLink(false)
-            return
+            recoveryError = 'This recovery link is invalid or expired. Request a new one.'
           }
         }
-      }
 
-      const {
-        data: { session },
-      } = await supabase.auth.getSession()
+        const {
+          data: { session },
+        } = await supabase.auth.getSession()
 
-      if (!session) {
-        setMessage({ type: 'error', text: 'No active recovery session was found. Open the reset link from your email again.' })
+        if (!isActive) {
+          return
+        }
+
+        if (!session) {
+          setRecoveryReady(false)
+          setMessage({
+            type: 'error',
+            text:
+              recoveryError ??
+              'No active recovery session was found. Open the newest reset link from your email again.',
+          })
+          setCheckingLink(false)
+          return
+        }
+
+        window.history.replaceState({}, document.title, window.location.pathname)
+        setMessage(null)
+        setRecoveryReady(true)
         setCheckingLink(false)
+      } catch {
+        if (!isActive) {
+          return
+        }
+
+        setRecoveryReady(false)
+        setMessage({
+          type: 'error',
+          text: 'Unable to verify the recovery link right now. Request a new one and try again.',
+        })
+        setCheckingLink(false)
+      }
+    }
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!isActive) {
         return
       }
 
-      setRecoveryReady(true)
-      setCheckingLink(false)
-    }
+      if ((event === 'PASSWORD_RECOVERY' || event === 'SIGNED_IN') && session) {
+        window.history.replaceState({}, document.title, window.location.pathname)
+        setMessage(null)
+        setRecoveryReady(true)
+        setCheckingLink(false)
+      }
+    })
 
     void bootRecovery()
+
+    return () => {
+      isActive = false
+      subscription.unsubscribe()
+    }
   }, [supabase])
 
   const handleSubmit = async (event: React.FormEvent) => {
