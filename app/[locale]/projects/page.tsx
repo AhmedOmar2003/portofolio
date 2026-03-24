@@ -23,26 +23,25 @@ function formatPreview(content?: string | null, fallback?: string, maxLength = 1
   return `${preview.slice(0, maxLength).trimEnd()}...`;
 }
 
-export default async function ProjectsPage(props: { params: Promise<{ locale: string }> }) {
-  const { locale } = await props.params;
-  const nav = await getTranslations({ locale, namespace: 'Navigation' });
-  const home = await getTranslations({ locale, namespace: 'HomePage' });
+export default async function ProjectsPage() {
+  const nav = await getTranslations({ locale: 'en', namespace: 'Navigation' });
+  const home = await getTranslations({ locale: 'en', namespace: 'HomePage' });
   const supabase = await createClient();
 
   const { data: projectsData } = await supabase.from('projects').select('*').order('created_at', { ascending: false });
 
   const allProjects = (projectsData || []).map((project, index) => ({
-    title: locale === 'ar' ? project.name_ar : project.name_en,
+    title: project.name_en,
     category: project.category || home('projectCategoryFallback'),
     year: project.start_date ? new Date(project.start_date).getFullYear().toString() : home('projectYearFallback'),
     description: formatPreview(
-      locale === 'ar' ? project.description_ar : project.description_en,
-      locale === 'ar' ? home('projectDescriptionFallbackAr') : home('projectDescriptionFallbackEn')
+      project.description_en,
+      home('projectDescriptionFallbackEn')
     ),
     href: `/projects/${project.slug}`,
     imageUrl: project.images && project.images.length > 0 ? project.images[0] : undefined,
     role: home('projectRoleValue'),
-    impact: formatPreview(locale === 'ar' ? project.solution_ar : project.solution_en, home('projectImpactFallback')),
+    impact: formatPreview(project.solution_en, home('projectImpactFallback')),
     index,
   }));
 

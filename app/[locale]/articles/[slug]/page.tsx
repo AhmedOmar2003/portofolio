@@ -13,7 +13,7 @@ function splitParagraphs(content?: string | null) {
 }
 
 export default async function ArticleDetailPage(props: { params: Promise<{ slug: string; locale: string }> }) {
-  const { slug, locale } = await props.params;
+  const { slug } = await props.params;
   const supabase = await createClient();
 
   const { data: article } = await supabase.from('articles').select('*').eq('slug', slug).single();
@@ -22,11 +22,11 @@ export default async function ArticleDetailPage(props: { params: Promise<{ slug:
     notFound();
   }
 
-  const title = locale === 'ar' ? article.title_ar : article.title_en;
-  const content = locale === 'ar' ? article.content_ar : article.content_en;
-  const excerpt = locale === 'ar' ? article.excerpt_ar : article.excerpt_en;
+  const title = article.title_en;
+  const content = article.content_en;
+  const excerpt = article.excerpt_en;
   const publishedDate = article.published_at
-    ? new Date(article.published_at).toLocaleDateString(locale === 'ar' ? 'ar-EG' : 'en-US', {
+    ? new Date(article.published_at).toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'long',
         day: 'numeric',
@@ -41,8 +41,8 @@ export default async function ArticleDetailPage(props: { params: Promise<{ slug:
           href="/articles"
           className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2.5 text-sm text-slate-300 transition hover:border-white/20 hover:text-white"
         >
-          <ArrowLeft className={`h-4 w-4 ${locale === 'ar' ? 'rotate-180' : ''}`} aria-hidden="true" />
-          {locale === 'ar' ? 'العودة إلى المقالات' : 'Back to articles'}
+          <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+          Back to articles
         </Link>
 
         <article className="section-shell overflow-hidden px-6 py-8 md:px-10 md:py-10">
@@ -56,7 +56,7 @@ export default async function ArticleDetailPage(props: { params: Promise<{ slug:
               {publishedDate ? <span className="text-slate-500">{publishedDate}</span> : null}
               {article.read_time_minutes ? (
                 <span className="text-slate-500">
-                  {article.read_time_minutes} {locale === 'ar' ? 'دقائق قراءة' : 'min read'}
+                  {article.read_time_minutes} min read
                 </span>
               ) : null}
             </div>
@@ -80,7 +80,7 @@ export default async function ArticleDetailPage(props: { params: Promise<{ slug:
             {paragraphs.length > 0 ? (
               paragraphs.map((paragraph, index) => <p key={`${paragraph}-${index}`}>{paragraph}</p>)
             ) : (
-              <p className="italic text-slate-500">{locale === 'ar' ? 'لا يوجد محتوى بعد.' : 'No content yet.'}</p>
+              <p className="italic text-slate-500">No content yet.</p>
             )}
           </div>
         </article>

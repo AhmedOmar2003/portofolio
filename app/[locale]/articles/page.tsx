@@ -7,21 +7,20 @@ import { createClient } from '@/utils/supabase/server';
 
 export const revalidate = 3600;
 
-function formatDate(dateValue: string | null | undefined, locale: string) {
+function formatDate(dateValue: string | null | undefined) {
   if (!dateValue) {
     return '';
   }
 
-  return new Date(dateValue).toLocaleDateString(locale === 'ar' ? 'ar-EG' : 'en-US', {
+  return new Date(dateValue).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
   });
 }
 
-export default async function ArticlesPage(props: { params: Promise<{ locale: string }> }) {
-  const { locale } = await props.params;
-  const t = await getTranslations({ locale, namespace: 'ArticlesPage' });
+export default async function ArticlesPage() {
+  const t = await getTranslations({ locale: 'en', namespace: 'ArticlesPage' });
   const supabase = await createClient();
 
   const { data: articlesData, error: articlesError } = await supabase.from('articles').select('*').order('created_at', { ascending: false });
@@ -32,11 +31,11 @@ export default async function ArticlesPage(props: { params: Promise<{ locale: st
 
   const articlesList = (articlesData || []).map((article) => ({
     slug: article.slug,
-    title: locale === 'ar' ? article.title_ar : article.title_en,
-    excerpt: locale === 'ar' ? article.excerpt_ar : article.excerpt_en,
+    title: article.title_en,
+    excerpt: article.excerpt_en,
     category: article.category || t('categoryFallback'),
-    date: formatDate(article.published_at || article.created_at, locale),
-    readTime: `${article.read_time_minutes || 5} ${locale === 'ar' ? 'دقائق قراءة' : 'min read'}`,
+    date: formatDate(article.published_at || article.created_at),
+    readTime: `${article.read_time_minutes || 5} min read`,
   }));
 
   const finalArticles =

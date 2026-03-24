@@ -1,31 +1,29 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { createClient } from '@/utils/supabase/client'
-import LanguageTabs from '@/components/admin/LanguageTabs'
+import { useEffect, useState } from 'react'
+import { Loader2, Save } from 'lucide-react'
+
 import MediaUpload from '@/components/admin/MediaUpload'
-import { Save, Loader2 } from 'lucide-react'
+import { createClient } from '@/utils/supabase/client'
+
+type MessageState = { type: 'success' | 'error'; text: string } | null
 
 export default function SiteSettingsAdminPage() {
-  const [activeLang, setActiveLang] = useState<'en' | 'ar'>('en')
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
-  const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
-  
+  const [message, setMessage] = useState<MessageState>(null)
   const supabase = createClient()
 
   const [formData, setFormData] = useState({
     logo_url: '',
     favicon_url: '',
-    hero_title_en: '', hero_title_ar: '',
-    hero_subtitle_en: '', hero_subtitle_ar: '',
-    default_language: 'en',
-    social_links: { twitter: '', behance: '', linkedin: '', dribbble: '' }
+    hero_title_en: '',
+    hero_subtitle_en: '',
+    social_links: { twitter: '', behance: '', linkedin: '', dribbble: '' },
   })
 
   useEffect(() => {
-    fetchSettingsData()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    void fetchSettingsData()
   }, [])
 
   const fetchSettingsData = async () => {
@@ -34,54 +32,66 @@ export default function SiteSettingsAdminPage() {
       if (error && error.code !== 'PGRST116') {
         throw error
       }
+
       if (data) {
         setFormData({
           logo_url: data.logo_url || '',
           favicon_url: data.favicon_url || '',
-          hero_title_en: data.hero_title_en || '', hero_title_ar: data.hero_title_ar || '',
-          hero_subtitle_en: data.hero_subtitle_en || '', hero_subtitle_ar: data.hero_subtitle_ar || '',
-          default_language: data.default_language || 'en',
-          social_links: data.social_links || { twitter: '', behance: '', linkedin: '', dribbble: '' }
+          hero_title_en: data.hero_title_en || '',
+          hero_subtitle_en: data.hero_subtitle_en || '',
+          social_links: data.social_links || { twitter: '', behance: '', linkedin: '', dribbble: '' },
         })
       }
     } catch (error) {
       console.error('Error fetching settings:', error)
+      setMessage({ type: 'error', text: 'Failed to load site settings.' })
     } finally {
       setLoading(false)
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleChange = (field: string, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }))
+  const handleChange = (field: keyof typeof formData, value: string | typeof formData.social_links) => {
+    setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
   const handleSocialChange = (key: string, value: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      social_links: { ...prev.social_links, [key]: value }
+      social_links: { ...prev.social_links, [key]: value },
     }))
   }
 
   const handleSave = async () => {
     setSaving(true)
     setMessage(null)
+
+    const payload = {
+      logo_url: formData.logo_url,
+      favicon_url: formData.favicon_url,
+      hero_title_en: formData.hero_title_en,
+      hero_title_ar: formData.hero_title_en,
+      hero_subtitle_en: formData.hero_subtitle_en,
+      hero_subtitle_ar: formData.hero_subtitle_en,
+      default_language: 'en',
+      social_links: formData.social_links,
+    }
+
     try {
       const { data: existingData } = await supabase.from('site_settings').select('id').single()
 
       if (existingData) {
-        const { error } = await supabase.from('site_settings').update(formData).eq('id', existingData.id)
+        const { error } = await supabase.from('site_settings').update(payload).eq('id', existingData.id)
         if (error) throw error
       } else {
-        const { error } = await supabase.from('site_settings').insert([formData])
+        const { error } = await supabase.from('site_settings').insert([payload])
         if (error) throw error
       }
-      
-      setMessage({ type: 'success', text: 'Site settings saved successfully!' })
+
+      setMessage({ type: 'success', text: 'Brand and hero settings updated.' })
       setTimeout(() => setMessage(null), 3000)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      setMessage({ type: 'error', text: error.message || 'Error saving data' })
+    } catch (error) {
+      console.error('Error saving site settings:', error)
+      setMessage({ type: 'error', text: 'Failed to save site settings.' })
     } finally {
       setSaving(false)
     }
@@ -89,116 +99,96 @@ export default function SiteSettingsAdminPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[50vh]">
-        <Loader2 className="w-8 h-8 text-brand-primary animate-spin" />
+      <div className="flex min-h-[40vh] items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-[#8df6c8]" />
       </div>
     )
   }
 
   return (
-    <div className="max-w-5xl mx-auto pb-20">
-      <div className="flex items-center justify-between mb-8">
+    <div className="mx-auto max-w-6xl space-y-6 pb-20">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white mb-2">Site Settings</h1>
-          <p className="text-white/60">Manage global website configuration and hero section.</p>
+          <p className="admin-kicker">Hero & Brand</p>
+          <h1 className="mt-2 text-3xl font-semibold tracking-[-0.05em] text-white">Manage the first impression</h1>
+          <p className="mt-3 max-w-2xl text-base leading-7 text-slate-300">
+            Update the hero message, logo, and social links that shape the overall brand experience.
+          </p>
         </div>
-        <button
-          onClick={handleSave}
-          disabled={saving}
-          className="flex items-center gap-2 px-6 py-3 bg-brand-primary hover:bg-brand-primary-light text-brand-dark font-bold rounded-xl transition-colors disabled:opacity-50"
-        >
-          {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
-          {saving ? 'Saving...' : 'Save Changes'}
+
+        <button type="button" onClick={handleSave} disabled={saving} className="btn btn-primary w-fit text-sm">
+          {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+          {saving ? 'Saving...' : 'Save changes'}
         </button>
       </div>
 
-      {message && (
-        <div className={`p-4 mb-6 rounded-xl border ${
-          message.type === 'success' ? 'bg-green-500/10 border-green-500/20 text-green-400' : 'bg-red-500/10 border-red-500/20 text-red-400'
-        }`}>
+      {message ? (
+        <div className={`rounded-[1.15rem] border px-4 py-3 text-sm ${message.type === 'success' ? 'border-emerald-400/20 bg-emerald-400/10 text-emerald-200' : 'border-rose-400/20 bg-rose-400/10 text-rose-200'}`}>
           {message.text}
         </div>
-      )}
+      ) : null}
 
-      <div className="mb-8">
-        <LanguageTabs activeLanguage={activeLang} onLanguageChange={setActiveLang} />
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white/5 border border-white/10 p-6 rounded-2xl space-y-5">
-            <h2 className="text-xl font-bold text-white mb-4">Hero Section Content</h2>
-            
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
+        <section className="admin-card px-6 py-6">
+          <h2 className="text-xl font-semibold text-white">Hero content</h2>
+          <div className="mt-6 grid gap-5">
             <div>
-              <label className="block text-sm font-medium text-white/80 mb-2">Hero Title</label>
-              <textarea
-                rows={3}
-                value={activeLang === 'en' ? formData.hero_title_en : formData.hero_title_ar}
-                onChange={(e) => handleChange(`hero_title_${activeLang}`, e.target.value)}
-                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:border-brand-primary text-white outline-none resize-none text-xl font-medium"
-                dir={activeLang === 'ar' ? 'rtl' : 'ltr'}
-              />
+              <label className="admin-label">Hero headline</label>
+              <textarea className="admin-textarea min-h-[140px]" value={formData.hero_title_en} onChange={(e) => handleChange('hero_title_en', e.target.value)} />
             </div>
-            
             <div>
-              <label className="block text-sm font-medium text-white/80 mb-2">Hero Subtitle</label>
-              <textarea
-                rows={3}
-                value={activeLang === 'en' ? formData.hero_subtitle_en : formData.hero_subtitle_ar}
-                onChange={(e) => handleChange(`hero_subtitle_${activeLang}`, e.target.value)}
-                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:border-brand-primary text-white outline-none resize-none"
-                dir={activeLang === 'ar' ? 'rtl' : 'ltr'}
-              />
+              <label className="admin-label">Hero supporting text</label>
+              <textarea className="admin-textarea min-h-[140px]" value={formData.hero_subtitle_en} onChange={(e) => handleChange('hero_subtitle_en', e.target.value)} />
             </div>
           </div>
+        </section>
 
-          <div className="bg-white/5 border border-white/10 p-6 rounded-2xl space-y-5">
-            <h2 className="text-xl font-bold text-white mb-4">Social Links</h2>
-            <div className="grid grid-cols-2 gap-4">
-              {['linkedin', 'behance', 'twitter', 'dribbble'].map(social => (
+        <div className="space-y-6">
+          <section className="admin-card px-6 py-6">
+            <h2 className="text-xl font-semibold text-white">Brand assets</h2>
+            <div className="mt-6 space-y-6">
+              <div>
+                <label className="admin-label">Site logo</label>
+                <MediaUpload
+                  bucket="portfolio-media"
+                  folder="settings"
+                  accept="image/*"
+                  currentUrl={formData.logo_url}
+                  onUploadSuccess={(url) => handleChange('logo_url', url)}
+                  onRemove={() => handleChange('logo_url', '')}
+                />
+              </div>
+              <div>
+                <label className="admin-label">Favicon / icon</label>
+                <MediaUpload
+                  bucket="portfolio-media"
+                  folder="settings"
+                  accept="image/*"
+                  currentUrl={formData.favicon_url}
+                  onUploadSuccess={(url) => handleChange('favicon_url', url)}
+                  onRemove={() => handleChange('favicon_url', '')}
+                />
+              </div>
+            </div>
+          </section>
+
+          <section className="admin-card px-6 py-6">
+            <h2 className="text-xl font-semibold text-white">Social links</h2>
+            <div className="mt-6 grid gap-4">
+              {['linkedin', 'behance', 'twitter', 'dribbble'].map((social) => (
                 <div key={social}>
-                  <label className="block text-sm font-medium text-white/80 mb-2 capitalize">{social} URL</label>
+                  <label className="admin-label capitalize">{social}</label>
                   <input
                     type="url"
+                    className="admin-input"
                     value={formData.social_links[social as keyof typeof formData.social_links] || ''}
                     onChange={(e) => handleSocialChange(social, e.target.value)}
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:border-brand-primary text-white outline-none"
                     placeholder="https://"
                   />
                 </div>
               ))}
             </div>
-          </div>
-        </div>
-
-        <div className="space-y-6">
-          <div className="bg-white/5 border border-white/10 p-6 rounded-2xl space-y-6">
-            <h2 className="text-xl font-bold text-white">Global Settings</h2>
-            
-            <div>
-              <label className="block text-sm font-medium text-white/80 mb-2">Default Language</label>
-              <select
-                value={formData.default_language}
-                onChange={(e) => handleChange('default_language', e.target.value)}
-                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:border-brand-primary text-white outline-none"
-              >
-                <option value="en">English (en)</option>
-                <option value="ar">Arabic (ar)</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="bg-white/5 border border-white/10 p-6 rounded-2xl">
-            <h2 className="text-xl font-bold text-white mb-6">Site Logo</h2>
-            <MediaUpload
-              bucket="portfolio-media"
-              folder="settings"
-              accept="image/*"
-              currentUrl={formData.logo_url}
-              onUploadSuccess={(url) => handleChange('logo_url', url)}
-              onRemove={() => handleChange('logo_url', '')}
-            />
-          </div>
+          </section>
         </div>
       </div>
     </div>

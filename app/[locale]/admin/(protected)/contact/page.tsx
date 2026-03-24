@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import { Github, Instagram, Link as LinkIcon, Linkedin, Loader2, Mail, Phone, Plus, Save, Twitter, X } from 'lucide-react'
+
 import { createClient } from '@/utils/supabase/client'
-import { Plus, Loader2, Save, X, Phone, Mail, Link as LinkIcon, Instagram, Linkedin, Twitter, Github } from 'lucide-react'
-import LanguageTabs from '@/components/admin/LanguageTabs'
 
 const ICONS = {
   phone: Phone,
@@ -12,78 +12,75 @@ const ICONS = {
   twitter: Twitter,
   instagram: Instagram,
   github: Github,
-  link: LinkIcon
+  link: LinkIcon,
+}
+
+type ContactMethod = {
+  id: string
+  type: keyof typeof ICONS
+  label_en: string
+  label_ar: string
+  value: string
+  icon: keyof typeof ICONS
+  is_visible: boolean
+  view_order: number
+  _isNew?: boolean
 }
 
 export default function ContactMethodsPage() {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [methods, setMethods] = useState<any[]>([])
+  const [methods, setMethods] = useState<ContactMethod[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
-  const [activeLang, setActiveLang] = useState<'en' | 'ar'>('en')
-  const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
-
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
   const supabase = createClient()
 
   useEffect(() => {
-    fetchMethods()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    void fetchMethods()
   }, [])
 
   const fetchMethods = async () => {
     try {
-      const { data, error } = await supabase
-        .from('contact_methods')
-        .select('*')
-        .order('view_order', { ascending: true })
-      
+      const { data, error } = await supabase.from('contact_methods').select('*').order('view_order', { ascending: true })
       if (error) throw error
-      if (data) setMethods(data)
+      setMethods((data as ContactMethod[]) || [])
     } catch (error) {
       console.error('Error fetching contact methods:', error)
+      setMessage({ type: 'error', text: 'Failed to load contact methods.' })
     } finally {
       setLoading(false)
     }
   }
 
   const handleAdd = () => {
-    setMethods([
-      ...methods, 
-      { 
-        id: `new_${Date.now()}`, 
-        type: 'email', 
-        label_en: '', 
-        label_ar: '', 
-        value: '', 
-        icon: 'email', 
-        is_visible: true, 
-        view_order: methods.length,
-        _isNew: true
-      }
+    setMethods((prev) => [
+      ...prev,
+      {
+        id: `new_${Date.now()}`,
+        type: 'email',
+        label_en: '',
+        label_ar: '',
+        value: '',
+        icon: 'email',
+        is_visible: true,
+        view_order: prev.length,
+        _isNew: true,
+      },
     ])
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleChange = (index: number, field: string, value: any) => {
-    const newMethods = [...methods]
-    newMethods[index] = { ...newMethods[index], [field]: value }
-    setMethods(newMethods)
+  const handleChange = <K extends keyof ContactMethod>(index: number, field: K, value: ContactMethod[K]) => {
+    setMethods((prev) => prev.map((method, methodIndex) => (methodIndex === index ? { ...method, [field]: value } : method)))
   }
 
   const handleRemove = async (index: number) => {
     const method = methods[index]
+
     if (!method._isNew) {
-      if (!confirm('Are you sure you want to delete this contact method from the database?')) return
-      try {
-        await supabase.from('contact_methods').delete().eq('id', method.id)
-      } catch (e) {
-        console.error('Error deleting', e)
-        return
-      }
+      if (!confirm('Delete this contact method?')) return
+      await supabase.from('contact_methods').delete().eq('id', method.id)
     }
-    const newMethods = [...methods]
-    newMethods.splice(index, 1)
-    setMethods(newMethods)
+
+    setMethods((prev) => prev.filter((_, itemIndex) => itemIndex !== index))
   }
 
   const handleSave = async () => {
@@ -91,36 +88,34 @@ export default function ContactMethodsPage() {
     setMessage(null)
 
     try {
-      // Filter out new methods correctly and update existing ones
-      const promises = methods.map((m, idx) => {
-        const payload = {
-          type: m.type,
-          label_en: m.label_en,
-          label_ar: m.label_ar,
-          value: m.value,
-          icon: m.icon,
-          is_visible: m.is_visible,
-          view_order: idx
-        }
+      const results = await Promise.all(
+        methods.map((method, index) => {
+          const payload = {
+            type: method.type,
+            label_en: method.label_en,
+            label_ar: method.label_en,
+            value: method.value,
+            icon: method.icon,
+            is_visible: method.is_visible,
+            view_order: index,
+          }
 
-        if (m._isNew) {
-          return supabase.from('contact_methods').insert([payload])
-        } else {
-          return supabase.from('contact_methods').update(payload).eq('id', m.id)
-        }
-      })
+          return method._isNew
+            ? supabase.from('contact_methods').insert([payload])
+            : supabase.from('contact_methods').update(payload).eq('id', method.id)
+        })
+      )
 
-      const results = await Promise.all(promises)
-      const hasErrors = results.some(r => r.error !== null)
-      
-      if (hasErrors) throw new Error('Some methods failed to save.')
-      
-      setMessage({ type: 'success', text: 'Contact methods saved successfully!' })
-      await fetchMethods() // Refresh
+      if (results.some((result) => result.error)) {
+        throw new Error('One or more contact methods failed to save.')
+      }
+
+      setMessage({ type: 'success', text: 'Contact methods updated successfully.' })
+      await fetchMethods()
       setTimeout(() => setMessage(null), 3000)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      setMessage({ type: 'error', text: error.message || 'Error saving data' })
+    } catch (error) {
+      console.error('Error saving contact methods:', error)
+      setMessage({ type: 'error', text: 'Failed to save contact methods.' })
     } finally {
       setSaving(false)
     }
@@ -128,143 +123,113 @@ export default function ContactMethodsPage() {
 
   if (loading) {
     return (
-      <div className="flex justify-center py-20">
-        <Loader2 className="w-8 h-8 text-brand-primary animate-spin" />
+      <div className="flex min-h-[40vh] items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-[#8df6c8]" />
       </div>
     )
   }
 
   return (
-    <div className="max-w-5xl mx-auto pb-20">
-      <div className="flex items-center justify-between mb-8">
+    <div className="mx-auto max-w-6xl space-y-6 pb-20">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white mb-2">Contact Methods</h1>
-          <p className="text-white/60">Manage how clients can reach you.</p>
+          <p className="admin-kicker">Contact</p>
+          <h1 className="mt-2 text-3xl font-semibold tracking-[-0.05em] text-white">Manage contact paths</h1>
+          <p className="mt-3 max-w-2xl text-base leading-7 text-slate-300">Control the ways visitors can reach out, from direct email to social and professional profiles.</p>
         </div>
-        <div className="flex gap-4">
-          <button
-            onClick={handleAdd}
-            className="flex items-center gap-2 px-6 py-3 bg-white/5 hover:bg-white/10 text-white font-bold rounded-xl transition-colors border border-white/10"
-          >
-            <Plus className="w-5 h-5" />
-            Add Method
+
+        <div className="flex flex-wrap gap-3">
+          <button type="button" onClick={handleAdd} className="btn btn-secondary text-sm">
+            <Plus className="h-4 w-4" />
+            Add method
           </button>
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            className="flex items-center gap-2 px-6 py-3 bg-brand-primary hover:bg-brand-primary-light text-brand-dark font-bold rounded-xl transition-colors disabled:opacity-50"
-          >
-            {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
-            Save Changes
+          <button type="button" onClick={handleSave} disabled={saving} className="btn btn-primary text-sm">
+            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+            {saving ? 'Saving...' : 'Save changes'}
           </button>
         </div>
       </div>
 
-      {message && (
-        <div className={`p-4 mb-8 rounded-xl border ${
-          message.type === 'success' ? 'bg-green-500/10 border-green-500/20 text-green-400' : 'bg-red-500/10 border-red-500/20 text-red-400'
-        }`}>
+      {message ? (
+        <div className={`rounded-[1.15rem] border px-4 py-3 text-sm ${message.type === 'success' ? 'border-emerald-400/20 bg-emerald-400/10 text-emerald-200' : 'border-rose-400/20 bg-rose-400/10 text-rose-200'}`}>
           {message.text}
         </div>
-      )}
-
-      <div className="mb-6">
-        <LanguageTabs activeLanguage={activeLang} onLanguageChange={setActiveLang} />
-      </div>
+      ) : null}
 
       <div className="space-y-4">
-        {methods.map((method, index) => {
-          const IconComponent = ICONS[method.icon as keyof typeof ICONS] || LinkIcon
+        {methods.length > 0 ? (
+          methods.map((method, index) => {
+            const IconComponent = ICONS[method.icon] || LinkIcon
 
-          return (
-            <div key={method.id} className="bg-white/5 border border-white/10 rounded-2xl p-6 flex gap-6 relative group">
-              <button
-                onClick={() => handleRemove(index)}
-                className="absolute top-4 right-4 p-1.5 text-white/30 hover:text-red-400 bg-white/5 hover:bg-red-500/10 rounded-lg transition-colors"
-                title="Remove"
-              >
-                <X className="w-4 h-4" />
-              </button>
+            return (
+              <section key={method.id} className="admin-card relative px-6 py-6">
+                <button
+                  type="button"
+                  onClick={() => void handleRemove(index)}
+                  className="absolute right-4 top-4 rounded-xl border border-white/8 bg-white/[0.03] p-2 text-slate-400 transition hover:border-rose-400/20 hover:bg-rose-400/10 hover:text-rose-200"
+                >
+                  <X className="h-4 w-4" />
+                </button>
 
-              <div className="w-16 h-16 bg-white/10 rounded-xl flex items-center justify-center flex-shrink-0 text-white">
-                <IconComponent className="w-8 h-8" />
-              </div>
+                <div className="grid gap-5 md:grid-cols-[auto_minmax(0,1fr)]">
+                  <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] text-[#8df6c8]">
+                    <IconComponent className="h-6 w-6" />
+                  </div>
 
-              <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pr-8">
-                <div>
-                  <label className="block text-xs font-medium text-white/60 mb-1">Type Identifier</label>
-                  <select
-                    value={method.type}
-                    onChange={(e) => handleChange(index, 'type', e.target.value)}
-                    className="w-full px-3 py-2 bg-black/20 border border-white/10 rounded-xl focus:border-brand-primary text-white text-sm outline-none"
-                  >
-                    <option value="email">Email</option>
-                    <option value="phone">Phone</option>
-                    <option value="linkedin">LinkedIn</option>
-                    <option value="twitter">Twitter / X</option>
-                    <option value="instagram">Instagram</option>
-                    <option value="github">GitHub</option>
-                    <option value="link">Other Link</option>
-                  </select>
+                  <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                    <div>
+                      <label className="admin-label">Type</label>
+                      <select className="admin-select" value={method.type} onChange={(e) => handleChange(index, 'type', e.target.value as ContactMethod['type'])}>
+                        <option value="email">Email</option>
+                        <option value="phone">Phone</option>
+                        <option value="linkedin">LinkedIn</option>
+                        <option value="twitter">Twitter / X</option>
+                        <option value="instagram">Instagram</option>
+                        <option value="github">GitHub</option>
+                        <option value="link">Other Link</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="admin-label">Icon</label>
+                      <select className="admin-select" value={method.icon} onChange={(e) => handleChange(index, 'icon', e.target.value as ContactMethod['icon'])}>
+                        {Object.keys(ICONS).map((icon) => (
+                          <option key={icon} value={icon}>
+                            {icon}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="admin-label">Label</label>
+                      <input className="admin-input" value={method.label_en} onChange={(e) => handleChange(index, 'label_en', e.target.value)} placeholder="e.g. Email me" />
+                    </div>
+
+                    <div>
+                      <label className="admin-label">Value</label>
+                      <input className="admin-input" value={method.value} onChange={(e) => handleChange(index, 'value', e.target.value)} placeholder="mailto:..., tel:..., https://..." />
+                    </div>
+                  </div>
                 </div>
-                
-                <div>
-                  <label className="block text-xs font-medium text-white/60 mb-1">Icon</label>
-                  <select
-                    value={method.icon}
-                    onChange={(e) => handleChange(index, 'icon', e.target.value)}
-                    className="w-full px-3 py-2 bg-black/20 border border-white/10 rounded-xl focus:border-brand-primary text-white text-sm outline-none"
-                  >
-                    {Object.keys(ICONS).map(icon => (
-                      <option key={icon} value={icon}>{icon}</option>
-                    ))}
-                  </select>
-                </div>
 
-                <div>
-                  <label className="block text-xs font-medium text-white/60 mb-1">
-                    Label ({activeLang === 'en' ? 'EN' : 'AR'})
-                  </label>
+                <div className="mt-5 flex items-center gap-3">
                   <input
-                    type="text"
-                    value={activeLang === 'en' ? method.label_en : method.label_ar}
-                    onChange={(e) => handleChange(index, `label_${activeLang}`, e.target.value)}
-                    className="w-full px-3 py-2 bg-black/20 border border-white/10 rounded-xl focus:border-brand-primary text-white text-sm outline-none"
-                    dir={activeLang === 'ar' ? 'rtl' : 'ltr'}
-                    placeholder="e.g. Drop me an email"
+                    id={`visible-${method.id}`}
+                    type="checkbox"
+                    checked={method.is_visible}
+                    onChange={(e) => handleChange(index, 'is_visible', e.target.checked)}
+                    className="h-4 w-4 rounded border-white/20 bg-black/20 accent-[var(--color-green-accent)]"
                   />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-medium text-white/60 mb-1">Link Value (URL/Phone)</label>
-                  <input
-                    type="text"
-                    value={method.value}
-                    onChange={(e) => handleChange(index, 'value', e.target.value)}
-                    className="w-full px-3 py-2 bg-black/20 border border-white/10 rounded-xl focus:border-brand-primary text-white text-sm outline-none"
-                    placeholder="mailto:.., tel:.., https:.."
-                  />
-                </div>
-
-                <div className="lg:col-span-4 flex items-center gap-3 mt-2">
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input 
-                      type="checkbox" 
-                      checked={method.is_visible} 
-                      onChange={(e) => handleChange(index, 'is_visible', e.target.checked)}
-                      className="rounded border-white/20 bg-black/20 text-brand-primary accent-brand-primary w-4 h-4"
-                    />
-                    <span className="text-sm text-white/80">Visible on website</span>
+                  <label htmlFor={`visible-${method.id}`} className="text-sm text-slate-300">
+                    Visible on the website
                   </label>
                 </div>
-              </div>
-            </div>
-          )
-        })}
-        {methods.length === 0 && (
-           <div className="bg-white/5 border border-white/10 p-8 rounded-2xl text-center text-white/60">
-              No contact methods added yet.
-           </div>
+              </section>
+            )
+          })
+        ) : (
+          <div className="admin-card px-6 py-10 text-center text-sm text-slate-500">No contact methods added yet.</div>
         )}
       </div>
     </div>

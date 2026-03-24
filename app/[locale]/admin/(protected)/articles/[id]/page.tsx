@@ -1,113 +1,120 @@
 'use client'
 
-import { useState, useEffect, use } from 'react'
-import { createClient } from '@/utils/supabase/client'
-import { useRouter } from 'next/navigation'
-import LanguageTabs from '@/components/admin/LanguageTabs'
-import MediaUpload from '@/components/admin/MediaUpload'
-import { Save, Loader2, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
+import { use, useEffect, useState } from 'react'
+import { ArrowLeft, Loader2, Save } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
-export default function ArticleEditorPage({ params }: { params: Promise<{ locale: string, id: string }> }) {
+import MediaUpload from '@/components/admin/MediaUpload'
+import { createClient } from '@/utils/supabase/client'
+
+type MessageState = { type: 'success' | 'error'; text: string } | null
+
+export default function ArticleEditorPage({ params }: { params: Promise<{ locale: string; id: string }> }) {
   const resolvedParams = use(params)
   const { locale, id } = resolvedParams
   const isNew = id === 'new'
-  
   const router = useRouter()
   const supabase = createClient()
-  
-  const [activeLang, setActiveLang] = useState<'en' | 'ar'>('en')
+
   const [loading, setLoading] = useState(!isNew)
   const [saving, setSaving] = useState(false)
-  const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
-
+  const [message, setMessage] = useState<MessageState>(null)
   const [formData, setFormData] = useState({
-    title_en: '', title_ar: '',
+    title_en: '',
     slug: '',
-    excerpt_en: '', excerpt_ar: '',
-    content_en: '', content_ar: '',
+    excerpt_en: '',
+    content_en: '',
     cover_image_url: '',
-    published_at: ''
+    published_at: '',
   })
 
   useEffect(() => {
-    if (!isNew) fetchArticle()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (!isNew) {
+      void fetchArticle()
+    }
   }, [id, isNew])
 
   const fetchArticle = async () => {
     try {
       const { data, error } = await supabase.from('articles').select('*').eq('id', id).single()
       if (error) throw error
-      if (data) {
-        setFormData({
-          title_en: data.title_en || '', title_ar: data.title_ar || '',
-          slug: data.slug || '',
-          excerpt_en: data.excerpt_en || '', excerpt_ar: data.excerpt_ar || '',
-          content_en: data.content_en || '', content_ar: data.content_ar || '',
-          cover_image_url: data.cover_image_url || '',
-          // Format timestamp for datetime-local input
-          published_at: data.published_at ? new Date(data.published_at).toISOString().slice(0, 16) : ''
-        })
-      }
+
+      setFormData({
+        title_en: data.title_en || '',
+        slug: data.slug || '',
+        excerpt_en: data.excerpt_en || '',
+        content_en: data.content_en || '',
+        cover_image_url: data.cover_image_url || '',
+        published_at: data.published_at ? new Date(data.published_at).toISOString().slice(0, 16) : '',
+      })
     } catch (error) {
       console.error('Error fetching article:', error)
-      setMessage({ type: 'error', text: 'Failed to load article.' })
+      setMessage({ type: 'error', text: 'Failed to load the article.' })
     } finally {
       setLoading(false)
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleChange = (field: string, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }))
+  const handleChange = <K extends keyof typeof formData>(field: K, value: (typeof formData)[K]) => {
+    setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
   const generateSlug = () => {
     if (!formData.title_en) return
-    const slug = formData.title_en
+
+    const nextSlug = formData.title_en
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)+/g, '')
-    handleChange('slug', slug)
+
+    handleChange('slug', nextSlug)
   }
 
   const handlePublish = async () => {
-    // If not published yet, set to current time
-    if (!formData.published_at) {
-      handleChange('published_at', new Date().toISOString().slice(0, 16))
-    }
-    // Set a flag to identify publish action vs standard save if needed
-    handleSave()
+    const publishDate = formData.published_at || new Date().toISOString().slice(0, 16)
+    await handleSave(publishDate)
   }
 
-  const handleSave = async () => {
+  const handleSave = async (publishDate = formData.published_at) => {
     if (!formData.title_en || !formData.slug) {
-      setMessage({ type: 'error', text: 'English Title and Slug are required.' })
+      setMessage({ type: 'error', text: 'Title and slug are required.' })
       return
     }
 
     setSaving(true)
     setMessage(null)
-    
-    try {
-      // Prepare payload, converting empty published_at string to null
-      const payload = { ...formData, published_at: formData.published_at || null }
 
+    const payload = {
+      title_en: formData.title_en,
+      title_ar: formData.title_en,
+      slug: formData.slug,
+      excerpt_en: formData.excerpt_en,
+      excerpt_ar: formData.excerpt_en,
+      content_en: formData.content_en,
+      content_ar: formData.content_en,
+      cover_image_url: formData.cover_image_url,
+      published_at: publishDate || null,
+    }
+
+    try {
       if (isNew) {
         const { error } = await supabase.from('articles').insert([payload])
         if (error) throw error
-        setMessage({ type: 'success', text: 'Article created successfully!' })
-        setTimeout(() => router.push(`/${locale}/admin/articles`), 1500)
+        setMessage({ type: 'success', text: 'Article created successfully.' })
+        setTimeout(() => router.push(`/${locale}/admin/articles`), 1200)
       } else {
         const { error } = await supabase.from('articles').update(payload).eq('id', id)
         if (error) throw error
-        setMessage({ type: 'success', text: 'Article updated successfully!' })
-        setTimeout(() => setMessage(null), 3000)
+        setMessage({ type: 'success', text: 'Article updated successfully.' })
       }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      setMessage({ type: 'error', text: error.message || 'Error saving article' })
+
+      if (publishDate !== formData.published_at) {
+        setFormData((prev) => ({ ...prev, published_at: publishDate }))
+      }
+    } catch (error) {
+      console.error('Error saving article:', error)
+      setMessage({ type: 'error', text: 'Failed to save the article.' })
     } finally {
       setSaving(false)
     }
@@ -115,140 +122,119 @@ export default function ArticleEditorPage({ params }: { params: Promise<{ locale
 
   if (loading) {
     return (
-      <div className="flex justify-center py-20">
-        <Loader2 className="w-8 h-8 text-brand-primary animate-spin" />
+      <div className="flex min-h-[40vh] items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-[#8df6c8]" />
       </div>
     )
   }
 
   return (
-    <div className="max-w-6xl mx-auto pb-20">
-      <div className="mb-6">
-        <Link href={`/${locale}/admin/articles`} className="inline-flex items-center gap-2 text-white/60 hover:text-white transition-colors text-sm font-medium">
-          <ArrowLeft className="w-4 h-4" /> Back to Articles
-        </Link>
-      </div>
+    <div className="mx-auto max-w-6xl space-y-6 pb-20">
+      <Link href={`/${locale}/admin/articles`} className="inline-flex items-center gap-2 text-sm font-medium text-slate-400 transition hover:text-white">
+        <ArrowLeft className="h-4 w-4" />
+        Back to articles
+      </Link>
 
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white mb-2">
-            {isNew ? 'Write New Article' : 'Edit Article'}
-          </h1>
+          <p className="admin-kicker">Articles</p>
+          <h1 className="mt-2 text-3xl font-semibold tracking-[-0.05em] text-white">{isNew ? 'Create article' : 'Edit article'}</h1>
+          <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-400">
+            Keep editorial content structured, easy to scan, and aligned with the overall portfolio narrative.
+          </p>
         </div>
-        <div className="flex gap-4">
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            className="flex items-center gap-2 px-6 py-3 bg-white/5 hover:bg-white/10 text-white font-bold rounded-xl transition-colors disabled:opacity-50 border border-white/10"
-          >
-            {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
-            Save Draft
+
+        <div className="flex flex-wrap gap-3">
+          <button type="button" onClick={() => void handleSave()} disabled={saving} className="btn btn-secondary text-sm">
+            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+            Save draft
           </button>
-          <button
-            onClick={handlePublish}
-            disabled={saving}
-            className="flex items-center gap-2 px-6 py-3 bg-brand-primary hover:bg-brand-primary-light text-brand-dark font-bold rounded-xl transition-colors disabled:opacity-50 shadow-lg shadow-brand-primary/20"
-          >
-            {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : (formData.published_at ? <Save className="w-5 h-5" /> : <Loader2 className="w-5 h-5 opacity-0" />)}
-            {formData.published_at ? 'Update Published' : 'Publish Now'}
+          <button type="button" onClick={() => void handlePublish()} disabled={saving} className="btn btn-primary text-sm">
+            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+            {formData.published_at ? 'Update published article' : 'Publish article'}
           </button>
         </div>
       </div>
 
-      {message && (
-        <div className={`p-4 mb-8 rounded-xl border ${
-          message.type === 'success' ? 'bg-green-500/10 border-green-500/20 text-green-400' : 'bg-red-500/10 border-red-500/20 text-red-400'
-        }`}>
+      {message ? (
+        <div className={`rounded-[1.15rem] border px-4 py-3 text-sm ${message.type === 'success' ? 'border-emerald-400/20 bg-emerald-400/10 text-emerald-200' : 'border-rose-400/20 bg-rose-400/10 text-rose-200'}`}>
           {message.text}
         </div>
-      )}
+      ) : null}
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        <div className="lg:col-span-3 space-y-6">
-          <div className="bg-white/5 border border-white/10 p-6 rounded-2xl">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-white">Content Editor</h2>
-              <LanguageTabs activeLanguage={activeLang} onLanguageChange={setActiveLang} />
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
+        <section className="admin-card px-6 py-6">
+          <h2 className="text-xl font-semibold text-white">Editorial content</h2>
+          <div className="mt-6 grid gap-5">
+            <div>
+              <label className="admin-label">Title</label>
+              <input
+                className="admin-input"
+                value={formData.title_en}
+                onChange={(e) => handleChange('title_en', e.target.value)}
+                onBlur={isNew ? generateSlug : undefined}
+              />
             </div>
-
-            <div className="space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-white/80 mb-2">Title *</label>
-                <input
-                  type="text"
-                  value={activeLang === 'en' ? formData.title_en : formData.title_ar}
-                  onChange={(e) => handleChange(`title_${activeLang}`, e.target.value)}
-                  onBlur={activeLang === 'en' && isNew ? generateSlug : undefined}
-                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:border-brand-primary text-white outline-none text-lg font-medium"
-                  dir={activeLang === 'ar' ? 'rtl' : 'ltr'}
-                  required
-                />
-              </div>
-
-              {activeLang === 'en' && (
-                <div>
-                  <label className="block text-sm font-medium text-white/80 mb-2">URL Slug *</label>
-                  <input
-                    type="text"
-                    value={formData.slug}
-                    onChange={(e) => handleChange('slug', e.target.value)}
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:border-brand-primary text-white outline-none font-mono text-sm text-white/60"
-                  />
-                </div>
-              )}
-
-              <div>
-                <label className="block text-sm font-medium text-white/80 mb-2">Excerpt</label>
-                <textarea
-                  rows={3}
-                  value={activeLang === 'en' ? formData.excerpt_en : formData.excerpt_ar}
-                  onChange={(e) => handleChange(`excerpt_${activeLang}`, e.target.value)}
-                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:border-brand-primary text-white outline-none resize-none"
-                  dir={activeLang === 'ar' ? 'rtl' : 'ltr'}
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-white/80 mb-2">Main Content (Markdown supported)</label>
-                <textarea
-                  rows={20}
-                  value={activeLang === 'en' ? formData.content_en : formData.content_ar}
-                  onChange={(e) => handleChange(`content_${activeLang}`, e.target.value)}
-                  className="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-xl focus:border-brand-primary text-white outline-none resize-none font-mono text-sm leading-relaxed"
-                  dir={activeLang === 'ar' ? 'rtl' : 'ltr'}
-                />
-              </div>
+            <div>
+              <label className="admin-label">Slug</label>
+              <input
+                className="admin-input font-mono text-sm"
+                value={formData.slug}
+                onChange={(e) => handleChange('slug', e.target.value)}
+                placeholder="design-systems-that-scale"
+              />
+            </div>
+            <div>
+              <label className="admin-label">Excerpt</label>
+              <textarea
+                className="admin-textarea min-h-[140px]"
+                value={formData.excerpt_en}
+                onChange={(e) => handleChange('excerpt_en', e.target.value)}
+                placeholder="A short summary that explains the article's main insight."
+              />
+            </div>
+            <div>
+              <label className="admin-label">Main content</label>
+              <textarea
+                className="admin-textarea min-h-[320px] font-mono text-sm leading-7"
+                value={formData.content_en}
+                onChange={(e) => handleChange('content_en', e.target.value)}
+                placeholder="Write the article body here. Markdown-style formatting is fine."
+              />
             </div>
           </div>
-        </div>
+        </section>
 
         <div className="space-y-6">
-          <div className="bg-white/5 border border-white/10 p-6 rounded-2xl space-y-6">
-            <h2 className="text-xl font-bold text-white">Publishing</h2>
-            
-            <div>
-              <label className="block text-sm font-medium text-white/80 mb-2">Publish Date</label>
-              <input
-                type="datetime-local"
-                value={formData.published_at}
-                onChange={(e) => handleChange('published_at', e.target.value)}
-                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:border-brand-primary text-white outline-none [color-scheme:dark]"
-              />
-              <p className="mt-2 text-xs text-white/40">Leave empty to keep as draft.</p>
+          <section className="admin-card px-6 py-6">
+            <h2 className="text-xl font-semibold text-white">Publishing</h2>
+            <div className="mt-6 space-y-5">
+              <div>
+                <label className="admin-label">Publish date</label>
+                <input
+                  type="datetime-local"
+                  className="admin-input [color-scheme:dark]"
+                  value={formData.published_at}
+                  onChange={(e) => handleChange('published_at', e.target.value)}
+                />
+                <p className="admin-helper mt-2">Leave empty to keep the article as a draft.</p>
+              </div>
             </div>
-          </div>
+          </section>
 
-          <div className="bg-white/5 border border-white/10 p-6 rounded-2xl">
-            <h2 className="text-xl font-bold text-white mb-6">Cover Image</h2>
-            <MediaUpload
-              bucket="portfolio-media"
-              folder="articles"
-              accept="image/*"
-              currentUrl={formData.cover_image_url}
-              onUploadSuccess={(url) => handleChange('cover_image_url', url)}
-              onRemove={() => handleChange('cover_image_url', '')}
-            />
-          </div>
+          <section className="admin-card px-6 py-6">
+            <h2 className="text-xl font-semibold text-white">Cover image</h2>
+            <div className="mt-6">
+              <MediaUpload
+                bucket="portfolio-media"
+                folder="articles"
+                accept="image/*"
+                currentUrl={formData.cover_image_url}
+                onUploadSuccess={(url) => handleChange('cover_image_url', url)}
+                onRemove={() => handleChange('cover_image_url', '')}
+              />
+            </div>
+          </section>
         </div>
       </div>
     </div>

@@ -1,6 +1,7 @@
-import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
+
 import AdminSidebar from '@/components/admin/AdminSidebar'
+import { createClient } from '@/utils/supabase/server'
 
 export default async function ProtectedAdminLayout({
   children,
@@ -11,7 +12,6 @@ export default async function ProtectedAdminLayout({
 }) {
   const { locale } = await params
   const supabase = await createClient()
-  
   const { data, error } = await supabase.auth.getUser()
 
   if (error || !data?.user) {
@@ -19,18 +19,22 @@ export default async function ProtectedAdminLayout({
   }
 
   return (
-    <div className="min-h-screen bg-brand-dark flex flex-col md:flex-row">
+    <div className="admin-shell min-h-screen md:flex">
       <AdminSidebar locale={locale} />
-      <div className="flex-1 overflow-y-auto">
-        <header className="h-16 border-b border-white/10 bg-brand-dark/50 backdrop-blur-md sticky top-0 z-10 flex items-center px-8">
-          <h2 className="text-white font-medium">Dashboard Overview</h2>
-          <div className="ml-auto flex items-center gap-4">
-            <div className="text-sm text-white/60">{data.user.email}</div>
+      <div className="min-w-0 flex-1">
+        <header className="sticky top-0 z-20 border-b border-white/8 bg-[rgba(5,8,18,0.78)] px-6 py-4 backdrop-blur-2xl md:px-8">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">Internal Tool</p>
+              <h2 className="mt-1 text-lg font-semibold text-white">Portfolio Management Dashboard</h2>
+            </div>
+            <div className="rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-sm text-slate-300">
+              {data.user.email}
+            </div>
           </div>
         </header>
-        <main className="p-8">
-          {children}
-        </main>
+
+        <main className="px-6 py-8 md:px-8">{children}</main>
       </div>
     </div>
   )

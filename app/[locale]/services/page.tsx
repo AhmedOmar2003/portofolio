@@ -14,17 +14,16 @@ function splitLines(content?: string | null) {
     .filter(Boolean);
 }
 
-export default async function ServicesPage(props: { params: Promise<{ locale: string }> }) {
-  const { locale } = await props.params;
-  const t = await getTranslations({ locale, namespace: 'ServicesPage' });
+export default async function ServicesPage() {
+  const t = await getTranslations({ locale: 'en', namespace: 'ServicesPage' });
   const supabase = await createClient();
 
   const { data: servicesData } = await supabase.from('services').select('*').order('view_order', { ascending: true });
 
   const servicesList = (servicesData || []).map((service, index) => {
-    const title = locale === 'ar' ? service.title_ar : service.title_en;
-    const description = locale === 'ar' ? service.description_ar : service.description_en;
-    const detailedContent = locale === 'ar' ? service.detailed_content_ar : service.detailed_content_en;
+    const title = service.title_en;
+    const description = service.description_en;
+    const detailedContent = service.detailed_content_en;
     const deliverables = splitLines(detailedContent);
 
     return {

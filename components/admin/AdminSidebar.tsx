@@ -1,21 +1,22 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { 
-  LayoutDashboard, 
-  User, 
-  Briefcase, 
-  Layers, 
-  FileText, 
-  MessageSquare, 
-  Settings,
+import { useRouter, usePathname } from 'next/navigation'
+import {
+  Briefcase,
+  FileText,
+  LayoutDashboard,
+  Layers,
   LogOut,
   Mail,
-  Search
+  MessageSquare,
+  Search,
+  Settings,
+  Sparkles,
+  User
 } from 'lucide-react'
+
 import { createClient } from '@/utils/supabase/client'
-import { useRouter } from 'next/navigation'
 
 export default function AdminSidebar({ locale }: { locale: string }) {
   const pathname = usePathname()
@@ -23,15 +24,15 @@ export default function AdminSidebar({ locale }: { locale: string }) {
   const supabase = createClient()
 
   const navItems = [
-    { name: 'Overview', href: `/${locale}/admin`, icon: LayoutDashboard },
-    { name: 'About', href: `/${locale}/admin/about`, icon: User },
-    { name: 'Projects', href: `/${locale}/admin/projects`, icon: Briefcase },
-    { name: 'Services', href: `/${locale}/admin/services`, icon: Layers },
-    { name: 'Articles', href: `/${locale}/admin/articles`, icon: FileText },
-    { name: 'Inbox', href: `/${locale}/admin/messages`, icon: Mail },
-    { name: 'SEO & Perf', href: `/${locale}/admin/seo`, icon: Search },
-    { name: 'Contact Methods', href: `/${locale}/admin/contact`, icon: MessageSquare },
-    { name: 'Settings', href: `/${locale}/admin/settings`, icon: Settings },
+    { name: 'Overview', hint: 'Portfolio status', href: `/${locale}/admin`, icon: LayoutDashboard },
+    { name: 'Hero & Brand', hint: 'Hero, logo, social', href: `/${locale}/admin/settings`, icon: Sparkles },
+    { name: 'About & Skills', hint: 'Bio, tools, experience', href: `/${locale}/admin/about`, icon: User },
+    { name: 'Projects', hint: 'Case studies', href: `/${locale}/admin/projects`, icon: Briefcase },
+    { name: 'Services', hint: 'Expertise cards', href: `/${locale}/admin/services`, icon: Layers },
+    { name: 'Articles', hint: 'Writing and insights', href: `/${locale}/admin/articles`, icon: FileText },
+    { name: 'Contact', hint: 'Methods and CTA paths', href: `/${locale}/admin/contact`, icon: MessageSquare },
+    { name: 'Inbox', hint: 'Messages', href: `/${locale}/admin/messages`, icon: Mail },
+    { name: 'SEO & Perf', hint: 'Search and tracking', href: `/${locale}/admin/seo`, icon: Search },
   ]
 
   const handleLogout = async () => {
@@ -41,47 +42,48 @@ export default function AdminSidebar({ locale }: { locale: string }) {
   }
 
   return (
-    <aside className="w-full md:w-64 bg-[#0a0a0a] border-r border-white/10 flex flex-col h-screen sticky top-0">
-      <div className="p-6 border-b border-white/10">
-        <h1 className="text-2xl font-bold font-serif italic text-white">Nasq Admin</h1>
-      </div>
-      
-      <nav className="flex-1 py-6 px-4 space-y-2 overflow-y-auto">
-        {navItems.map((item) => {
-          // Exact match for overview, startsWith for others to highlight correctly
-          const isActive = item.href === `/${locale}/admin` 
-            ? pathname === item.href
-            : pathname.startsWith(item.href)
+    <aside className="w-full border-b border-white/8 bg-[rgba(4,7,15,0.86)] md:sticky md:top-0 md:h-screen md:w-[320px] md:border-b-0 md:border-r">
+      <div className="flex h-full flex-col px-5 py-5">
+        <div className="mb-6 rounded-[1.6rem] border border-white/8 bg-white/[0.03] p-5">
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">Portfolio CMS</p>
+          <h1 className="mt-3 text-2xl font-semibold tracking-[-0.04em] text-white">Ahmed Essam Admin</h1>
+          <p className="mt-2 text-sm leading-6 text-slate-400">Manage the portfolio like a product: clear structure, polished content, and scalable updates.</p>
+        </div>
 
-          const Icon = item.icon
+        <nav className="flex-1 space-y-2 overflow-y-auto" aria-label="Admin navigation">
+          {navItems.map((item) => {
+            const isActive = item.href === `/${locale}/admin` ? pathname === item.href : pathname.startsWith(item.href)
+            const Icon = item.icon
 
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${
-                isActive 
-                  ? 'bg-brand-primary/10 text-brand-primary' 
-                  : 'text-white/60 hover:bg-white/5 hover:text-white'
-              }`}
-            >
-              <Icon className="w-5 h-5" />
-              <span className="font-medium">{item.name}</span>
-              {isActive && (
-                <div className="absolute left-0 w-1 h-8 bg-brand-primary rounded-r-full" />
-              )}
-            </Link>
-          )
-        })}
-      </nav>
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`group flex items-start gap-3 rounded-[1.25rem] border px-4 py-3 transition ${
+                  isActive
+                    ? 'border-[#8df6c8]/20 bg-[linear-gradient(135deg,rgba(141,246,200,0.14),rgba(106,215,255,0.08))]'
+                    : 'border-transparent bg-transparent hover:border-white/8 hover:bg-white/[0.04]'
+                }`}
+              >
+                <span className={`mt-0.5 inline-flex h-10 w-10 items-center justify-center rounded-2xl border ${isActive ? 'border-[#8df6c8]/20 bg-[#8df6c8]/10 text-[#8df6c8]' : 'border-white/8 bg-white/[0.03] text-slate-400 group-hover:text-white'}`}>
+                  <Icon className="h-4 w-4" />
+                </span>
+                <span className="min-w-0">
+                  <span className={`block text-sm font-semibold ${isActive ? 'text-white' : 'text-slate-200'}`}>{item.name}</span>
+                  <span className="mt-1 block text-xs leading-5 text-slate-500">{item.hint}</span>
+                </span>
+              </Link>
+            )
+          })}
+        </nav>
 
-      <div className="p-4 border-t border-white/10">
-        <button 
+        <button
+          type="button"
           onClick={handleLogout}
-          className="w-full flex items-center gap-3 px-4 py-3 text-white/60 hover:text-red-400 hover:bg-red-400/10 rounded-xl transition-all duration-300"
+          className="mt-4 inline-flex items-center justify-center gap-2 rounded-[1.15rem] border border-white/8 bg-white/[0.03] px-4 py-3 text-sm font-semibold text-slate-200 transition hover:border-rose-400/20 hover:bg-rose-400/10 hover:text-rose-200"
         >
-          <LogOut className="w-5 h-5" />
-          <span className="font-medium">Logout</span>
+          <LogOut className="h-4 w-4" />
+          Logout
         </button>
       </div>
     </aside>

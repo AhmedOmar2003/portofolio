@@ -8,7 +8,6 @@ import { useTranslations } from 'next-intl';
 import { usePathname } from 'next/navigation';
 
 import { Link } from '@/i18n/routing';
-import LanguageToggle from '../ui/LanguageToggle';
 
 interface NavbarProps {
   logoUrl?: string | null;
@@ -103,14 +102,12 @@ export default function Navbar({ logoUrl }: NavbarProps) {
           </nav>
 
           <div className="hidden items-center gap-3 lg:flex">
-            <LanguageToggle />
             <Link href="/contact" className="btn btn-primary px-5 py-3 text-sm">
               {t('contact')}
             </Link>
           </div>
 
           <div className="flex items-center gap-3 lg:hidden">
-            <LanguageToggle />
             <button
               type="button"
               aria-expanded={isMobileMenuOpen}

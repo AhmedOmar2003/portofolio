@@ -25,8 +25,8 @@ function formatHref(type: string, value: string) {
 }
 
 export default async function ContactPage(props: { params: Promise<{ locale: string }> }) {
-  const { locale } = await props.params;
-  const t = await getTranslations({ locale, namespace: 'ContactPage' });
+  await props.params;
+  const t = await getTranslations({ locale: 'en', namespace: 'ContactPage' });
   const supabase = await createClient();
 
   const { data: contactsData } = await supabase
@@ -38,7 +38,7 @@ export default async function ContactPage(props: { params: Promise<{ locale: str
   const contactMethods = (contactsData || []).map((method) => ({
     id: method.id,
     type: method.type,
-    label: locale === 'ar' ? method.label_ar : method.label_en,
+    label: method.label_en,
     value: method.value,
   })) as ContactMethod[];
 

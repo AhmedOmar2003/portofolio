@@ -15,17 +15,16 @@ function splitLines(content?: string | null) {
     .filter(Boolean);
 }
 
-export default async function AboutPage(props: { params: Promise<{ locale: string }> }) {
-  const { locale } = await props.params;
-  const t = await getTranslations({ locale, namespace: 'AboutPage' });
+export default async function AboutPage() {
+  const t = await getTranslations({ locale: 'en', namespace: 'AboutPage' });
   const supabase = await createClient();
 
   const { data: aboutData } = await supabase.from('about').select('*').single();
 
-  const title = locale === 'ar' ? aboutData?.title_ar : aboutData?.title_en;
-  const intro = locale === 'ar' ? aboutData?.intro_ar : aboutData?.intro_en;
-  const longBiography = locale === 'ar' ? aboutData?.long_biography_ar : aboutData?.long_biography_en;
-  const philosophy = locale === 'ar' ? aboutData?.philosophy_ar : aboutData?.philosophy_en;
+  const title = aboutData?.title_en;
+  const intro = aboutData?.intro_en;
+  const longBiography = aboutData?.long_biography_en;
+  const philosophy = aboutData?.philosophy_en;
 
   const biographyParagraphs = splitLines(longBiography).length
     ? splitLines(longBiography)
