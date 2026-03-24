@@ -42,7 +42,6 @@ export default async function LocaleLayout({
   const messages = await getMessages();
   const { createClient } = await import('@/utils/supabase/server');
   const supabase = await createClient();
-  const { data: settings } = await supabase.from('site_settings').select('logo_url').single();
   const { data: contactsData } = await supabase
     .from('contact_methods')
     .select('type, value, label_en')
@@ -60,7 +59,7 @@ export default async function LocaleLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-zinc-950 text-zinc-50 font-sans flex min-h-screen flex-col`}>
         <NextIntlClientProvider messages={messages}>
           <AnalyticsTracker />
-          <Navbar logoUrl={settings?.logo_url || null} />
+          <Navbar />
           <div className="flex-grow">{children}</div>
           <Footer socialLinks={socialLinksParams} />
           <WhatsAppButton />

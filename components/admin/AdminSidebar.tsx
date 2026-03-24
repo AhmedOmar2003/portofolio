@@ -16,6 +16,7 @@ import {
   User
 } from 'lucide-react'
 
+import BrandMark from '@/components/ui/BrandMark'
 import { createClient } from '@/utils/supabase/client'
 
 export default function AdminSidebar({ locale }: { locale: string }) {
@@ -45,8 +46,9 @@ export default function AdminSidebar({ locale }: { locale: string }) {
     <aside className="w-full border-b border-white/8 bg-[rgba(4,7,15,0.86)] md:sticky md:top-0 md:h-screen md:w-[320px] md:border-b-0 md:border-r">
       <div className="flex h-full flex-col px-5 py-5">
         <div className="mb-6 rounded-[1.6rem] border border-white/8 bg-white/[0.03] p-5">
+          <BrandMark />
           <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">Portfolio CMS</p>
-          <h1 className="mt-3 text-2xl font-semibold tracking-[-0.04em] text-white">Ahmed Essam Admin</h1>
+          <h1 className="mt-4 text-2xl font-semibold tracking-[-0.04em] text-white">Ahmed Essam Admin</h1>
           <p className="mt-2 text-sm leading-6 text-slate-400">Manage the portfolio like a product: clear structure, polished content, and scalable updates.</p>
         </div>
 

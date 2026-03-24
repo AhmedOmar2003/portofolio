@@ -1,19 +1,15 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Image from 'next/image';
 import { Menu, X } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import { usePathname } from 'next/navigation';
 
 import { Link } from '@/i18n/routing';
+import BrandMark from '@/components/ui/BrandMark';
 
-interface NavbarProps {
-  logoUrl?: string | null;
-}
-
-export default function Navbar({ logoUrl }: NavbarProps) {
+export default function Navbar() {
   const t = useTranslations('Navigation');
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
@@ -39,7 +35,7 @@ export default function Navbar({ logoUrl }: NavbarProps) {
   ];
 
   const isActive = (href: string) => {
-    const strippedPath = pathname.replace(/^\/(en|ar)/, '') || '/';
+    const strippedPath = pathname.replace(/^\/en/, '') || '/';
     if (href === '/') {
       return strippedPath === '/';
     }
@@ -58,15 +54,7 @@ export default function Navbar({ logoUrl }: NavbarProps) {
       >
         <div className="flex items-center justify-between px-4 py-3 md:px-6">
           <Link href="/" className="flex items-center gap-3 rounded-full px-2 py-1.5 text-white">
-            {logoUrl ? (
-              <div className="relative h-10 w-10 overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04]">
-                <Image src={logoUrl} alt="Ahmed Essam Maher logo" fill className="object-contain p-1.5" priority />
-              </div>
-            ) : (
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-[linear-gradient(135deg,rgba(141,246,200,0.18),rgba(106,215,255,0.12))] text-sm font-semibold shadow-[inset_0_1px_0_rgba(255,255,255,0.16)]">
-                AE
-              </div>
-            )}
+            <BrandMark compact />
             <div className="hidden sm:block">
               <p className="text-sm font-semibold tracking-[0.16em] text-white/90 uppercase">Ahmed Essam</p>
               <p className="text-xs text-slate-400">{t('eyebrow')}</p>
