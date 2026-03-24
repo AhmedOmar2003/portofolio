@@ -7,6 +7,7 @@ import {
   ADMIN_SESSION_COOKIE,
   createAdminSessionToken,
   getAdminSessionCookieOptions,
+  verifyEnvAdminCredentials,
 } from '@/utils/admin-auth'
 
 const loginSchema = z.object({
@@ -35,6 +36,29 @@ export async function POST(request: Request) {
     )
   }
 
+  const envLoginResult = verifyEnvAdminCredentials(
+    parsed.data.email,
+    parsed.data.password
+  )
+
+  if (envLoginResult === true) {
+    const cookieStore = await cookies()
+    cookieStore.set(
+      ADMIN_SESSION_COOKIE,
+      createAdminSessionToken(parsed.data.email),
+      getAdminSessionCookieOptions()
+    )
+
+    return NextResponse.json({ ok: true })
+  }
+
+  if (envLoginResult === false) {
+    return NextResponse.json(
+      { error: 'Incorrect admin email or password.' },
+      { status: 401 }
+    )
+  }
+
   const supabase = createSupabaseClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -55,7 +79,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         error:
-          'Admin login is not configured in Supabase yet. Run the SQL file for fixed admin access first.',
+          `Admin login is not configured yet. Either set ADMIN_LOGIN_EMAIL and ADMIN_LOGIN_PASSWORD in the environment, or finish the Supabase SQL setup. Supabase returned: ${error.message}`,
       },
       { status: 500 }
     )

@@ -99,3 +99,26 @@ export function getAdminSessionCookieOptions() {
     maxAge: ADMIN_SESSION_MAX_AGE,
   }
 }
+
+function safeEquals(left: string, right: string) {
+  const leftBuffer = Buffer.from(left)
+  const rightBuffer = Buffer.from(right)
+
+  if (leftBuffer.length !== rightBuffer.length) {
+    return false
+  }
+
+  return timingSafeEqual(leftBuffer, rightBuffer)
+}
+
+export function verifyEnvAdminCredentials(email: string, password: string) {
+  const adminEmail = process.env.ADMIN_LOGIN_EMAIL
+  const adminPassword = process.env.ADMIN_LOGIN_PASSWORD
+
+  if (!adminEmail || !adminPassword) {
+    return null
+  }
+
+  return safeEquals(email.trim().toLowerCase(), adminEmail.trim().toLowerCase()) &&
+    safeEquals(password, adminPassword)
+}
