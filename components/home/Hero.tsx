@@ -1,158 +1,206 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
-import { motion } from 'framer-motion';
-import { ArrowUpRight, Mail } from 'lucide-react';
+import { motion, useReducedMotion } from 'framer-motion';
+import { ArrowDownRight, ArrowUpRight, Mail, Sparkles } from 'lucide-react';
 import Image from 'next/image';
-import { Link } from '@/i18n/routing';
+import { useTranslations } from 'next-intl';
 
 interface HeroProps {
   title?: string;
   subtitle?: string;
+  projectCount: number;
+  serviceCount: number;
 }
 
-export default function Hero({ title, subtitle }: HeroProps) {
+export default function Hero({ title, subtitle, projectCount, serviceCount }: HeroProps) {
   const t = useTranslations('Hero');
+  const shouldReduceMotion = useReducedMotion();
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.15,
-        delayChildren: 0.1,
-      },
-    },
-  };
-
-  const itemVariants: import('framer-motion').Variants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] },
-    },
-  };
-
-  // Format title (split on first line break if exists, or use default)
   const displayTitle = title || t('title');
-  const titleParts = displayTitle.split('\n');
+  const displaySubtitle = subtitle || t('positioning');
+  const heroTitle = displayTitle.split('\n');
+
+  const heroStats = [
+    {
+      value: `${projectCount.toString().padStart(2, '0')}+`,
+      label: t('statProjects'),
+    },
+    {
+      value: `${serviceCount.toString().padStart(2, '0')}+`,
+      label: t('statServices'),
+    },
+    {
+      value: 'AR / EN',
+      label: t('statBilingual'),
+    },
+  ];
+
+  const traits = [t('traitResearch'), t('traitSystems'), t('traitAccessibility')];
 
   return (
-    <section className="relative min-h-[90vh] flex items-center pt-32 pb-24 overflow-hidden bg-zinc-950">
-      {/* Subtle Noise / Grid Background */}
-      <div 
-        className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none" 
-        style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '48px 48px' }}
-      />
+    <section
+      id="top"
+      className="ambient-grid relative overflow-hidden px-6 pb-24 pt-32 md:px-10 lg:px-12 lg:pb-32 lg:pt-40"
+      aria-labelledby="hero-heading"
+    >
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute left-[8%] top-24 h-48 w-48 rounded-full bg-emerald-300/10 blur-[120px]" />
+        <div className="absolute right-[8%] top-20 h-72 w-72 rounded-full bg-sky-400/10 blur-[140px]" />
+        <div className="absolute bottom-0 left-1/2 h-64 w-[40rem] -translate-x-1/2 rounded-full bg-cyan-300/10 blur-[160px]" />
+      </div>
 
-      {/* Premium Glow */}
-      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-green-500/10 rounded-full blur-[120px] pointer-events-none -translate-y-1/2 translate-x-1/3" />
-      <div className="absolute bottom-0 left-0 w-[800px] h-[800px] bg-zinc-800/20 rounded-full blur-[150px] pointer-events-none translate-y-1/2 -translate-x-1/3" />
-
-      <div className="container mx-auto px-6 md:px-12 grid lg:grid-cols-12 gap-16 lg:gap-8 items-center relative z-10">
-        
-        {/* Text Content */}
+      <div className="mx-auto grid max-w-[1380px] gap-14 lg:grid-cols-[minmax(0,1.1fr)_minmax(420px,0.9fr)] lg:items-center">
         <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="lg:col-span-7 flex flex-col items-start"
+          initial={shouldReduceMotion ? false : { opacity: 0, y: 32 }}
+          animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="relative z-10"
         >
-          <motion.div variants={itemVariants} className="inline-flex items-center gap-2 mb-6 sm:mb-8 px-4 py-2 bg-zinc-900/60 backdrop-blur-sm border border-zinc-800/80 rounded-full shadow-lg shadow-black/20">
-            <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-            <span className="text-xs font-medium text-zinc-300 tracking-wide uppercase">UX/UI &amp; Digital Product Designer</span>
-          </motion.div>
+          <div className="eyebrow mb-6">{t('eyebrow')}</div>
 
-          <motion.h1 variants={itemVariants} className="text-4xl sm:text-6xl lg:text-[5rem] xl:text-[5.5rem] font-bold tracking-tight mb-5 sm:mb-8 leading-[1.05]">
-            {titleParts.length > 1 ? (
-              <>
-                <span className="text-zinc-50 block mb-2">{titleParts[0]}</span>
-                <span className="text-transparent bg-clip-text bg-gradient-to-br from-zinc-100 via-zinc-300 to-zinc-600">{titleParts.slice(1).join('\n')}</span>
-              </>
-            ) : (
-              <span className="text-zinc-50 block mb-2">{titleParts[0]}</span>
-            )}
-          </motion.h1>
-
-          <motion.p variants={itemVariants} className="text-base sm:text-lg lg:text-xl text-zinc-400 font-light mb-8 sm:mb-12 max-w-2xl leading-relaxed whitespace-pre-wrap">
-            {subtitle || t('positioning')}
-          </motion.p>
-
-          <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 w-full sm:w-auto">
-            {/* Primary CTA — View Projects */}
-            <Link
-              href="/projects"
-              className="btn btn-primary text-sm sm:text-base w-full sm:w-auto"
+          <div className="mb-8 max-w-4xl space-y-6">
+            <h1
+              id="hero-heading"
+              className="text-balance text-5xl font-semibold tracking-[-0.05em] text-white sm:text-6xl lg:text-[5.6rem] lg:leading-[0.95]"
             >
+              <span className="block text-white/92">{heroTitle[0]}</span>
+              {heroTitle.length > 1 ? (
+                <span className="mt-2 block bg-gradient-to-r from-[#f8fafc] via-[#c7f9e2] to-[#7dd3fc] bg-clip-text text-transparent">
+                  {heroTitle.slice(1).join(' ')}
+                </span>
+              ) : (
+                <span className="mt-2 block bg-gradient-to-r from-[#f8fafc] via-[#d8eafe] to-[#8df6c8] bg-clip-text text-transparent">
+                  {t('headlineAccent')}
+                </span>
+              )}
+            </h1>
+
+            <p className="max-w-2xl text-balance text-lg leading-8 text-slate-300 sm:text-xl">
+              {displaySubtitle}
+            </p>
+          </div>
+
+          <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center">
+            <a href="#projects" className="btn btn-primary text-sm sm:text-base">
               {t('ctaPrimary')}
-              <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200" />
-            </Link>
-
-            {/* Secondary CTA — Contact Me */}
-            <Link
-              href="/contact"
-              className="btn btn-secondary text-sm sm:text-base w-full sm:w-auto"
-            >
-              <Mail className="w-4 h-4" />
+              <ArrowDownRight className="h-4 w-4" aria-hidden="true" />
+            </a>
+            <a href="#contact" className="btn btn-secondary text-sm sm:text-base">
+              <Mail className="h-4 w-4" aria-hidden="true" />
               {t('ctaSecondary')}
-            </Link>
-          </motion.div>
-        </motion.div>
+            </a>
+          </div>
 
-        {/* Profile Photo */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9, filter: 'blur(10px)' }}
-          animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
-          transition={{ duration: 1.2, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-          className="lg:col-span-5 relative w-full flex items-center justify-center"
-        >
-          <div className="relative w-full max-w-[380px]">
+          <div className="mb-10 grid gap-4 sm:grid-cols-3">
+            {heroStats.map((stat, index) => (
+              <motion.div
+                key={stat.label}
+                initial={shouldReduceMotion ? false : { opacity: 0, y: 24 }}
+                animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
+                transition={{ duration: 0.55, delay: 0.1 + index * 0.08, ease: [0.16, 1, 0.3, 1] }}
+                className="surface-panel rounded-[1.5rem] px-5 py-5"
+              >
+                <p className="mb-1 text-3xl font-semibold tracking-[-0.04em] text-white">{stat.value}</p>
+                <p className="text-sm text-slate-400">{stat.label}</p>
+              </motion.div>
+            ))}
+          </div>
 
-            {/* Glow behind photo */}
-            <div className="absolute inset-0 rounded-3xl bg-green-500/10 blur-3xl scale-110 pointer-events-none" />
-
-            {/* Photo frame with floating animation */}
-            <motion.div
-              animate={{ y: [-6, 6, -6] }}
-              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-              className="relative rounded-3xl overflow-hidden border border-zinc-700/60 shadow-2xl shadow-black/60"
-              style={{ aspectRatio: '3/4' }}
-            >
-              {/* Green gradient overlay at bottom */}
-              <div className="absolute inset-0 bg-gradient-to-t from-green-950/40 via-transparent to-transparent z-10 pointer-events-none" />
-              <Image
-                src="/profile.png"
-                alt="Ahmed Essam Maher"
-                fill
-                className="object-cover object-top"
-                priority
-              />
-            </motion.div>
-
-            {/* Floating availability badge */}
-            <motion.div
-              animate={{ y: [-8, 8, -8], x: [-4, 4, -4] }}
-              transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute -left-8 bottom-16 px-5 py-3 bg-zinc-900/90 backdrop-blur-xl border border-zinc-800 rounded-2xl shadow-xl flex items-center gap-3 z-20"
-            >
-              <div className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_10px_rgba(5,242,108,0.6)] animate-pulse" />
-              <span className="text-sm text-zinc-200 font-medium">Available for work</span>
-            </motion.div>
-
-            {/* Floating projects badge */}
-            <motion.div
-              animate={{ y: [10, -10, 10], rotate: [0, 3, 0] }}
-              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-              className="absolute -right-6 top-12 px-4 py-3 bg-zinc-900/90 backdrop-blur-xl border border-green-500/30 rounded-2xl shadow-xl flex flex-col gap-1 z-20"
-            >
-              <span className="text-2xl font-bold text-green-500 leading-none">20+</span>
-              <span className="text-xs text-zinc-400">Projects Done</span>
-            </motion.div>
-
+          <div className="flex flex-wrap items-center gap-3 text-sm text-slate-300">
+            {traits.map((trait) => (
+              <span
+                key={trait}
+                className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 backdrop-blur-xl"
+              >
+                <Sparkles className="h-3.5 w-3.5 text-[#8df6c8]" aria-hidden="true" />
+                {trait}
+              </span>
+            ))}
           </div>
         </motion.div>
 
+        <motion.div
+          initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.96, y: 24 }}
+          animate={shouldReduceMotion ? undefined : { opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.85, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+          className="relative"
+        >
+          <div className="surface-panel relative overflow-hidden rounded-[2rem] p-5 md:p-6">
+            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />
+            <div className="grid gap-5 md:grid-cols-[1.2fr_0.8fr]">
+              <div className="relative min-h-[430px] overflow-hidden rounded-[1.6rem] border border-white/10 bg-[radial-gradient(circle_at_top,_rgba(141,246,200,0.18),_transparent_42%),linear-gradient(180deg,_rgba(255,255,255,0.06),_rgba(255,255,255,0.02))]">
+                <div className="absolute inset-0 bg-[linear-gradient(rgba(148,163,184,0.12)_1px,transparent_1px),linear-gradient(90deg,rgba(148,163,184,0.12)_1px,transparent_1px)] bg-[size:44px_44px] opacity-25" />
+                <div className="absolute inset-x-8 top-8 z-10 flex items-center justify-between rounded-full border border-white/12 bg-black/20 px-4 py-3 backdrop-blur-xl">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.3em] text-slate-400">{t('introLabel')}</p>
+                    <p className="mt-1 text-sm font-medium text-white">{t('availability')}</p>
+                  </div>
+                  <span className="flex h-10 w-10 items-center justify-center rounded-full border border-emerald-300/30 bg-emerald-300/10 text-[#8df6c8]">
+                    <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+                  </span>
+                </div>
+
+                <motion.div
+                  animate={
+                    shouldReduceMotion
+                      ? undefined
+                      : {
+                          y: [-10, 8, -10],
+                        }
+                  }
+                  transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+                  className="absolute inset-x-0 bottom-0 top-28"
+                >
+                  <div className="absolute inset-x-10 bottom-8 top-0 overflow-hidden rounded-[1.8rem] border border-white/10 bg-slate-950/55 shadow-[0_40px_120px_rgba(2,8,23,0.55)]">
+                    <Image
+                      src="/profile.png"
+                      alt="Ahmed Essam Maher portrait"
+                      fill
+                      priority
+                      className="object-cover object-top"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#04070f] via-transparent to-transparent" />
+                  </div>
+                </motion.div>
+              </div>
+
+              <div className="grid gap-5">
+                <motion.div
+                  animate={shouldReduceMotion ? undefined : { y: [0, -10, 0] }}
+                  transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
+                  className="rounded-[1.5rem] border border-white/10 bg-white/[0.04] p-5 backdrop-blur-xl"
+                >
+                  <p className="mb-4 text-xs uppercase tracking-[0.28em] text-slate-400">{t('snapshotLabel')}</p>
+                  <div className="space-y-3">
+                    <div className="rounded-2xl border border-white/8 bg-black/15 p-4">
+                      <p className="text-sm text-slate-400">{t('snapshotResearch')}</p>
+                      <p className="mt-2 text-base font-medium text-white">{t('snapshotResearchValue')}</p>
+                    </div>
+                    <div className="rounded-2xl border border-white/8 bg-black/15 p-4">
+                      <p className="text-sm text-slate-400">{t('snapshotSystems')}</p>
+                      <p className="mt-2 text-base font-medium text-white">{t('snapshotSystemsValue')}</p>
+                    </div>
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  animate={shouldReduceMotion ? undefined : { y: [0, 10, 0] }}
+                  transition={{ duration: 6.5, repeat: Infinity, ease: 'easeInOut' }}
+                  className="rounded-[1.5rem] border border-[#8df6c8]/20 bg-gradient-to-br from-[#8df6c8]/12 via-transparent to-[#6ad7ff]/10 p-5"
+                >
+                  <p className="mb-3 text-xs uppercase tracking-[0.28em] text-slate-300">{t('impactLabel')}</p>
+                  <h2 className="text-2xl font-semibold tracking-[-0.04em] text-white">{t('impactTitle')}</h2>
+                  <p className="mt-3 text-sm leading-7 text-slate-300">{t('impactDescription')}</p>
+                </motion.div>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-5 flex items-center gap-3 text-sm text-slate-400">
+            <span className="inline-flex h-2.5 w-2.5 rounded-full bg-[#8df6c8] shadow-[0_0_18px_rgba(141,246,200,0.9)]" />
+            <span>{t('scrollLabel')}</span>
+          </div>
+        </motion.div>
       </div>
     </section>
   );

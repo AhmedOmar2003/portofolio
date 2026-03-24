@@ -6,7 +6,6 @@ import '../globals.css';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
-import IntroSequence from '@/components/home/IntroSequence';
 import AnalyticsTracker from '@/components/analytics/AnalyticsTracker';
 
 const geistSans = Geist({
@@ -75,7 +74,6 @@ export default async function LocaleLayout({
       >
         <NextIntlClientProvider messages={messages}>
           <AnalyticsTracker />
-          <IntroSequence />
           <Navbar logoUrl={logoUrl} />
           <div className="flex-grow">
             {children}

@@ -1,8 +1,8 @@
 'use client';
 
+import { motion, useReducedMotion } from 'framer-motion';
+import { Dribbble, Github, Link as LinkIcon, Linkedin, Mail, Twitter } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { motion } from 'framer-motion';
-import { Linkedin, Dribbble, Mail, Link as LinkIcon, Twitter, Github } from 'lucide-react';
 
 interface FooterProps {
   socialLinks?: { type: string; value: string; label: string }[];
@@ -10,82 +10,86 @@ interface FooterProps {
 
 export default function Footer({ socialLinks = [] }: FooterProps) {
   const t = useTranslations('Footer');
+  const shouldReduceMotion = useReducedMotion();
   const currentYear = new Date().getFullYear();
 
-  // Helper to map string type to Lucide Icon
   const getIcon = (type: string) => {
     switch (type.toLowerCase()) {
-      case 'linkedin': return <Linkedin size={20} />;
-      case 'dribbble': return <Dribbble size={20} />;
-      case 'twitter': return <Twitter size={20} />;
-      case 'github': return <Github size={20} />;
-      case 'email': return <Mail size={20} />;
-      default: return <LinkIcon size={20} />;
+      case 'linkedin':
+        return <Linkedin size={18} />;
+      case 'dribbble':
+        return <Dribbble size={18} />;
+      case 'twitter':
+        return <Twitter size={18} />;
+      case 'github':
+        return <Github size={18} />;
+      case 'email':
+        return <Mail size={18} />;
+      default:
+        return <LinkIcon size={18} />;
     }
   };
 
   const fallbacks = [
     { type: 'linkedin', value: '#', label: 'LinkedIn' },
     { type: 'dribbble', value: '#', label: 'Dribbble' },
-    { type: 'email', value: 'mailto:contact@ahmed.design', label: 'Email' }
+    { type: 'email', value: 'mailto:contact@ahmed.design', label: 'Email' },
   ];
 
   const displayLinks = socialLinks.length > 0 ? socialLinks : fallbacks;
 
   return (
-    <footer className="border-t border-zinc-900 bg-zinc-950 pt-16 pb-8 mt-20">
-      <div className="container mx-auto px-6 md:px-12">
-        
-        {/* Top Section */}
-        <div className="grid md:grid-cols-2 gap-12 mb-16">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="flex flex-col gap-4"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-zinc-50">
-              {t('title')}<span className="text-green-500">.</span>
+    <footer className="px-6 pb-8 pt-12 md:px-10 lg:px-12">
+      <motion.div
+        initial={shouldReduceMotion ? false : { opacity: 0, y: 30 }}
+        whileInView={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-80px' }}
+        transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
+        className="section-shell mx-auto max-w-[1380px] px-6 py-10 md:px-10"
+      >
+        <div className="grid gap-10 md:grid-cols-[minmax(0,1.3fr)_minmax(0,0.7fr)] md:items-end">
+          <div>
+            <span className="eyebrow mb-5">{t('eyebrow')}</span>
+            <h2 className="max-w-2xl text-balance text-3xl font-semibold tracking-[-0.05em] text-white sm:text-4xl lg:text-[3.2rem]">
+              {t('title')}
             </h2>
-            <p className="text-zinc-400 font-light max-w-md">
-              {t('description')}
-            </p>
-          </motion.div>
-          
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            className="flex md:justify-end items-start"
-          >
-            <div className="flex flex-col gap-4">
-              <span className="text-sm font-semibold text-zinc-50 uppercase tracking-widest">{t('social')}</span>
-              <div className="flex gap-4">
-                {displayLinks.map((link, idx) => (
-                  <a 
-                    key={idx} 
-                    href={link.type.toLowerCase() === 'email' && !link.value.startsWith('mailto:') ? `mailto:${link.value}` : link.value} 
+            <p className="mt-5 max-w-xl text-lg leading-8 text-slate-300">{t('description')}</p>
+          </div>
+
+          <div className="flex flex-col gap-4 md:items-end">
+            <span className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">{t('social')}</span>
+            <div className="flex flex-wrap gap-3 md:justify-end">
+              {displayLinks.map((link) => {
+                const href =
+                  link.type.toLowerCase() === 'email' && !link.value.startsWith('mailto:')
+                    ? `mailto:${link.value}`
+                    : link.value;
+
+                return (
+                  <a
+                    key={`${link.type}-${link.label}`}
+                    href={href}
                     target={link.type.toLowerCase() === 'email' ? '_self' : '_blank'}
                     rel="noreferrer"
                     aria-label={link.label}
-                    className="w-12 h-12 rounded-full border border-zinc-800 flex items-center justify-center text-zinc-400 hover:text-green-500 hover:border-green-500/50 hover:bg-green-500/10 transition-all duration-300"
+                    className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-slate-200 transition hover:border-[#8df6c8]/30 hover:bg-white/[0.07] hover:text-white"
                   >
                     {getIcon(link.type)}
+                    <span>{link.label}</span>
                   </a>
-                ))}
-              </div>
+                );
+              })}
             </div>
-          </motion.div>
+          </div>
         </div>
-        
-        {/* Bottom Section */}
-        <div className="pt-8 border-t border-zinc-900 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-zinc-500">
-          <p>© {currentYear} {t('rights')}</p>
+
+        <div className="mt-10 flex flex-col gap-3 border-t border-white/8 pt-6 text-sm text-slate-500 md:flex-row md:items-center md:justify-between">
+          <p>
+            {currentYear} © {t('rights')}
+          </p>
           <p>{t('designBy')}</p>
         </div>
-        
-      </div>
+      </motion.div>
     </footer>
   );
 }

@@ -1,45 +1,108 @@
-import SectionHeading from '@/components/ui/SectionHeading';
-import ProjectCard from '@/components/ui/ProjectCard';
 import { getTranslations } from 'next-intl/server';
+
+import ProjectCard from '@/components/ui/ProjectCard';
+import SectionHeading from '@/components/ui/SectionHeading';
 import { createClient } from '@/utils/supabase/server';
 
 export const revalidate = 3600;
 
+function splitLines(content?: string | null) {
+  return (content || '')
+    .split('\n')
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function formatPreview(content?: string | null, fallback?: string, maxLength = 136) {
+  const preview = splitLines(content)[0] || fallback || '';
+
+  if (preview.length <= maxLength) {
+    return preview;
+  }
+
+  return `${preview.slice(0, maxLength).trimEnd()}...`;
+}
+
 export default async function ProjectsPage(props: { params: Promise<{ locale: string }> }) {
   const { locale } = await props.params;
-  const t = await getTranslations({ locale, namespace: 'Navigation' });
+  const nav = await getTranslations({ locale, namespace: 'Navigation' });
+  const home = await getTranslations({ locale, namespace: 'HomePage' });
   const supabase = await createClient();
 
-  const { data: projectsData } = await supabase
-    .from('projects')
-    .select('*')
-    .order('created_at', { ascending: false });
+  const { data: projectsData } = await supabase.from('projects').select('*').order('created_at', { ascending: false });
 
-  const allProjects = (projectsData || []).map((p, index) => ({
-    title: locale === 'ar' ? p.name_ar : p.name_en,
-    category: p.category || '',
-    year: p.start_date ? new Date(p.start_date).getFullYear().toString() : '',
-    description: locale === 'ar' ? p.description_ar : p.description_en,
-    slug: p.slug,
-    imageUrl: p.images && p.images.length > 0 ? p.images[0] : undefined,
-    index
+  const allProjects = (projectsData || []).map((project, index) => ({
+    title: locale === 'ar' ? project.name_ar : project.name_en,
+    category: project.category || home('projectCategoryFallback'),
+    year: project.start_date ? new Date(project.start_date).getFullYear().toString() : home('projectYearFallback'),
+    description: formatPreview(
+      locale === 'ar' ? project.description_ar : project.description_en,
+      locale === 'ar' ? home('projectDescriptionFallbackAr') : home('projectDescriptionFallbackEn')
+    ),
+    href: `/projects/${project.slug}`,
+    imageUrl: project.images && project.images.length > 0 ? project.images[0] : undefined,
+    role: home('projectRoleValue'),
+    impact: formatPreview(locale === 'ar' ? project.solution_ar : project.solution_en, home('projectImpactFallback')),
+    index,
   }));
 
-  const finalProjects = allProjects.length > 0 ? allProjects : [
-    { title: "Fintech Mobile Application", category: "Product Design", year: "2025", description: "Design & UX architecture.", slug: "fintech-app", index: 0 },
-    { title: "Healthcare SaaS Dashboard", category: "UX/UI Design", year: "2024", description: "Admin dashboard for clinics.", slug: "health-dashboard", index: 1 },
-    { title: "E-Commerce Experience", category: "Web Design", year: "2023", description: "A high-conversion e-commerce platform.", slug: "ecommerce-web", index: 2 },
-    { title: "Real Estate Portal", category: "Product Design", year: "2023", description: "Property management and listing platform.", slug: "real-estate", index: 3 },
-  ];
-  
+  const finalProjects =
+    allProjects.length > 0
+      ? allProjects
+      : [
+          {
+            title: home('sampleProjectTitle1'),
+            category: home('sampleProjectCategory1'),
+            year: '2025',
+            description: home('sampleProjectDescription1'),
+            href: '/projects',
+            imageUrl: undefined,
+            role: home('projectRoleValue'),
+            impact: home('sampleProjectImpact1'),
+            index: 0,
+          },
+          {
+            title: home('sampleProjectTitle2'),
+            category: home('sampleProjectCategory2'),
+            year: '2024',
+            description: home('sampleProjectDescription2'),
+            href: '/projects',
+            imageUrl: undefined,
+            role: home('projectRoleValue'),
+            impact: home('sampleProjectImpact2'),
+            index: 1,
+          },
+        ];
+
   return (
-    <main className="min-h-screen bg-zinc-950 pt-32 pb-24">
-      <div className="container mx-auto px-6 md:px-12">
-        <SectionHeading title={t('projects')} subtitle="A comprehensive collection of my design case studies and digital product solutions." />
-        
-        <div className="grid md:grid-cols-2 gap-8 md:gap-12 mt-16 max-w-6xl">
-          {finalProjects.map((project) => (
-            <ProjectCard key={project.slug} {...project} />
+    <main className="px-6 pb-24 pt-32 md:px-10 lg:px-12 lg:pt-36">
+      <div className="mx-auto max-w-[1380px]">
+        <SectionHeading
+          overline={home('featuredProjects')}
+          title={nav('projects')}
+          subtitle={home('featuredProjectsSub')}
+        />
+
+        <div className="grid gap-8 lg:grid-cols-2">
+          {finalProjects.map((project, index) => (
+            <ProjectCard
+              key={`${project.title}-${index}`}
+              index={project.index}
+              title={project.title}
+              category={project.category}
+              year={project.year}
+              description={project.description}
+              href={project.href}
+              imageUrl={project.imageUrl}
+              role={project.role}
+              impact={project.impact}
+              labels={{
+                role: home('projectRoleLabel'),
+                outcome: home('projectOutcomeLabel'),
+                year: home('projectYearLabel'),
+                cta: home('viewCaseStudy'),
+              }}
+            />
           ))}
         </div>
       </div>
