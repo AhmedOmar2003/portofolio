@@ -1,4 +1,4 @@
-import { DraftingCompass } from 'lucide-react'
+import { PenTool } from 'lucide-react'
 
 type BrandMarkProps = {
   className?: string
@@ -16,8 +16,8 @@ export default function BrandMark({ className = '', compact = false }: BrandMark
       <span className="absolute left-[18%] top-[20%] h-1.5 w-1.5 rounded-full bg-[#8df6c8]/80 shadow-[0_0_12px_rgba(141,246,200,0.6)]" />
       <span className="absolute bottom-[20%] right-[18%] h-1.5 w-1.5 rounded-full bg-[#6ad7ff]/80 shadow-[0_0_12px_rgba(106,215,255,0.55)]" />
       <div className="relative z-10 flex h-full w-full items-center justify-center">
-        <DraftingCompass
-          className={`${compact ? 'h-[1.35rem] w-[1.35rem]' : 'h-[1.8rem] w-[1.8rem]'} text-[#dffdf1] drop-shadow-[0_0_16px_rgba(141,246,200,0.22)]`}
+        <PenTool
+          className={`${compact ? 'h-[1.3rem] w-[1.3rem]' : 'h-[1.75rem] w-[1.75rem]'} text-[#e6fff4] drop-shadow-[0_0_16px_rgba(141,246,200,0.22)]`}
           strokeWidth={2}
         />
       </div>
