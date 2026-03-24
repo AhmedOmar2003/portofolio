@@ -1,7 +1,11 @@
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
 import createNextIntlPlugin from 'next-intl/plugin';
- 
+
 const withNextIntl = createNextIntlPlugin();
- 
+const projectRoot = path.dirname(fileURLToPath(import.meta.url));
+
 /** @type {import('next').NextConfig} */
 const nextConfig: import('next').NextConfig = {
   images: {
@@ -14,6 +18,9 @@ const nextConfig: import('next').NextConfig = {
       },
     ],
   },
+  turbopack: {
+    root: projectRoot,
+  },
 };
- 
+
 export default withNextIntl(nextConfig);
