@@ -17,16 +17,6 @@ const loginSchema = z.object({
 })
 
 export async function POST(request: Request) {
-  if (!process.env.ADMIN_SESSION_SECRET) {
-    return NextResponse.json(
-      {
-        error:
-          'Admin session secret is missing. Add ADMIN_SESSION_SECRET to the environment before signing in.',
-      },
-      { status: 500 }
-    )
-  }
-
   const body = await request.json().catch(() => null)
   const parsed = loginSchema.safeParse(body)
 

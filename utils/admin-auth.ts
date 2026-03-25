@@ -12,7 +12,12 @@ type AdminSessionPayload = {
 }
 
 function getAdminSessionSecret() {
-  return process.env.ADMIN_SESSION_SECRET
+  return (
+    process.env.ADMIN_SESSION_SECRET ??
+    process.env.SUPABASE_SERVICE_ROLE_KEY ??
+    process.env.SUPABASE_SECRET_KEY ??
+    null
+  )
 }
 
 function signPayload(encodedPayload: string) {
@@ -35,7 +40,9 @@ export function createAdminSessionToken(email: string) {
   const signature = signPayload(encodedPayload)
 
   if (!signature) {
-    throw new Error('ADMIN_SESSION_SECRET is missing.')
+    throw new Error(
+      'Admin session signing secret is missing. Add ADMIN_SESSION_SECRET or SUPABASE_SERVICE_ROLE_KEY.'
+    )
   }
 
   return `${encodedPayload}.${signature}`
