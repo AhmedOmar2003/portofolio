@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server'
+import { createHash } from 'crypto'
+import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import { z } from 'zod'
 import { cookies } from 'next/headers'
 
@@ -58,11 +60,62 @@ export async function POST(request: Request) {
     )
   }
 
-  return NextResponse.json(
+  const serviceRoleKey =
+    process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.SUPABASE_SECRET_KEY
+
+  if (!serviceRoleKey) {
+    return NextResponse.json(
+      {
+        error:
+          'Admin login is not configured. Add ADMIN_LOGIN_EMAIL and ADMIN_LOGIN_PASSWORD, or set SUPABASE_SERVICE_ROLE_KEY for the fixed SQL admin table.',
+      },
+      { status: 500 }
+    )
+  }
+
+  const supabase = createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    serviceRoleKey,
     {
-      error:
-        'Admin login credentials are not loaded. Add ADMIN_LOGIN_EMAIL and ADMIN_LOGIN_PASSWORD to the project .env.local, then restart the Next.js server.',
-    },
-    { status: 500 }
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
+    }
   )
+
+  const { data, error } = await supabase
+    .from('admin_credentials')
+    .select('email,password_hash')
+    .eq('email', parsed.data.email.trim().toLowerCase())
+    .maybeSingle()
+
+  if (error) {
+    return NextResponse.json(
+      {
+        error: `Admin SQL login is not ready yet. Supabase returned: ${error.message}`,
+      },
+      { status: 500 }
+    )
+  }
+
+  const incomingPasswordHash = createHash('sha256')
+    .update(parsed.data.password)
+    .digest('hex')
+
+  if (!data || data.password_hash !== incomingPasswordHash) {
+    return NextResponse.json(
+      { error: 'Incorrect admin email or password.' },
+      { status: 401 }
+    )
+  }
+
+  const cookieStore = await cookies()
+  cookieStore.set(
+    ADMIN_SESSION_COOKIE,
+    createAdminSessionToken(data.email),
+    getAdminSessionCookieOptions()
+  )
+
+  return NextResponse.json({ ok: true })
 }
