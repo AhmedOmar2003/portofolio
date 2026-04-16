@@ -274,33 +274,29 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         </section>
 
         <section id="skills" aria-labelledby="skills-heading" className="mx-auto max-w-[1380px] py-16 md:py-24">
-          <div className="flex flex-col gap-10">
-            <div className="max-w-3xl">
-              <SectionHeading id="skills-heading" overline={t('skillsEyebrow')} title={t('skillsTitle')} subtitle={t('skillsSubtitle')} />
+          <div className="section-shell px-6 py-12 md:px-12 md:py-16">
+            <div className="flex flex-col gap-12 lg:flex-row lg:gap-20">
+              <div className="lg:w-[35%] shrink-0">
+                <div className="sticky top-32">
+                  <SectionHeading id="skills-heading" overline={t('skillsEyebrow')} title={t('skillsTitle')} subtitle={t('skillsSubtitle')} />
+                </div>
+              </div>
 
-              <div className="mt-8 flex flex-wrap gap-3">
-                {finalSkillClusters.map((skill) => (
-                  <span key={skill} className="rounded-full border border-white/10 bg-white/[0.04] px-5 py-2.5 text-[0.9rem] font-medium text-slate-200">
-                    {skill}
-                  </span>
+              <div className="grid gap-x-10 gap-y-12 sm:grid-cols-2 lg:w-[65%]">
+                {finalServices.map((service, index) => (
+                  <article key={service.id} className="relative flex flex-col pt-2 border-t border-white/10 sm:border-none sm:pt-0">
+                    <span className="mb-4 block text-sm font-semibold tracking-widest text-[#8df6c8] uppercase">
+                      [{index + 1}]
+                    </span>
+                    <h3 className={`mb-3 text-xl font-bold text-white ${isArabic ? 'leading-tight' : 'tracking-[-0.03em]'}`}>
+                      {service.title}
+                    </h3>
+                    <p className={`text-base text-slate-400 ${isArabic ? 'leading-8' : 'leading-7'}`}>
+                      {service.desc}
+                    </p>
+                  </article>
                 ))}
               </div>
-            </div>
-
-            <div className="mt-16 grid gap-x-12 gap-y-16 sm:grid-cols-2 lg:grid-cols-3">
-              {finalServices.map((service, index) => (
-                <article key={service.id} className="group relative flex flex-col border-t border-white/10 pt-8 transition-colors hover:border-[#8df6c8]/40">
-                  <span className="mb-5 block text-sm font-semibold tracking-widest text-[#8df6c8] opacity-80 uppercase transition-opacity group-hover:opacity-100">
-                    0{index + 1} //
-                  </span>
-                  <h3 className={`mb-4 text-2xl font-semibold text-white ${isArabic ? 'leading-tight' : 'tracking-[-0.03em]'}`}>
-                    {service.title}
-                  </h3>
-                  <p className={`text-base text-slate-400 ${isArabic ? 'leading-8' : 'leading-7'}`}>
-                    {service.desc}
-                  </p>
-                </article>
-              ))}
             </div>
           </div>
         </section>
