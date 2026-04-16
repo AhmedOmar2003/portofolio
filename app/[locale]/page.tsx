@@ -1,4 +1,4 @@
-import { ArrowUpRight, CheckCircle2, MoveRight } from 'lucide-react';
+import { ArrowUpRight, CheckCircle2, MoveRight, Figma, Code2, Sparkles } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 
 import Hero from '@/components/home/Hero';
@@ -198,15 +198,49 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
               </div>
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-2">
-              {condensedPrinciples.map((point, index) => (
-                <div key={`${point}-${index}`} className="rounded-[1.45rem] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.05),rgba(255,255,255,0.02))] p-5">
-                  <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-[#8df6c8]/20 bg-[#8df6c8]/10 text-[#8df6c8]">
-                    <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
+            {/* Design to Code Visual Illustration */}
+            <div className="relative flex h-full min-h-[320px] w-full flex-col items-center justify-center rounded-3xl border border-white/10 bg-[linear-gradient(160deg,rgba(141,246,200,0.03),rgba(255,255,255,0.01))] p-6 sm:p-10 lg:min-h-full">
+              
+              <div className="relative flex w-full max-w-[340px] items-center justify-between">
+                {/* Figma Design Abstract Layer */}
+                <div className="group z-10 flex h-40 w-[45%] shrink-0 flex-col overflow-hidden rounded-xl border border-white/15 bg-[#0a0a0a] p-3 shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:rotate-0 sm:h-48 sm:p-4 -rotate-3">
+                  <div className="mb-3 flex items-center gap-2 border-b border-white/10 pb-2">
+                    <Figma className="h-4 w-4 text-[#F24E1E]" />
+                    <span className="text-[10px] font-medium tracking-wider text-slate-300">Design</span>
                   </div>
-                  <p className={`text-base text-slate-100 ${isArabic ? 'leading-8' : 'leading-7'}`}>{point}</p>
+                  <div className="flex flex-1 flex-col gap-2.5 opacity-80 transition-opacity group-hover:opacity-100">
+                    <div className="h-2 w-full rounded-full bg-white/10" />
+                    <div className="h-full w-full rounded-lg border border-white/5 bg-[linear-gradient(160deg,rgba(141,246,200,0.2),rgba(255,255,255,0.02))]" />
+                    <div className="flex gap-2">
+                      <div className="h-2 w-1/2 rounded-full bg-white/10" />
+                      <div className="h-2 w-1/2 rounded-full bg-white/10" />
+                    </div>
+                  </div>
                 </div>
-              ))}
+
+                {/* Connection Line & Sparkle */}
+                <div className="absolute left-1/2 top-1/2 z-20 flex h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-[#050816] shadow-xl transition-transform duration-500 hover:scale-110">
+                  <Sparkles className="h-4 w-4 text-[#8df6c8]" />
+                </div>
+                <div className="absolute top-1/2 -z-0 w-full border-t border-dashed border-white/20" />
+
+                {/* Code Abstract Layer */}
+                <div className="group z-10 flex h-40 w-[45%] shrink-0 flex-col overflow-hidden rounded-xl border border-white/15 bg-[#0c1222] p-3 shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:rotate-0 sm:h-48 sm:p-4 rotate-3">
+                  <div className="mb-2 flex items-center gap-2 border-b border-white/10 pb-2">
+                    <Code2 className="h-4 w-4 text-[#38bdf8]" />
+                    <span className="text-[10px] font-medium tracking-wider text-slate-300">Code</span>
+                  </div>
+                  <div className="flex flex-1 flex-col justify-center gap-1.5 font-mono text-[9px] opacity-80 transition-opacity group-hover:opacity-100 sm:text-[10px]">
+                    <p><span className="text-[#f472b6]">export</span> <span className="text-[#38bdf8]">function</span> <span className="text-[#fde047]">App</span>() {'{'}</p>
+                    <p className="pl-2"><span className="text-[#f472b6]">return</span> (</p>
+                    <p className="pl-4 text-[#8df6c8]">&lt;Layout&gt;</p>
+                    <p className="pl-6 text-slate-300">{"{UI}"}</p>
+                    <p className="pl-4 text-[#8df6c8]">&lt;/Layout&gt;</p>
+                    <p className="pl-2">)</p>
+                    <p>{'}'}</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
