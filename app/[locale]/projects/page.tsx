@@ -2,6 +2,7 @@ import { getTranslations } from 'next-intl/server';
 
 import ProjectCard from '@/components/ui/ProjectCard';
 import SectionHeading from '@/components/ui/SectionHeading';
+import { getLocaleDateFormat, localizedValue } from '@/utils/locale-content';
 import { createClient } from '@/utils/supabase/server';
 
 export const revalidate = 3600;
@@ -23,25 +24,28 @@ function formatPreview(content?: string | null, fallback?: string, maxLength = 1
   return `${preview.slice(0, maxLength).trimEnd()}...`;
 }
 
-export default async function ProjectsPage() {
-  const nav = await getTranslations({ locale: 'en', namespace: 'Navigation' });
-  const home = await getTranslations({ locale: 'en', namespace: 'HomePage' });
+export default async function ProjectsPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const nav = await getTranslations({ locale, namespace: 'Navigation' });
+  const home = await getTranslations({ locale, namespace: 'HomePage' });
   const supabase = await createClient();
 
   const { data: projectsData } = await supabase.from('projects').select('*').order('created_at', { ascending: false });
 
   const allProjects = (projectsData || []).map((project, index) => ({
-    title: project.name_en,
+    title: localizedValue(project as Record<string, unknown>, 'name', locale),
     category: project.category || home('projectCategoryFallback'),
-    year: project.start_date ? new Date(project.start_date).getFullYear().toString() : home('projectYearFallback'),
+    year: project.start_date
+      ? new Date(project.start_date).toLocaleDateString(getLocaleDateFormat(locale), { year: 'numeric' })
+      : home('projectYearFallback'),
     description: formatPreview(
-      project.description_en,
+      localizedValue(project as Record<string, unknown>, 'description', locale),
       home('projectDescriptionFallbackEn')
     ),
     href: `/projects/${project.slug}`,
     imageUrl: project.images && project.images.length > 0 ? project.images[0] : undefined,
     role: home('projectRoleValue'),
-    impact: formatPreview(project.solution_en, home('projectImpactFallback')),
+    impact: formatPreview(localizedValue(project as Record<string, unknown>, 'solution', locale), home('projectImpactFallback')),
     index,
   }));
 

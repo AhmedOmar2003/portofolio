@@ -93,7 +93,7 @@ export default function ContactMethodsPage() {
           const payload = {
             type: method.type,
             label_en: method.label_en,
-            label_ar: method.label_en,
+            label_ar: method.label_ar,
             value: method.value,
             icon: method.icon,
             is_visible: method.is_visible,
@@ -176,7 +176,7 @@ export default function ContactMethodsPage() {
                     <IconComponent className="h-6 w-6" />
                   </div>
 
-                  <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                  <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
                     <div>
                       <label className="admin-label">Type</label>
                       <select className="admin-select" value={method.type} onChange={(e) => handleChange(index, 'type', e.target.value as ContactMethod['type'])}>
@@ -202,8 +202,19 @@ export default function ContactMethodsPage() {
                     </div>
 
                     <div>
-                      <label className="admin-label">Label</label>
+                      <label className="admin-label">Label (English)</label>
                       <input className="admin-input" value={method.label_en} onChange={(e) => handleChange(index, 'label_en', e.target.value)} placeholder="e.g. Email me" />
+                    </div>
+
+                    <div>
+                      <label className="admin-label">الاسم الظاهر (العربية)</label>
+                      <input
+                        dir="rtl"
+                        className="admin-input text-right"
+                        value={method.label_ar}
+                        onChange={(e) => handleChange(index, 'label_ar', e.target.value)}
+                        placeholder="مثال: تواصل عبر البريد"
+                      />
                     </div>
 
                     <div>

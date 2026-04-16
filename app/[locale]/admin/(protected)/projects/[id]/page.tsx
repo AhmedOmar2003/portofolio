@@ -24,12 +24,17 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
   const [message, setMessage] = useState<MessageState>(null)
   const [formData, setFormData] = useState({
     name_en: '',
+    name_ar: '',
     slug: '',
     category: '',
     description_en: '',
+    description_ar: '',
     problem_en: '',
+    problem_ar: '',
     solution_en: '',
+    solution_ar: '',
     process_en: '',
+    process_ar: '',
     start_date: '',
     end_date: '',
     is_featured: false,
@@ -51,12 +56,17 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
       if (data) {
         setFormData({
           name_en: data.name_en || '',
+          name_ar: data.name_ar || '',
           slug: data.slug || '',
           category: data.category || '',
           description_en: data.description_en || '',
+          description_ar: data.description_ar || '',
           problem_en: data.problem_en || '',
+          problem_ar: data.problem_ar || '',
           solution_en: data.solution_en || '',
+          solution_ar: data.solution_ar || '',
           process_en: data.process_en || '',
+          process_ar: data.process_ar || '',
           start_date: data.start_date || '',
           end_date: data.end_date || '',
           is_featured: data.is_featured || false,
@@ -103,17 +113,17 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
 
     const payload = {
       name_en: formData.name_en,
-      name_ar: formData.name_en,
+      name_ar: formData.name_ar,
       slug: formData.slug,
       category: formData.category,
       description_en: formData.description_en,
-      description_ar: formData.description_en,
+      description_ar: formData.description_ar,
       problem_en: formData.problem_en,
-      problem_ar: formData.problem_en,
+      problem_ar: formData.problem_ar,
       solution_en: formData.solution_en,
-      solution_ar: formData.solution_en,
+      solution_ar: formData.solution_ar,
       process_en: formData.process_en,
-      process_ar: formData.process_en,
+      process_ar: formData.process_ar,
       start_date: formData.start_date || null,
       end_date: formData.end_date || null,
       is_featured: formData.is_featured,
@@ -183,8 +193,17 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
             <h2 className="text-xl font-semibold text-white">General information</h2>
             <div className="mt-6 grid gap-5 md:grid-cols-2">
               <div className="md:col-span-2">
-                <label className="admin-label">Project title</label>
+                <label className="admin-label">Project title (English)</label>
                 <input className="admin-input" value={formData.name_en} onChange={(e) => handleChange('name_en', e.target.value)} onBlur={isNew ? generateSlug : undefined} />
+              </div>
+              <div className="md:col-span-2">
+                <label className="admin-label">عنوان المشروع (العربية)</label>
+                <input
+                  dir="rtl"
+                  className="admin-input text-right"
+                  value={formData.name_ar}
+                  onChange={(e) => handleChange('name_ar', e.target.value)}
+                />
               </div>
               <div>
                 <label className="admin-label">Slug</label>
@@ -195,8 +214,17 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
                 <input className="admin-input" value={formData.category} onChange={(e) => handleChange('category', e.target.value)} placeholder="Product Design, SaaS, UX Audit..." />
               </div>
               <div className="md:col-span-2">
-                <label className="admin-label">Project summary</label>
+                <label className="admin-label">Project summary (English)</label>
                 <textarea className="admin-textarea min-h-[120px]" value={formData.description_en} onChange={(e) => handleChange('description_en', e.target.value)} />
+              </div>
+              <div className="md:col-span-2">
+                <label className="admin-label">ملخص المشروع (العربية)</label>
+                <textarea
+                  dir="rtl"
+                  className="admin-textarea min-h-[120px] text-right"
+                  value={formData.description_ar}
+                  onChange={(e) => handleChange('description_ar', e.target.value)}
+                />
               </div>
             </div>
           </section>
@@ -205,16 +233,43 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
             <h2 className="text-xl font-semibold text-white">Case study content</h2>
             <div className="mt-6 grid gap-5">
               <div>
-                <label className="admin-label">Problem</label>
+                <label className="admin-label">Problem (English)</label>
                 <textarea className="admin-textarea min-h-[150px]" value={formData.problem_en} onChange={(e) => handleChange('problem_en', e.target.value)} />
               </div>
               <div>
-                <label className="admin-label">Design process</label>
+                <label className="admin-label">المشكلة (العربية)</label>
+                <textarea
+                  dir="rtl"
+                  className="admin-textarea min-h-[150px] text-right"
+                  value={formData.problem_ar}
+                  onChange={(e) => handleChange('problem_ar', e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="admin-label">Design process (English)</label>
                 <textarea className="admin-textarea min-h-[180px]" value={formData.process_en} onChange={(e) => handleChange('process_en', e.target.value)} />
               </div>
               <div>
-                <label className="admin-label">Results and impact</label>
+                <label className="admin-label">عملية التصميم (العربية)</label>
+                <textarea
+                  dir="rtl"
+                  className="admin-textarea min-h-[180px] text-right"
+                  value={formData.process_ar}
+                  onChange={(e) => handleChange('process_ar', e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="admin-label">Results and impact (English)</label>
                 <textarea className="admin-textarea min-h-[150px]" value={formData.solution_en} onChange={(e) => handleChange('solution_en', e.target.value)} />
+              </div>
+              <div>
+                <label className="admin-label">النتائج والأثر (العربية)</label>
+                <textarea
+                  dir="rtl"
+                  className="admin-textarea min-h-[150px] text-right"
+                  value={formData.solution_ar}
+                  onChange={(e) => handleChange('solution_ar', e.target.value)}
+                />
               </div>
             </div>
           </section>

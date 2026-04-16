@@ -4,6 +4,7 @@ import { getTranslations } from 'next-intl/server';
 
 import { Link } from '@/i18n/routing';
 import SectionHeading from '@/components/ui/SectionHeading';
+import { localizedValue } from '@/utils/locale-content';
 import { createClient } from '@/utils/supabase/server';
 
 export const revalidate = 3600;
@@ -15,16 +16,17 @@ function splitLines(content?: string | null) {
     .filter(Boolean);
 }
 
-export default async function AboutPage() {
-  const t = await getTranslations({ locale: 'en', namespace: 'AboutPage' });
+export default async function AboutPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'AboutPage' });
   const supabase = await createClient();
 
   const { data: aboutData } = await supabase.from('about').select('*').single();
 
-  const title = aboutData?.title_en;
-  const intro = aboutData?.intro_en;
-  const longBiography = aboutData?.long_biography_en;
-  const philosophy = aboutData?.philosophy_en;
+  const title = localizedValue(aboutData as Record<string, unknown>, 'title', locale);
+  const intro = localizedValue(aboutData as Record<string, unknown>, 'intro', locale);
+  const longBiography = localizedValue(aboutData as Record<string, unknown>, 'long_biography', locale);
+  const philosophy = localizedValue(aboutData as Record<string, unknown>, 'philosophy', locale);
 
   const biographyParagraphs = splitLines(longBiography).length
     ? splitLines(longBiography)

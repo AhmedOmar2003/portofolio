@@ -3,6 +3,7 @@ import { getTranslations } from 'next-intl/server';
 
 import { Link } from '@/i18n/routing';
 import SectionHeading from '@/components/ui/SectionHeading';
+import { localizedValue } from '@/utils/locale-content';
 import { createClient } from '@/utils/supabase/server';
 
 export const revalidate = 3600;
@@ -14,16 +15,17 @@ function splitLines(content?: string | null) {
     .filter(Boolean);
 }
 
-export default async function ServicesPage() {
-  const t = await getTranslations({ locale: 'en', namespace: 'ServicesPage' });
+export default async function ServicesPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'ServicesPage' });
   const supabase = await createClient();
 
   const { data: servicesData } = await supabase.from('services').select('*').order('view_order', { ascending: true });
 
   const servicesList = (servicesData || []).map((service, index) => {
-    const title = service.title_en;
-    const description = service.description_en;
-    const detailedContent = service.detailed_content_en;
+    const title = localizedValue(service as Record<string, unknown>, 'title', locale);
+    const description = localizedValue(service as Record<string, unknown>, 'description', locale);
+    const detailedContent = localizedValue(service as Record<string, unknown>, 'detailed_content', locale);
     const deliverables = splitLines(detailedContent);
 
     return {

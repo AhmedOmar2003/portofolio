@@ -4,12 +4,15 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { Edit2, Loader2, Plus, Star, Trash2 } from 'lucide-react'
+import { useParams } from 'next/navigation'
 
 import { createClient } from '@/utils/supabase/client'
+import { isArabicLocale } from '@/utils/locale-content'
 
 type ProjectItem = {
   id: string
   name_en: string
+  name_ar?: string
   slug: string
   is_featured: boolean
   images: string[]
@@ -20,6 +23,8 @@ export default function ProjectsListPage() {
   const [loading, setLoading] = useState(true)
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const supabase = createClient()
+  const params = useParams<{ locale: string }>()
+  const locale = params?.locale || 'en'
 
   useEffect(() => {
     void fetchProjects()
@@ -27,7 +32,10 @@ export default function ProjectsListPage() {
 
   const fetchProjects = async () => {
     try {
-      const { data, error } = await supabase.from('projects').select('id, name_en, slug, is_featured, images').order('created_at', { ascending: false })
+      const { data, error } = await supabase
+        .from('projects')
+        .select('id, name_en, name_ar, slug, is_featured, images')
+        .order('created_at', { ascending: false })
       if (error) throw error
       setProjects((data as ProjectItem[]) || [])
     } catch (error) {
@@ -86,7 +94,12 @@ export default function ProjectsListPage() {
             <article key={project.id} className="admin-card overflow-hidden">
               <div className="relative h-52 bg-black/20">
                 {project.images?.[0] ? (
-                  <Image src={project.images[0]} alt={project.name_en} fill className="object-cover" />
+                  <Image
+                    src={project.images[0]}
+                    alt={isArabicLocale(locale) ? project.name_ar || project.name_en : project.name_en || project.name_ar || ''}
+                    fill
+                    className="object-cover"
+                  />
                 ) : (
                   <div className="flex h-full items-center justify-center text-sm text-slate-500">No cover image</div>
                 )}
@@ -99,7 +112,9 @@ export default function ProjectsListPage() {
               </div>
 
               <div className="px-5 py-5">
-                <h2 className="text-lg font-semibold text-white">{project.name_en}</h2>
+                <h2 className="text-lg font-semibold text-white">
+                  {isArabicLocale(locale) ? project.name_ar || project.name_en : project.name_en || project.name_ar}
+                </h2>
                 <p className="mt-2 text-sm text-slate-500">{project.slug}</p>
 
                 <div className="mt-5 flex items-center gap-3 border-t border-white/8 pt-4">

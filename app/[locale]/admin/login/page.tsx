@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { ArrowRight, Loader2, LockKeyhole } from 'lucide-react'
-import { useRouter } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 
 import BrandMark from '@/components/ui/BrandMark'
 
@@ -12,6 +12,8 @@ export default function AdminLoginPage() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const router = useRouter()
+  const params = useParams<{ locale: string }>()
+  const locale = params?.locale || 'en'
 
   const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault()
@@ -38,7 +40,7 @@ export default function AdminLoginPage() {
     }
 
     router.refresh()
-    router.push('/en/admin')
+    router.push(`/${locale}/admin`)
   }
 
   return (

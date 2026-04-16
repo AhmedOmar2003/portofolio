@@ -4,12 +4,15 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { ArrowDown, ArrowUp, Edit2, Loader2, Plus, Star, Trash2 } from 'lucide-react'
+import { useParams } from 'next/navigation'
 
 import { createClient } from '@/utils/supabase/client'
+import { isArabicLocale } from '@/utils/locale-content'
 
 type ServiceItem = {
   id: string
   title_en: string
+  title_ar?: string
   icon_image_url: string | null
   view_order: number
   is_featured: boolean
@@ -20,6 +23,8 @@ export default function ServicesListPage() {
   const [loading, setLoading] = useState(true)
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const supabase = createClient()
+  const params = useParams<{ locale: string }>()
+  const locale = params?.locale || 'en'
 
   useEffect(() => {
     void fetchServices()
@@ -27,7 +32,10 @@ export default function ServicesListPage() {
 
   const fetchServices = async () => {
     try {
-      const { data, error } = await supabase.from('services').select('id, title_en, icon_image_url, view_order, is_featured').order('view_order', { ascending: true })
+      const { data, error } = await supabase
+        .from('services')
+        .select('id, title_en, title_ar, icon_image_url, view_order, is_featured')
+        .order('view_order', { ascending: true })
       if (error) throw error
       setServices((data as ServiceItem[]) || [])
     } catch (error) {
@@ -108,7 +116,13 @@ export default function ServicesListPage() {
 
                   <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04]">
                     {service.icon_image_url ? (
-                      <Image src={service.icon_image_url} alt={service.title_en} width={56} height={56} className="h-full w-full object-cover" />
+                      <Image
+                        src={service.icon_image_url}
+                        alt={isArabicLocale(locale) ? service.title_ar || service.title_en : service.title_en || service.title_ar || ''}
+                        width={56}
+                        height={56}
+                        className="h-full w-full object-cover"
+                      />
                     ) : (
                       <span className="text-xs text-slate-500">No icon</span>
                     )}
@@ -117,7 +131,9 @@ export default function ServicesListPage() {
 
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-3">
-                    <h2 className="text-lg font-semibold text-white">{service.title_en}</h2>
+                    <h2 className="text-lg font-semibold text-white">
+                      {isArabicLocale(locale) ? service.title_ar || service.title_en : service.title_en || service.title_ar}
+                    </h2>
                     {service.is_featured ? (
                       <span className="inline-flex items-center gap-1 rounded-full border border-[#8df6c8]/20 bg-[#8df6c8]/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#8df6c8]">
                         <Star className="h-3 w-3" />

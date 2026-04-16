@@ -3,24 +3,26 @@ import { getTranslations } from 'next-intl/server';
 
 import { Link } from '@/i18n/routing';
 import SectionHeading from '@/components/ui/SectionHeading';
+import { getLocaleDateFormat, localizedValue } from '@/utils/locale-content';
 import { createClient } from '@/utils/supabase/server';
 
 export const revalidate = 3600;
 
-function formatDate(dateValue: string | null | undefined) {
+function formatDate(dateValue: string | null | undefined, locale: string) {
   if (!dateValue) {
     return '';
   }
 
-  return new Date(dateValue).toLocaleDateString('en-US', {
+  return new Date(dateValue).toLocaleDateString(getLocaleDateFormat(locale), {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
   });
 }
 
-export default async function ArticlesPage() {
-  const t = await getTranslations({ locale: 'en', namespace: 'ArticlesPage' });
+export default async function ArticlesPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'ArticlesPage' });
   const supabase = await createClient();
 
   const { data: articlesData, error: articlesError } = await supabase.from('articles').select('*').order('created_at', { ascending: false });
@@ -31,10 +33,10 @@ export default async function ArticlesPage() {
 
   const articlesList = (articlesData || []).map((article) => ({
     slug: article.slug,
-    title: article.title_en,
-    excerpt: article.excerpt_en,
+    title: localizedValue(article as Record<string, unknown>, 'title', locale),
+    excerpt: localizedValue(article as Record<string, unknown>, 'excerpt', locale),
     category: article.category || t('categoryFallback'),
-    date: formatDate(article.published_at || article.created_at),
+    date: formatDate(article.published_at || article.created_at, locale),
     readTime: `${article.read_time_minutes || 5} min read`,
   }));
 

@@ -4,10 +4,10 @@ import { useEffect, useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
-import { usePathname } from 'next/navigation';
 
-import { Link } from '@/i18n/routing';
+import { Link, usePathname } from '@/i18n/routing';
 import BrandMark from '@/components/ui/BrandMark';
+import LocaleSwitcher from '@/components/ui/LocaleSwitcher';
 
 export default function Navbar() {
   const t = useTranslations('Navigation');
@@ -35,12 +35,11 @@ export default function Navbar() {
   ];
 
   const isActive = (href: string) => {
-    const strippedPath = pathname.replace(/^\/en/, '') || '/';
     if (href === '/') {
-      return strippedPath === '/';
+      return pathname === '/';
     }
 
-    return strippedPath.startsWith(href);
+    return pathname.startsWith(href);
   };
 
   return (
@@ -90,12 +89,14 @@ export default function Navbar() {
           </nav>
 
           <div className="hidden items-center gap-3 lg:flex">
+            <LocaleSwitcher />
             <Link href="/contact" className="btn btn-primary px-5 py-3 text-sm">
               {t('contact')}
             </Link>
           </div>
 
           <div className="flex items-center gap-3 lg:hidden">
+            <LocaleSwitcher compact />
             <button
               type="button"
               aria-expanded={isMobileMenuOpen}
@@ -142,6 +143,9 @@ export default function Navbar() {
                 <Link href="/contact" className="btn btn-primary mt-2 w-full justify-center py-3 text-sm">
                   {t('contact')}
                 </Link>
+                <div className="mt-2">
+                  <LocaleSwitcher />
+                </div>
               </div>
             </motion.div>
           ) : null}

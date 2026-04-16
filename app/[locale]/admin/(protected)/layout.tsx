@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 
 import AdminSidebar from '@/components/admin/AdminSidebar'
+import LocaleSwitcher from '@/components/ui/LocaleSwitcher'
 import { getAdminSession } from '@/utils/admin-auth'
 
 export default async function ProtectedAdminLayout({
@@ -27,8 +28,11 @@ export default async function ProtectedAdminLayout({
               <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">Internal Tool</p>
               <h2 className="mt-1 text-lg font-semibold text-white">Portfolio Management Dashboard</h2>
             </div>
-            <div className="rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-sm text-slate-300">
-              {session.email}
+            <div className="flex items-center gap-3">
+              <LocaleSwitcher />
+              <div className="rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-sm text-slate-300">
+                {session.email}
+              </div>
             </div>
           </div>
         </header>

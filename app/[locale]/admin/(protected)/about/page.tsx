@@ -82,15 +82,21 @@ export default function AboutAdminPage() {
 
   const [formData, setFormData] = useState({
     name_en: '',
+    name_ar: '',
     title_en: '',
+    title_ar: '',
     intro_en: '',
+    intro_ar: '',
     long_biography_en: '',
+    long_biography_ar: '',
     philosophy_en: '',
+    philosophy_ar: '',
     skillsText: '',
     toolsText: '',
     experienceText: '',
     profile_image_url: '',
     resume_url_en: '',
+    resume_url_ar: '',
   })
 
   useEffect(() => {
@@ -108,15 +114,21 @@ export default function AboutAdminPage() {
       if (data) {
         setFormData({
           name_en: data.name_en || '',
+          name_ar: data.name_ar || '',
           title_en: data.title_en || '',
+          title_ar: data.title_ar || '',
           intro_en: data.intro_en || '',
+          intro_ar: data.intro_ar || '',
           long_biography_en: data.long_biography_en || '',
+          long_biography_ar: data.long_biography_ar || '',
           philosophy_en: data.philosophy_en || '',
+          philosophy_ar: data.philosophy_ar || '',
           skillsText: stringifyList(data.skills),
           toolsText: stringifyList(data.tools),
           experienceText: stringifyTimeline(data.experience_timeline),
           profile_image_url: data.profile_image_url || '',
           resume_url_en: data.resume_url_en || '',
+          resume_url_ar: data.resume_url_ar || '',
         })
       }
     } catch (error) {
@@ -142,21 +154,21 @@ export default function AboutAdminPage() {
 
     const payload = {
       name_en: formData.name_en,
-      name_ar: formData.name_en,
+      name_ar: formData.name_ar,
       title_en: formData.title_en,
-      title_ar: formData.title_en,
+      title_ar: formData.title_ar,
       intro_en: formData.intro_en,
-      intro_ar: formData.intro_en,
+      intro_ar: formData.intro_ar,
       long_biography_en: formData.long_biography_en,
-      long_biography_ar: formData.long_biography_en,
+      long_biography_ar: formData.long_biography_ar,
       philosophy_en: formData.philosophy_en,
-      philosophy_ar: formData.philosophy_en,
+      philosophy_ar: formData.philosophy_ar,
       skills: parseSimpleList(formData.skillsText),
       tools: parseSimpleList(formData.toolsText),
       experience_timeline: parseTimeline(formData.experienceText),
       profile_image_url: formData.profile_image_url,
       resume_url_en: formData.resume_url_en,
-      resume_url_ar: formData.resume_url_en,
+      resume_url_ar: formData.resume_url_ar,
     }
 
     try {
@@ -221,20 +233,40 @@ export default function AboutAdminPage() {
                 <input className="admin-input" value={formData.name_en} onChange={(e) => handleChange('name_en', e.target.value)} />
               </div>
               <div className="md:col-span-2">
+                <label className="admin-label">الاسم بالكامل (العربية)</label>
+                <input dir="rtl" className="admin-input text-right" value={formData.name_ar} onChange={(e) => handleChange('name_ar', e.target.value)} />
+              </div>
+              <div className="md:col-span-2">
                 <label className="admin-label">Professional title</label>
                 <input className="admin-input" value={formData.title_en} onChange={(e) => handleChange('title_en', e.target.value)} />
+              </div>
+              <div className="md:col-span-2">
+                <label className="admin-label">المسمى الوظيفي (العربية)</label>
+                <input dir="rtl" className="admin-input text-right" value={formData.title_ar} onChange={(e) => handleChange('title_ar', e.target.value)} />
               </div>
               <div className="md:col-span-2">
                 <label className="admin-label">Short introduction</label>
                 <textarea className="admin-textarea min-h-[110px]" value={formData.intro_en} onChange={(e) => handleChange('intro_en', e.target.value)} />
               </div>
               <div className="md:col-span-2">
+                <label className="admin-label">المقدمة المختصرة (العربية)</label>
+                <textarea dir="rtl" className="admin-textarea min-h-[110px] text-right" value={formData.intro_ar} onChange={(e) => handleChange('intro_ar', e.target.value)} />
+              </div>
+              <div className="md:col-span-2">
                 <label className="admin-label">Long biography</label>
                 <textarea className="admin-textarea min-h-[220px]" value={formData.long_biography_en} onChange={(e) => handleChange('long_biography_en', e.target.value)} />
               </div>
               <div className="md:col-span-2">
+                <label className="admin-label">السيرة التفصيلية (العربية)</label>
+                <textarea dir="rtl" className="admin-textarea min-h-[220px] text-right" value={formData.long_biography_ar} onChange={(e) => handleChange('long_biography_ar', e.target.value)} />
+              </div>
+              <div className="md:col-span-2">
                 <label className="admin-label">Design philosophy</label>
                 <textarea className="admin-textarea min-h-[180px]" value={formData.philosophy_en} onChange={(e) => handleChange('philosophy_en', e.target.value)} />
+              </div>
+              <div className="md:col-span-2">
+                <label className="admin-label">فلسفة التصميم (العربية)</label>
+                <textarea dir="rtl" className="admin-textarea min-h-[180px] text-right" value={formData.philosophy_ar} onChange={(e) => handleChange('philosophy_ar', e.target.value)} />
               </div>
             </div>
           </section>
@@ -293,6 +325,17 @@ export default function AboutAdminPage() {
                   accept="application/pdf"
                   onUploadSuccess={(url) => handleChange('resume_url_en', url)}
                   onRemove={() => handleChange('resume_url_en', '')}
+                />
+              </div>
+              <div>
+                <label className="admin-label">ملف الـ CV (العربية)</label>
+                <MediaUpload
+                  bucket="portfolio-media"
+                  folder="about"
+                  currentUrl={formData.resume_url_ar}
+                  accept="application/pdf"
+                  onUploadSuccess={(url) => handleChange('resume_url_ar', url)}
+                  onRemove={() => handleChange('resume_url_ar', '')}
                 />
               </div>
             </div>

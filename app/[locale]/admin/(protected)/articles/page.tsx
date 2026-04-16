@@ -4,12 +4,15 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { Edit2, Loader2, Plus, Trash2 } from 'lucide-react'
+import { useParams } from 'next/navigation'
 
 import { createClient } from '@/utils/supabase/client'
+import { getLocaleDateFormat, isArabicLocale } from '@/utils/locale-content'
 
 type ArticleListItem = {
   id: string
   title_en: string
+  title_ar?: string
   slug: string
   published_at: string | null
   cover_image_url: string | null
@@ -22,6 +25,8 @@ export default function ArticlesListPage() {
   const [loading, setLoading] = useState(true)
   const [fetchError, setFetchError] = useState<string | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
+  const params = useParams<{ locale: string }>()
+  const locale = params?.locale || 'en'
 
   useEffect(() => {
     void fetchArticles()
@@ -31,7 +36,7 @@ export default function ArticlesListPage() {
     try {
       const { data, error } = await supabase
         .from('articles')
-        .select('id, title_en, slug, published_at, cover_image_url, created_at')
+        .select('id, title_en, title_ar, slug, published_at, cover_image_url, created_at')
         .order('created_at', { ascending: false })
 
       if (error) {
@@ -108,13 +113,20 @@ export default function ArticlesListPage() {
           {articles.map((article) => {
             const isPublished = article.published_at && new Date(article.published_at) <= new Date()
             const statusLabel = isPublished ? 'Published' : 'Draft'
-            const dateLabel = article.published_at || article.created_at
-              ? new Date(article.published_at || article.created_at || '').toLocaleDateString('en-US', {
+              const dateLabel = article.published_at || article.created_at
+                ? new Date(article.published_at || article.created_at || '').toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
+                  })
+                : 'No date'
+              const localizedDateLabel = article.published_at || article.created_at
+                ? new Date(article.published_at || article.created_at || '').toLocaleDateString(getLocaleDateFormat(locale), {
                   month: 'short',
                   day: 'numeric',
                   year: 'numeric',
                 })
-              : 'No date'
+                : 'No date'
 
             return (
               <article key={article.id} className="admin-card overflow-hidden">
@@ -122,7 +134,7 @@ export default function ArticlesListPage() {
                   {article.cover_image_url ? (
                     <Image
                       src={article.cover_image_url}
-                      alt={article.title_en}
+                      alt={isArabicLocale(locale) ? article.title_ar || article.title_en : article.title_en || article.title_ar || ''}
                       fill
                       className="object-cover opacity-80 transition duration-500 hover:scale-[1.02] hover:opacity-100"
                     />
@@ -139,8 +151,10 @@ export default function ArticlesListPage() {
                 <div className="flex h-[calc(100%-11rem)] flex-col px-5 py-5">
                   <div className="flex items-start justify-between gap-4">
                     <div>
-                      <h2 className="text-lg font-semibold leading-7 text-white">{article.title_en}</h2>
-                      <p className="mt-2 text-xs uppercase tracking-[0.18em] text-slate-500">{dateLabel}</p>
+                      <h2 className="text-lg font-semibold leading-7 text-white">
+                        {isArabicLocale(locale) ? article.title_ar || article.title_en : article.title_en || article.title_ar}
+                      </h2>
+                      <p className="mt-2 text-xs uppercase tracking-[0.18em] text-slate-500">{localizedDateLabel || dateLabel}</p>
                     </div>
                     <span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-slate-400">
                       {article.slug}

@@ -5,6 +5,7 @@ import Hero from '@/components/home/Hero';
 import SectionHeading from '@/components/ui/SectionHeading';
 import ProjectCard from '@/components/ui/ProjectCard';
 import { Link } from '@/i18n/routing';
+import { getLocaleDateFormat, localizedValue } from '@/utils/locale-content';
 import { createClient } from '@/utils/supabase/server';
 
 export const revalidate = 3600;
@@ -13,6 +14,7 @@ type ContactMethod = {
   type: string;
   value: string;
   label_en: string;
+  label_ar?: string;
 };
 
 function splitLines(content?: string | null) {
@@ -48,8 +50,9 @@ function normalizeName(entry: unknown, fallback = '') {
   return fallback;
 }
 
-export default async function HomePage() {
-  const t = await getTranslations({ locale: 'en', namespace: 'HomePage' });
+export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'HomePage' });
   const supabase = await createClient();
 
   const [
@@ -61,27 +64,37 @@ export default async function HomePage() {
   ] = await Promise.all([
     supabase.from('projects').select('*').eq('is_featured', true).order('created_at', { ascending: false }).limit(2),
     supabase.from('services').select('*').eq('is_featured', true).order('view_order', { ascending: true }).limit(2),
-    supabase.from('site_settings').select('hero_title_en, hero_subtitle_en').single(),
+    supabase
+      .from('site_settings')
+      .select('hero_title_en, hero_title_ar, hero_subtitle_en, hero_subtitle_ar')
+      .single(),
     supabase
       .from('about')
-      .select('title_en, intro_en, philosophy_en, skills, tools')
+      .select('title_en, title_ar, intro_en, intro_ar, philosophy_en, philosophy_ar, skills, tools')
       .single(),
-    supabase.from('contact_methods').select('type, value, label_en').eq('is_visible', true).order('view_order', { ascending: true }).limit(2),
+    supabase
+      .from('contact_methods')
+      .select('type, value, label_en, label_ar')
+      .eq('is_visible', true)
+      .order('view_order', { ascending: true })
+      .limit(2),
   ]);
 
-  const principleCards = splitLines(aboutData?.philosophy_en).slice(0, 3);
+  const principleCards = splitLines(localizedValue(aboutData as Record<string, unknown>, 'philosophy', locale)).slice(0, 3);
   const principles = principleCards.length ? principleCards : [t('principle1'), t('principle2'), t('principle3')];
   const condensedPrinciples = principles.slice(0, 2);
 
   const featuredProjects = (projectsData || []).map((project) => ({
-    title: project.name_en,
+    title: localizedValue(project as Record<string, unknown>, 'name', locale),
     category: project.category || t('projectCategoryFallback'),
-    year: project.start_date ? new Date(project.start_date).getFullYear().toString() : t('projectYearFallback'),
-    description: formatPreview(project.description_en, t('projectDescriptionFallbackEn'), 138),
+    year: project.start_date
+      ? new Date(project.start_date).toLocaleDateString(getLocaleDateFormat(locale), { year: 'numeric' })
+      : t('projectYearFallback'),
+    description: formatPreview(localizedValue(project as Record<string, unknown>, 'description', locale), t('projectDescriptionFallbackEn'), 138),
     href: `/projects/${project.slug}`,
     imageUrl: project.images && project.images.length > 0 ? project.images[0] : undefined,
     role: t('projectRoleValue'),
-    impact: formatPreview(project.solution_en, t('projectImpactFallback')),
+    impact: formatPreview(localizedValue(project as Record<string, unknown>, 'solution', locale), t('projectImpactFallback')),
   }));
 
   const finalFeaturedProjects =
@@ -111,9 +124,11 @@ export default async function HomePage() {
         ];
 
   const services = (servicesData || []).map((service, index) => ({
-    id: service.id || `${service.title_en}-${index}`,
-    title: service.title_en,
-    desc: service.description_en || service.detailed_content_en,
+    id: service.id || `${localizedValue(service as Record<string, unknown>, 'title', locale)}-${index}`,
+    title: localizedValue(service as Record<string, unknown>, 'title', locale),
+    desc:
+      localizedValue(service as Record<string, unknown>, 'description', locale) ||
+      localizedValue(service as Record<string, unknown>, 'detailed_content', locale),
   }));
 
   const finalServices =
@@ -139,8 +154,8 @@ export default async function HomePage() {
       </a>
 
       <Hero
-        title={settingsData?.hero_title_en}
-        subtitle={settingsData?.hero_subtitle_en}
+        title={localizedValue(settingsData as Record<string, unknown>, 'hero_title', locale)}
+        subtitle={localizedValue(settingsData as Record<string, unknown>, 'hero_subtitle', locale)}
         projectCount={finalFeaturedProjects.length}
         serviceCount={finalServices.length}
       />
@@ -149,7 +164,11 @@ export default async function HomePage() {
         <section id="about" className="mx-auto max-w-[1380px] py-8 md:py-12">
           <div className="section-shell grid gap-8 px-6 py-7 md:px-8 md:py-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-12">
             <div>
-              <SectionHeading overline={t('aboutEyebrow')} title={aboutData?.title_en || t('aboutTitle')} subtitle={aboutData?.intro_en || t('aboutSubtitle')} />
+              <SectionHeading
+                overline={t('aboutEyebrow')}
+                title={localizedValue(aboutData as Record<string, unknown>, 'title', locale, t('aboutTitle'))}
+                subtitle={localizedValue(aboutData as Record<string, unknown>, 'intro', locale, t('aboutSubtitle'))}
+              />
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="rounded-[1.35rem] border border-white/8 bg-white/[0.03] p-4">
                   <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">{t('aboutStatLabel1')}</p>
@@ -253,7 +272,7 @@ export default async function HomePage() {
                         rel="noreferrer"
                         className="rounded-full border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-slate-200 transition hover:border-[#8df6c8]/30 hover:text-white"
                       >
-                        {method.label_en}
+                        {localizedValue(method as Record<string, unknown>, 'label', locale)}
                       </a>
                     ))}
                   </div>

@@ -8,6 +8,7 @@ import AnalyticsTracker from '@/components/analytics/AnalyticsTracker';
 import Footer from '@/components/layout/Footer';
 import Navbar from '@/components/layout/Navbar';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
+import { isArabicLocale, localizedValue } from '@/utils/locale-content';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -21,15 +22,25 @@ const geistMono = Geist_Mono({
   display: 'swap',
 });
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
   const { createClient } = await import('@/utils/supabase/server');
   const supabase = await createClient();
-  const { data: settings } = await supabase.from('site_settings').select('hero_title_en, hero_subtitle_en').single();
+  const { data: settings } = await supabase
+    .from('site_settings')
+    .select('hero_title_en, hero_title_ar, hero_subtitle_en, hero_subtitle_ar')
+    .single();
 
   return {
-    title: settings?.hero_title_en || 'Ahmed Essam Maher | UI/UX & Digital Product Designer',
+    title:
+      localizedValue(settings as Record<string, unknown>, 'hero_title', locale) ||
+      'Ahmed Essam Maher | UI/UX & Digital Product Designer',
     description:
-      settings?.hero_subtitle_en ||
+      localizedValue(settings as Record<string, unknown>, 'hero_subtitle', locale) ||
       'I design digital products that solve real problems through product thinking, elegant interfaces, and accessible systems.',
     icons: {
       icon: [
@@ -43,28 +54,35 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function LocaleLayout({
   children,
+  params,
 }: {
   children: React.ReactNode;
+  params: Promise<{ locale: string }>;
 }) {
+  const { locale } = await params;
   const messages = await getMessages();
   const { createClient } = await import('@/utils/supabase/server');
   const supabase = await createClient();
   const { data: contactsData } = await supabase
     .from('contact_methods')
-    .select('type, value, label_en')
+    .select('type, value, label_en, label_ar')
     .eq('is_visible', true)
     .order('view_order', { ascending: true });
 
   const socialLinksParams = (contactsData || []).map((method) => ({
     type: method.type,
     value: method.value,
-    label: method.label_en,
+    label:
+      localizedValue(method as Record<string, unknown>, 'label', locale) ||
+      method.label_en ||
+      method.label_ar ||
+      '',
   }));
 
   return (
-    <html lang="en">
+    <html lang={locale} dir={isArabicLocale(locale) ? 'rtl' : 'ltr'}>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-zinc-950 text-zinc-50 font-sans flex min-h-screen flex-col`}>
-        <NextIntlClientProvider messages={messages}>
+        <NextIntlClientProvider locale={locale} messages={messages}>
           <AnalyticsTracker />
           <Navbar />
           <div className="flex-grow">{children}</div>

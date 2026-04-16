@@ -22,8 +22,11 @@ export default function ServiceEditorPage({ params }: { params: Promise<{ locale
   const [message, setMessage] = useState<MessageState>(null)
   const [formData, setFormData] = useState({
     title_en: '',
+    title_ar: '',
     description_en: '',
+    description_ar: '',
     detailed_content_en: '',
+    detailed_content_ar: '',
     icon_image_url: '',
     is_featured: false,
     view_order: 0,
@@ -43,8 +46,11 @@ export default function ServiceEditorPage({ params }: { params: Promise<{ locale
       if (error) throw error
       setFormData({
         title_en: data.title_en || '',
+        title_ar: data.title_ar || '',
         description_en: data.description_en || '',
+        description_ar: data.description_ar || '',
         detailed_content_en: data.detailed_content_en || '',
+        detailed_content_ar: data.detailed_content_ar || '',
         icon_image_url: data.icon_image_url || '',
         is_featured: data.is_featured || false,
         view_order: data.view_order || 0,
@@ -78,11 +84,11 @@ export default function ServiceEditorPage({ params }: { params: Promise<{ locale
 
     const payload = {
       title_en: formData.title_en,
-      title_ar: formData.title_en,
+      title_ar: formData.title_ar,
       description_en: formData.description_en,
-      description_ar: formData.description_en,
+      description_ar: formData.description_ar,
       detailed_content_en: formData.detailed_content_en,
-      detailed_content_ar: formData.detailed_content_en,
+      detailed_content_ar: formData.detailed_content_ar,
       icon_image_url: formData.icon_image_url,
       is_featured: formData.is_featured,
       view_order: formData.view_order,
@@ -144,16 +150,44 @@ export default function ServiceEditorPage({ params }: { params: Promise<{ locale
           <h2 className="text-xl font-semibold text-white">Service details</h2>
           <div className="mt-6 grid gap-5">
             <div>
-              <label className="admin-label">Title</label>
+              <label className="admin-label">Title (English)</label>
               <input className="admin-input" value={formData.title_en} onChange={(e) => handleChange('title_en', e.target.value)} />
             </div>
             <div>
-              <label className="admin-label">Short description</label>
+              <label className="admin-label">العنوان (العربية)</label>
+              <input
+                dir="rtl"
+                className="admin-input text-right"
+                value={formData.title_ar}
+                onChange={(e) => handleChange('title_ar', e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="admin-label">Short description (English)</label>
               <textarea className="admin-textarea min-h-[140px]" value={formData.description_en} onChange={(e) => handleChange('description_en', e.target.value)} />
             </div>
             <div>
-              <label className="admin-label">Detailed content / deliverables</label>
+              <label className="admin-label">الوصف المختصر (العربية)</label>
+              <textarea
+                dir="rtl"
+                className="admin-textarea min-h-[140px] text-right"
+                value={formData.description_ar}
+                onChange={(e) => handleChange('description_ar', e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="admin-label">Detailed content / deliverables (English)</label>
               <textarea className="admin-textarea min-h-[220px]" value={formData.detailed_content_en} onChange={(e) => handleChange('detailed_content_en', e.target.value)} placeholder="Use one line per deliverable or supporting point." />
+            </div>
+            <div>
+              <label className="admin-label">المحتوى التفصيلي / المخرجات (العربية)</label>
+              <textarea
+                dir="rtl"
+                className="admin-textarea min-h-[220px] text-right"
+                value={formData.detailed_content_ar}
+                onChange={(e) => handleChange('detailed_content_ar', e.target.value)}
+                placeholder="اكتب كل نقطة في سطر مستقل."
+              />
             </div>
           </div>
         </section>

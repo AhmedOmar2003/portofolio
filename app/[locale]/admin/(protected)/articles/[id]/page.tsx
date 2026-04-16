@@ -22,9 +22,12 @@ export default function ArticleEditorPage({ params }: { params: Promise<{ locale
   const [message, setMessage] = useState<MessageState>(null)
   const [formData, setFormData] = useState({
     title_en: '',
+    title_ar: '',
     slug: '',
     excerpt_en: '',
+    excerpt_ar: '',
     content_en: '',
+    content_ar: '',
     cover_image_url: '',
     published_at: '',
   })
@@ -42,9 +45,12 @@ export default function ArticleEditorPage({ params }: { params: Promise<{ locale
 
       setFormData({
         title_en: data.title_en || '',
+        title_ar: data.title_ar || '',
         slug: data.slug || '',
         excerpt_en: data.excerpt_en || '',
+        excerpt_ar: data.excerpt_ar || '',
         content_en: data.content_en || '',
+        content_ar: data.content_ar || '',
         cover_image_url: data.cover_image_url || '',
         published_at: data.published_at ? new Date(data.published_at).toISOString().slice(0, 16) : '',
       })
@@ -87,12 +93,12 @@ export default function ArticleEditorPage({ params }: { params: Promise<{ locale
 
     const payload = {
       title_en: formData.title_en,
-      title_ar: formData.title_en,
+      title_ar: formData.title_ar,
       slug: formData.slug,
       excerpt_en: formData.excerpt_en,
-      excerpt_ar: formData.excerpt_en,
+      excerpt_ar: formData.excerpt_ar,
       content_en: formData.content_en,
-      content_ar: formData.content_en,
+      content_ar: formData.content_ar,
       cover_image_url: formData.cover_image_url,
       published_at: publishDate || null,
     }
@@ -167,12 +173,21 @@ export default function ArticleEditorPage({ params }: { params: Promise<{ locale
           <h2 className="text-xl font-semibold text-white">Editorial content</h2>
           <div className="mt-6 grid gap-5">
             <div>
-              <label className="admin-label">Title</label>
+              <label className="admin-label">Title (English)</label>
               <input
                 className="admin-input"
                 value={formData.title_en}
                 onChange={(e) => handleChange('title_en', e.target.value)}
                 onBlur={isNew ? generateSlug : undefined}
+              />
+            </div>
+            <div>
+              <label className="admin-label">العنوان (العربية)</label>
+              <input
+                dir="rtl"
+                className="admin-input text-right"
+                value={formData.title_ar}
+                onChange={(e) => handleChange('title_ar', e.target.value)}
               />
             </div>
             <div>
@@ -185,7 +200,7 @@ export default function ArticleEditorPage({ params }: { params: Promise<{ locale
               />
             </div>
             <div>
-              <label className="admin-label">Excerpt</label>
+              <label className="admin-label">Excerpt (English)</label>
               <textarea
                 className="admin-textarea min-h-[140px]"
                 value={formData.excerpt_en}
@@ -194,12 +209,32 @@ export default function ArticleEditorPage({ params }: { params: Promise<{ locale
               />
             </div>
             <div>
-              <label className="admin-label">Main content</label>
+              <label className="admin-label">المُلخص (العربية)</label>
+              <textarea
+                dir="rtl"
+                className="admin-textarea min-h-[140px] text-right"
+                value={formData.excerpt_ar}
+                onChange={(e) => handleChange('excerpt_ar', e.target.value)}
+                placeholder="ملخص قصير يوضح الفكرة الأساسية للمقال."
+              />
+            </div>
+            <div>
+              <label className="admin-label">Main content (English)</label>
               <textarea
                 className="admin-textarea min-h-[320px] font-mono text-sm leading-7"
                 value={formData.content_en}
                 onChange={(e) => handleChange('content_en', e.target.value)}
                 placeholder="Write the article body here. Markdown-style formatting is fine."
+              />
+            </div>
+            <div>
+              <label className="admin-label">المحتوى الأساسي (العربية)</label>
+              <textarea
+                dir="rtl"
+                className="admin-textarea min-h-[320px] text-right"
+                value={formData.content_ar}
+                onChange={(e) => handleChange('content_ar', e.target.value)}
+                placeholder="اكتب محتوى المقال بالعربي."
               />
             </div>
           </div>

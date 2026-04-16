@@ -18,7 +18,9 @@ export default function SiteSettingsAdminPage() {
     logo_url: '',
     favicon_url: '',
     hero_title_en: '',
+    hero_title_ar: '',
     hero_subtitle_en: '',
+    hero_subtitle_ar: '',
     social_links: { twitter: '', behance: '', linkedin: '', dribbble: '' },
   })
 
@@ -38,7 +40,9 @@ export default function SiteSettingsAdminPage() {
           logo_url: data.logo_url || '',
           favicon_url: data.favicon_url || '',
           hero_title_en: data.hero_title_en || '',
+          hero_title_ar: data.hero_title_ar || '',
           hero_subtitle_en: data.hero_subtitle_en || '',
+          hero_subtitle_ar: data.hero_subtitle_ar || '',
           social_links: data.social_links || { twitter: '', behance: '', linkedin: '', dribbble: '' },
         })
       }
@@ -69,9 +73,9 @@ export default function SiteSettingsAdminPage() {
       logo_url: formData.logo_url,
       favicon_url: formData.favicon_url,
       hero_title_en: formData.hero_title_en,
-      hero_title_ar: formData.hero_title_en,
+      hero_title_ar: formData.hero_title_ar,
       hero_subtitle_en: formData.hero_subtitle_en,
-      hero_subtitle_ar: formData.hero_subtitle_en,
+      hero_subtitle_ar: formData.hero_subtitle_ar,
       default_language: 'en',
       social_links: formData.social_links,
     }
@@ -133,12 +137,30 @@ export default function SiteSettingsAdminPage() {
           <h2 className="text-xl font-semibold text-white">Hero content</h2>
           <div className="mt-6 grid gap-5">
             <div>
-              <label className="admin-label">Hero headline</label>
+              <label className="admin-label">Hero headline (English)</label>
               <textarea className="admin-textarea min-h-[140px]" value={formData.hero_title_en} onChange={(e) => handleChange('hero_title_en', e.target.value)} />
             </div>
             <div>
-              <label className="admin-label">Hero supporting text</label>
+              <label className="admin-label">العنوان الرئيسي (العربية)</label>
+              <textarea
+                dir="rtl"
+                className="admin-textarea min-h-[140px] text-right"
+                value={formData.hero_title_ar}
+                onChange={(e) => handleChange('hero_title_ar', e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="admin-label">Hero supporting text (English)</label>
               <textarea className="admin-textarea min-h-[140px]" value={formData.hero_subtitle_en} onChange={(e) => handleChange('hero_subtitle_en', e.target.value)} />
+            </div>
+            <div>
+              <label className="admin-label">النص الداعم (العربية)</label>
+              <textarea
+                dir="rtl"
+                className="admin-textarea min-h-[140px] text-right"
+                value={formData.hero_subtitle_ar}
+                onChange={(e) => handleChange('hero_subtitle_ar', e.target.value)}
+              />
             </div>
           </div>
         </section>

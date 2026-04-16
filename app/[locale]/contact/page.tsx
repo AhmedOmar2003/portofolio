@@ -3,6 +3,7 @@ import { getTranslations } from 'next-intl/server';
 
 import ContactForm from '@/components/contact/ContactForm';
 import SectionHeading from '@/components/ui/SectionHeading';
+import { localizedValue } from '@/utils/locale-content';
 import { createClient } from '@/utils/supabase/server';
 
 type ContactMethod = {
@@ -25,8 +26,8 @@ function formatHref(type: string, value: string) {
 }
 
 export default async function ContactPage(props: { params: Promise<{ locale: string }> }) {
-  await props.params;
-  const t = await getTranslations({ locale: 'en', namespace: 'ContactPage' });
+  const { locale } = await props.params;
+  const t = await getTranslations({ locale, namespace: 'ContactPage' });
   const supabase = await createClient();
 
   const { data: contactsData } = await supabase
@@ -38,7 +39,7 @@ export default async function ContactPage(props: { params: Promise<{ locale: str
   const contactMethods = (contactsData || []).map((method) => ({
     id: method.id,
     type: method.type,
-    label: method.label_en,
+    label: localizedValue(method as Record<string, unknown>, 'label', locale),
     value: method.value,
   })) as ContactMethod[];
 
