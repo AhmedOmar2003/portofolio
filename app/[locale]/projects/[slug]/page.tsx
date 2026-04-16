@@ -38,18 +38,20 @@ export default async function ProjectCaseStudyPage(props: { params: Promise<{ sl
 
   const title       = localizedValue(project as Record<string, unknown>, 'name', locale);
   const description = localizedValue(project as Record<string, unknown>, 'description', locale);
+  const idea        = localizedValue(project as Record<string, unknown>, 'idea', locale);
   const problem     = localizedValue(project as Record<string, unknown>, 'problem', locale);
-  const process     = localizedValue(project as Record<string, unknown>, 'process', locale);
-  const solution    = localizedValue(project as Record<string, unknown>, 'solution', locale);
+  const ui_ux       = localizedValue(project as Record<string, unknown>, 'ui_ux', locale);
 
   const heroImage    = project.images?.[0] ?? null;
-  const galleryImages: string[] = project.images?.slice(1) ?? [];
+  const galleryImages: string[] = Array.isArray(project.images) ? project.images.slice(1, 4) : [];
+  const videoUrl     = Array.isArray(project.videos) && project.videos.length > 0 ? project.videos[0] : null;
   const externalLinks: Record<string, string> = project.external_links ?? {};
+  const technologies = Array.isArray(project.technologies) ? project.technologies : [];
 
   const sections = [
-    { id: 'problem',  label: isArabic ? 'المشكلة'         : 'Problem',        content: splitParagraphs(problem) },
-    { id: 'process',  label: isArabic ? 'عملية التصميم'   : 'Design Process', content: splitParagraphs(process) },
-    { id: 'solution', label: isArabic ? 'النتائج والأثر'  : 'Results',        content: splitParagraphs(solution) },
+    { id: 'idea',     label: isArabic ? 'الفكرة'               : 'The Idea',      content: splitParagraphs(idea) },
+    { id: 'problem',  label: isArabic ? 'المشكلة'             : 'The Problem',   content: splitParagraphs(problem) },
+    { id: 'ui_ux',    label: isArabic ? 'تصميم واجهة المستخدم'  : 'UI/UX Design',  content: splitParagraphs(ui_ux) },
   ].filter((s) => s.content.length > 0);
 
   const metaItems = [
@@ -144,6 +146,15 @@ export default async function ProjectCaseStudyPage(props: { params: Promise<{ sl
                     {s.label}
                   </a>
                 ))}
+                {technologies.length > 0 && (
+                  <a
+                    href="#technologies"
+                    className="flex items-center gap-3 text-sm text-slate-500 transition-colors hover:text-white"
+                  >
+                    <span className="text-xs text-[#8df6c8]">0{sections.length + 1}</span>
+                    {isArabic ? 'التقنيات المستخدمة' : 'Technologies'}
+                  </a>
+                )}
               </div>
             </aside>
 
@@ -159,6 +170,21 @@ export default async function ProjectCaseStudyPage(props: { params: Promise<{ sl
                   </div>
                 </article>
               ))}
+
+              {technologies.length > 0 && (
+                <article id="technologies" className={`scroll-mt-28 ${isArabic ? 'text-right' : ''}`}>
+                  <h2 className={`mb-6 text-2xl font-semibold text-white ${isArabic ? 'leading-tight' : 'tracking-[-0.04em]'}`}>
+                    {isArabic ? 'التقنيات المستخدمة' : 'Technologies Used'}
+                  </h2>
+                  <div className={`flex flex-wrap gap-3 ${isArabic ? 'flex-row-reverse' : ''}`}>
+                    {technologies.map((tech: string, i: number) => (
+                      <span key={i} className="inline-flex items-center rounded-full bg-white/5 border border-white/10 px-4 py-2 text-sm text-slate-300">
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+              )}
             </div>
           </section>
         )}
@@ -166,19 +192,35 @@ export default async function ProjectCaseStudyPage(props: { params: Promise<{ sl
         {/* Gallery */}
         {galleryImages.length > 0 && (
           <section>
-            <p className="eyebrow mb-8">{isArabic ? 'معرض الصور' : 'Gallery'}</p>
-            <div className="grid gap-5 md:grid-cols-2">
+            <p className="eyebrow mb-8 block">{isArabic ? 'معرض الصور' : 'Gallery'}</p>
+            <div className={`grid gap-5 ${galleryImages.length === 1 ? 'grid-cols-1' : galleryImages.length === 2 ? 'md:grid-cols-2' : 'md:grid-cols-2'}`}>
               {galleryImages.map((img: string, i: number) => (
-                <div key={i} className="relative aspect-[4/3] overflow-hidden rounded-3xl border border-white/10">
+                <div key={i} className={`relative overflow-hidden rounded-3xl border border-white/10 ${galleryImages.length === 3 && i === 2 ? 'md:col-span-2 aspect-[21/9]' : 'aspect-[4/3]'}`}>
                   <Image
                     src={img}
                     alt={`${title} — image ${i + 2}`}
                     fill
                     sizes="(max-width: 768px) 100vw, 50vw"
-                    className="object-cover"
+                    className="object-cover transition-transform duration-700 ease-out hover:scale-105"
                   />
                 </div>
               ))}
+            </div>
+          </section>
+        )}
+
+        {/* Video Player */}
+        {videoUrl && (
+          <section>
+            <p className="eyebrow mb-8 block">{isArabic ? 'فيديو عرض المشروع' : 'Project Showcase'}</p>
+            <div className="relative aspect-video w-full overflow-hidden rounded-3xl border border-white/10 bg-black shadow-2xl">
+              <video 
+                src={videoUrl} 
+                controls 
+                controlsList="nodownload"
+                className="h-full w-full object-cover" 
+                poster={heroImage || undefined}
+              />
             </div>
           </section>
         )}

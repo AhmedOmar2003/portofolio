@@ -34,12 +34,16 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
     problem_ar: '',
     solution_en: '',
     solution_ar: '',
-    process_en: '',
-    process_ar: '',
+    idea_en: '',
+    idea_ar: '',
+    ui_ux_en: '',
+    ui_ux_ar: '',
+    technologiesInput: '',
     start_date: '',
     end_date: '',
     is_featured: false,
     images: [] as string[],
+    videos: [] as string[],
     external_links: { live_demo: '', github: '' },
   })
 
@@ -66,12 +70,16 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
           problem_ar: data.problem_ar || '',
           solution_en: data.solution_en || '',
           solution_ar: data.solution_ar || '',
-          process_en: data.process_en || '',
-          process_ar: data.process_ar || '',
+          idea_en: data.idea_en || '',
+          idea_ar: data.idea_ar || '',
+          ui_ux_en: data.ui_ux_en || '',
+          ui_ux_ar: data.ui_ux_ar || '',
+          technologiesInput: Array.isArray(data.technologies) ? data.technologies.join(', ') : '',
           start_date: data.start_date || '',
           end_date: data.end_date || '',
           is_featured: data.is_featured || false,
           images: data.images || [],
+          videos: data.videos || [],
           external_links: data.external_links || { live_demo: '', github: '' },
         })
       }
@@ -123,12 +131,16 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
       problem_ar: formData.problem_ar,
       solution_en: formData.solution_en,
       solution_ar: formData.solution_ar,
-      process_en: formData.process_en,
-      process_ar: formData.process_ar,
+      idea_en: formData.idea_en,
+      idea_ar: formData.idea_ar,
+      ui_ux_en: formData.ui_ux_en,
+      ui_ux_ar: formData.ui_ux_ar,
+      technologies: formData.technologiesInput.split(',').map(s => s.trim()).filter(Boolean),
       start_date: formData.start_date || null,
       end_date: formData.end_date || null,
       is_featured: formData.is_featured,
-      images: formData.images,
+      images: formData.images.slice(0, 4), // Enforce 4 images max
+      videos: formData.videos.slice(0, 1), // Enforce 1 video max
       external_links: formData.external_links,
     }
 
@@ -234,7 +246,20 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
             <h2 className="text-xl font-semibold text-white">Case study content</h2>
             <div className="mt-6 grid gap-5">
               <div>
-                <label className="admin-label">Problem (English)</label>
+                <label className="admin-label">The Idea (English)</label>
+                <textarea className="admin-textarea min-h-[150px]" value={formData.idea_en} onChange={(e) => handleChange('idea_en', e.target.value)} />
+              </div>
+              <div>
+                <label className="admin-label">الفكرة (العربية)</label>
+                <textarea
+                  dir="rtl"
+                  className="admin-textarea min-h-[150px] text-right"
+                  value={formData.idea_ar}
+                  onChange={(e) => handleChange('idea_ar', e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="admin-label">The Problem (English)</label>
                 <textarea className="admin-textarea min-h-[150px]" value={formData.problem_en} onChange={(e) => handleChange('problem_en', e.target.value)} />
               </div>
               <div>
@@ -247,17 +272,21 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
                 />
               </div>
               <div>
-                <label className="admin-label">Design process (English)</label>
-                <textarea className="admin-textarea min-h-[180px]" value={formData.process_en} onChange={(e) => handleChange('process_en', e.target.value)} />
+                <label className="admin-label">UI/UX Design (English - Optional)</label>
+                <textarea className="admin-textarea min-h-[120px]" value={formData.ui_ux_en} onChange={(e) => handleChange('ui_ux_en', e.target.value)} />
               </div>
               <div>
-                <label className="admin-label">عملية التصميم (العربية)</label>
+                <label className="admin-label">تصميم UI/UX (العربية - اختياري)</label>
                 <textarea
                   dir="rtl"
-                  className="admin-textarea min-h-[180px] text-right"
-                  value={formData.process_ar}
-                  onChange={(e) => handleChange('process_ar', e.target.value)}
+                  className="admin-textarea min-h-[120px] text-right"
+                  value={formData.ui_ux_ar}
+                  onChange={(e) => handleChange('ui_ux_ar', e.target.value)}
                 />
+              </div>
+              <div className="md:col-span-2">
+                <label className="admin-label">Technologies Used (Comma separated: React, Next.js, Figma)</label>
+                <input className="admin-input" value={formData.technologiesInput} onChange={(e) => handleChange('technologiesInput', e.target.value)} placeholder="React, Figma, Supabase" />
               </div>
               <div>
                 <label className="admin-label">Results and impact (English)</label>
@@ -321,10 +350,10 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
           </section>
 
           <section className="admin-card px-6 py-6">
-            <h2 className="text-xl font-semibold text-white">Gallery images</h2>
-            <p className="mt-1 text-sm text-slate-500">Up to 4 images — first is the cover shown on the project card.</p>
+            <h2 className="text-xl font-semibold text-white">Media Gallery</h2>
+            <p className="mt-1 text-sm text-slate-500">Up to 4 images max, 1 video optional.</p>
             <div className="mt-6 space-y-5">
-              {(['Cover', 'Supporting 1', 'Supporting 2', 'Supporting 3'] as const).map((label, index) => (
+              {(['Hero Cover', 'Gallery 1', 'Gallery 2', 'Gallery 3'] as const).map((label, index) => (
                 <div key={label}>
                   <p className="admin-label mb-2">Image {index + 1} — {label}</p>
                   {formData.images[index] ? (
@@ -356,6 +385,29 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
                   )}
                 </div>
               ))}
+
+              <div className="mt-8 border-t border-white/10 pt-8">
+                <p className="admin-label mb-2">Project Video (Optional)</p>
+                {formData.videos[0] ? (
+                  <div className="group relative overflow-hidden rounded-[1.2rem] border border-white/10">
+                    <video src={formData.videos[0]} className="h-40 w-full object-cover" controls />
+                    <button
+                      type="button"
+                      onClick={() => handleChange('videos', [])}
+                      className="absolute right-3 top-3 rounded-xl border border-rose-400/20 bg-rose-400/10 p-2 text-rose-200 opacity-0 transition group-hover:opacity-100"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <MediaUpload
+                    bucket="portfolio-media"
+                    folder="videos"
+                    accept="video/*"
+                    onUploadSuccess={(url) => handleChange('videos', [url])}
+                  />
+                )}
+              </div>
             </div>
           </section>
         </div>
