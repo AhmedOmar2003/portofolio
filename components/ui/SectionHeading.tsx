@@ -22,10 +22,8 @@ export default function SectionHeading({
   const isCentered = alignment === 'center';
   const alignmentClass = isCentered
     ? 'items-center text-center'
-    : isArabic
-      ? 'items-end text-right'
-      : 'items-start text-left';
-  const textBlockClass = isCentered ? 'text-center' : isArabic ? 'text-right' : 'text-left';
+    : 'items-start text-start';
+  const textBlockClass = isCentered ? 'text-center' : 'text-start';
 
   return (
     <motion.div

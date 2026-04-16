@@ -173,7 +173,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
       <div id="main-content" className="px-6 pb-10 md:px-10 lg:px-12">
         <section id="about" className="mx-auto max-w-[1380px] py-16 md:py-24">
-          <div className="section-shell grid gap-8 px-6 py-7 md:px-8 md:py-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-12">
+          <div className="section-shell grid gap-10 px-6 py-8 md:px-10 md:py-12 lg:grid-cols-2 lg:gap-16">
             <div>
               <SectionHeading
                 overline={t('aboutEyebrow')}
@@ -239,11 +239,11 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         </section>
 
         <section id="skills" className="mx-auto max-w-[1380px] py-16 md:py-24">
-          <div className="grid gap-8 lg:grid-cols-[minmax(0,0.88fr)_minmax(0,1.12fr)] lg:gap-12">
-            <div>
+          <div className="flex flex-col gap-10">
+            <div className="max-w-3xl">
               <SectionHeading overline={t('skillsEyebrow')} title={t('skillsTitle')} subtitle={t('skillsSubtitle')} />
 
-              <div className="flex flex-wrap gap-2.5">
+              <div className="mt-6 flex flex-wrap gap-2.5">
                 {finalSkillClusters.map((skill) => (
                   <span key={skill} className="rounded-full border border-white/8 bg-white/[0.03] px-4 py-2.5 text-sm text-slate-200">
                     {skill}
@@ -252,13 +252,13 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
               </div>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-5 md:grid-cols-3">
               {finalServices.map((service, index) => (
-                <article key={service.id} className={`rounded-[1.45rem] border border-white/8 p-5 ${index === 0 ? 'bg-[linear-gradient(160deg,rgba(141,246,200,0.16),rgba(255,255,255,0.03))]' : 'bg-white/[0.03]'}`}>
+                <article key={service.id} className={`rounded-[1.45rem] border border-white/8 p-6 lg:p-8 ${index === 0 ? 'bg-[linear-gradient(160deg,rgba(141,246,200,0.16),rgba(255,255,255,0.03))]' : 'bg-white/[0.03]'}`}>
                   <span className="inline-flex rounded-full border border-white/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
                     0{index + 1}
                   </span>
-                  <h3 className={`mt-4 text-[1.45rem] font-semibold text-white ${isArabic ? 'tracking-normal leading-tight' : 'tracking-[-0.04em]'}`}>{service.title}</h3>
+                  <h3 className={`mt-5 text-[1.45rem] font-semibold text-white ${isArabic ? 'tracking-normal leading-tight' : 'tracking-[-0.04em]'}`}>{service.title}</h3>
                   <p className={`mt-3 text-sm text-slate-300 sm:text-base ${isArabic ? 'leading-8' : 'leading-7'}`}>{service.desc}</p>
                 </article>
               ))}
@@ -266,41 +266,38 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           </div>
         </section>
 
-        <section id="contact" className="mx-auto max-w-[1380px] py-16 md:py-24">
-          <div className="section-shell overflow-hidden px-6 py-8 md:px-8 md:py-10">
-            <div className={`absolute top-0 h-64 w-64 rounded-full bg-[#8df6c8]/10 blur-[120px] ${isArabic ? 'left-0' : 'right-0'}`} />
-            <div className="relative grid gap-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
-              <div>
-                <SectionHeading overline={t('contactEyebrow')} title={t('contactTitle')} subtitle={t('contactSubtitle')} />
+        <section id="contact" className="mx-auto max-w-[1000px] py-16 md:py-24">
+          <div className="section-shell relative overflow-hidden px-6 py-12 text-center md:px-12 md:py-16 flex flex-col items-center rounded-3xl">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-64 w-64 rounded-full bg-[#8df6c8]/10 blur-[120px]" />
+            <div className="relative z-10 flex flex-col items-center w-full">
+              <SectionHeading alignment="center" overline={t('contactEyebrow')} title={t('contactTitle')} subtitle={t('contactSubtitle')} />
 
-                {contactsData && contactsData.length > 0 ? (
-                  <div className="flex flex-wrap gap-3">
-                    {contactsData.map((method) => (
-                      <a
-                        key={`${method.type}-${method.value}`}
-                        href={formatContactHref(method as ContactMethod)}
-                        target={method.type.toLowerCase() === 'email' ? '_self' : '_blank'}
-                        rel="noreferrer"
-                        className="rounded-full border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-slate-200 transition hover:border-[#8df6c8]/30 hover:text-white"
-                      >
-                        {localizedValue(method as Record<string, unknown>, 'label', locale)}
-                      </a>
-                    ))}
-                  </div>
-                ) : null}
-              </div>
-
-              <div className={`flex w-full flex-col gap-3 sm:w-auto ${isArabic ? 'lg:items-start' : 'lg:items-end'}`}>
+              <div className="mt-8 flex flex-col w-full sm:w-auto sm:flex-row gap-4 justify-center items-center">
                 {primaryContact ? (
-                  <a href={formatContactHref(primaryContact)} className="btn btn-primary w-full justify-center text-sm sm:w-[18rem] sm:text-base">
+                  <a href={formatContactHref(primaryContact)} className="btn btn-primary w-full justify-center sm:w-auto px-8">
                     {t('contactPrimary')}
-                    <ArrowUpRight className={`h-4 w-4 ${isArabic ? 'rtl-flip' : ''}`} aria-hidden="true" />
                   </a>
                 ) : null}
-                <Link href="/contact" className="btn btn-secondary w-full justify-center text-sm sm:w-[18rem] sm:text-base">
+                <Link href="/contact" className="btn btn-secondary w-full justify-center sm:w-auto px-8">
                   {t('contactSecondary')}
                 </Link>
               </div>
+
+              {contactsData && contactsData.length > 0 ? (
+                <div className="mt-10 pt-8 border-t border-white/10 flex flex-wrap gap-6 justify-center w-full max-w-md">
+                  {contactsData.map((method) => (
+                    <a
+                      key={`${method.type}-${method.value}`}
+                      href={formatContactHref(method as ContactMethod)}
+                      target={method.type.toLowerCase() === 'email' ? '_self' : '_blank'}
+                      rel="noreferrer"
+                      className="text-slate-400 hover:text-white text-sm transition"
+                    >
+                      {localizedValue(method as Record<string, unknown>, 'label', locale)}
+                    </a>
+                  ))}
+                </div>
+              ) : null}
             </div>
           </div>
         </section>
