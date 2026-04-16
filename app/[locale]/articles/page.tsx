@@ -3,7 +3,7 @@ import { getTranslations } from 'next-intl/server';
 
 import { Link } from '@/i18n/routing';
 import SectionHeading from '@/components/ui/SectionHeading';
-import { getLocaleDateFormat, localizedValue } from '@/utils/locale-content';
+import { getLocaleDateFormat, isArabicLocale, localizedValue } from '@/utils/locale-content';
 import { createClient } from '@/utils/supabase/server';
 
 export const revalidate = 3600;
@@ -37,7 +37,9 @@ export default async function ArticlesPage({ params }: { params: Promise<{ local
     excerpt: localizedValue(article as Record<string, unknown>, 'excerpt', locale),
     category: article.category || t('categoryFallback'),
     date: formatDate(article.published_at || article.created_at, locale),
-    readTime: `${article.read_time_minutes || 5} min read`,
+    readTime: isArabicLocale(locale)
+      ? `${article.read_time_minutes || 5} دقائق قراءة`
+      : `${article.read_time_minutes || 5} min read`,
   }));
 
   const finalArticles =
@@ -50,7 +52,7 @@ export default async function ArticlesPage({ params }: { params: Promise<{ local
             excerpt: t('sampleExcerpt1'),
             category: t('sampleCategory1'),
             date: 'Oct 12, 2025',
-            readTime: '5 min read',
+            readTime: isArabicLocale(locale) ? '٥ دقائق قراءة' : '5 min read',
           },
           {
             slug: '#',
@@ -58,7 +60,7 @@ export default async function ArticlesPage({ params }: { params: Promise<{ local
             excerpt: t('sampleExcerpt2'),
             category: t('sampleCategory2'),
             date: 'Sep 28, 2025',
-            readTime: '8 min read',
+            readTime: isArabicLocale(locale) ? '٨ دقائق قراءة' : '8 min read',
           },
         ];
 
@@ -92,7 +94,12 @@ export default async function ArticlesPage({ params }: { params: Promise<{ local
 
                     <div className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-[#8df6c8]">
                       {t('cta')}
-                      <ArrowUpRight className="h-4 w-4 transition duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden="true" />
+                      <ArrowUpRight
+                        className={`h-4 w-4 transition duration-300 group-hover:-translate-y-0.5 ${
+                          isArabicLocale(locale) ? 'rtl-flip' : 'group-hover:translate-x-0.5'
+                        }`}
+                        aria-hidden="true"
+                      />
                     </div>
                   </article>
                 </Link>

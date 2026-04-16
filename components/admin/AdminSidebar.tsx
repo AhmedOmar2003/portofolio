@@ -21,17 +21,63 @@ import BrandMark from '@/components/ui/BrandMark'
 export default function AdminSidebar({ locale }: { locale: string }) {
   const pathname = usePathname()
   const router = useRouter()
+  const isArabic = locale === 'ar'
 
   const navItems = [
-    { name: 'Overview', hint: 'Portfolio status', href: `/${locale}/admin`, icon: LayoutDashboard },
-    { name: 'Hero & Brand', hint: 'Hero, logo, social', href: `/${locale}/admin/settings`, icon: Sparkles },
-    { name: 'About & Skills', hint: 'Bio, tools, experience', href: `/${locale}/admin/about`, icon: User },
-    { name: 'Projects', hint: 'Case studies', href: `/${locale}/admin/projects`, icon: Briefcase },
-    { name: 'Services', hint: 'Expertise cards', href: `/${locale}/admin/services`, icon: Layers },
-    { name: 'Articles', hint: 'Writing and insights', href: `/${locale}/admin/articles`, icon: FileText },
-    { name: 'Contact', hint: 'Methods and CTA paths', href: `/${locale}/admin/contact`, icon: MessageSquare },
-    { name: 'Inbox', hint: 'Messages', href: `/${locale}/admin/messages`, icon: Mail },
-    { name: 'SEO & Perf', hint: 'Search and tracking', href: `/${locale}/admin/seo`, icon: Search },
+    {
+      name: isArabic ? 'نظرة عامة' : 'Overview',
+      hint: isArabic ? 'حالة البورتفوليو' : 'Portfolio status',
+      href: `/${locale}/admin`,
+      icon: LayoutDashboard,
+    },
+    {
+      name: isArabic ? 'الهيرو والهوية' : 'Hero & Brand',
+      hint: isArabic ? 'العنوان، اللوجو، الروابط' : 'Hero, logo, social',
+      href: `/${locale}/admin/settings`,
+      icon: Sparkles,
+    },
+    {
+      name: isArabic ? 'عني والمهارات' : 'About & Skills',
+      hint: isArabic ? 'نبذة، أدوات، خبرات' : 'Bio, tools, experience',
+      href: `/${locale}/admin/about`,
+      icon: User,
+    },
+    {
+      name: isArabic ? 'المشاريع' : 'Projects',
+      hint: isArabic ? 'دراسات الحالة' : 'Case studies',
+      href: `/${locale}/admin/projects`,
+      icon: Briefcase,
+    },
+    {
+      name: isArabic ? 'الخدمات' : 'Services',
+      hint: isArabic ? 'بطاقات الخدمات' : 'Expertise cards',
+      href: `/${locale}/admin/services`,
+      icon: Layers,
+    },
+    {
+      name: isArabic ? 'المقالات' : 'Articles',
+      hint: isArabic ? 'كتابات ورؤى' : 'Writing and insights',
+      href: `/${locale}/admin/articles`,
+      icon: FileText,
+    },
+    {
+      name: isArabic ? 'التواصل' : 'Contact',
+      hint: isArabic ? 'الوسائل وأزرار التواصل' : 'Methods and CTA paths',
+      href: `/${locale}/admin/contact`,
+      icon: MessageSquare,
+    },
+    {
+      name: isArabic ? 'الرسائل' : 'Inbox',
+      hint: isArabic ? 'رسائل الزوار' : 'Messages',
+      href: `/${locale}/admin/messages`,
+      icon: Mail,
+    },
+    {
+      name: isArabic ? 'SEO والأداء' : 'SEO & Perf',
+      hint: isArabic ? 'البحث والتحليلات' : 'Search and tracking',
+      href: `/${locale}/admin/seo`,
+      icon: Search,
+    },
   ]
 
   const handleLogout = async () => {
@@ -47,9 +93,17 @@ export default function AdminSidebar({ locale }: { locale: string }) {
       <div className="flex h-full flex-col px-5 py-5">
         <div className="mb-6 rounded-[1.6rem] border border-white/8 bg-white/[0.03] p-5">
           <BrandMark />
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">Portfolio CMS</p>
-          <h1 className="mt-4 text-2xl font-semibold tracking-[-0.04em] text-white">Ahmed Essam Admin</h1>
-          <p className="mt-2 text-sm leading-6 text-slate-400">Manage the portfolio like a product: clear structure, polished content, and scalable updates.</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
+            {isArabic ? 'إدارة المحتوى' : 'Portfolio CMS'}
+          </p>
+          <h1 className="mt-4 text-2xl font-semibold tracking-[-0.04em] text-white">
+            {isArabic ? 'لوحة تحكم أحمد عصام' : 'Ahmed Essam Admin'}
+          </h1>
+          <p className="mt-2 text-sm leading-6 text-slate-400">
+            {isArabic
+              ? 'إدارة البورتفوليو بشكل منظم: محتوى واضح، شكل احترافي، وتحديثات سهلة.'
+              : 'Manage the portfolio like a product: clear structure, polished content, and scalable updates.'}
+          </p>
         </div>
 
         <nav className="flex-1 space-y-2 overflow-y-auto" aria-label="Admin navigation">
@@ -85,7 +139,7 @@ export default function AdminSidebar({ locale }: { locale: string }) {
           className="mt-4 inline-flex items-center justify-center gap-2 rounded-[1.15rem] border border-white/8 bg-white/[0.03] px-4 py-3 text-sm font-semibold text-slate-200 transition hover:border-rose-400/20 hover:bg-rose-400/10 hover:text-rose-200"
         >
           <LogOut className="h-4 w-4" />
-          Logout
+          {isArabic ? 'تسجيل الخروج' : 'Logout'}
         </button>
       </div>
     </aside>

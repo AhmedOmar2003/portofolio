@@ -3,13 +3,15 @@
 import { useEffect, useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 import { Link, usePathname } from '@/i18n/routing';
 import BrandMark from '@/components/ui/BrandMark';
 import LocaleSwitcher from '@/components/ui/LocaleSwitcher';
 
 export default function Navbar() {
+  const locale = useLocale();
+  const isArabic = locale === 'ar';
   const t = useTranslations('Navigation');
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
@@ -101,7 +103,7 @@ export default function Navbar() {
               type="button"
               aria-expanded={isMobileMenuOpen}
               aria-controls="mobile-navigation"
-              aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
+              aria-label={isMobileMenuOpen ? t('closeMenu') : t('openMenu')}
               onClick={() => setIsMobileMenuOpen((value) => !value)}
               className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] text-slate-100 transition hover:border-white/20 hover:bg-white/[0.08]"
             >
@@ -120,7 +122,7 @@ export default function Navbar() {
               transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
               className="overflow-hidden border-t border-white/8 lg:hidden"
             >
-              <div className="flex flex-col gap-2 px-4 py-4">
+              <div className={`flex flex-col gap-2 px-4 py-4 ${isArabic ? 'text-right' : ''}`}>
                 {navLinks.map((link) => {
                   const active = isActive(link.href);
 

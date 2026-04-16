@@ -76,7 +76,7 @@ export default function SiteSettingsAdminPage() {
       hero_title_ar: formData.hero_title_ar,
       hero_subtitle_en: formData.hero_subtitle_en,
       hero_subtitle_ar: formData.hero_subtitle_ar,
-      default_language: 'en',
+      default_language: 'ar',
       social_links: formData.social_links,
     }
 

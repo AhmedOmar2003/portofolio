@@ -2,13 +2,15 @@
 
 import { motion, useReducedMotion } from 'framer-motion';
 import { Dribbble, Github, Link as LinkIcon, Linkedin, Mail, Twitter } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 interface FooterProps {
   socialLinks?: { type: string; value: string; label: string }[];
 }
 
 export default function Footer({ socialLinks = [] }: FooterProps) {
+  const locale = useLocale();
+  const isArabic = locale === 'ar';
   const t = useTranslations('Footer');
   const shouldReduceMotion = useReducedMotion();
   const currentYear = new Date().getFullYear();
@@ -56,9 +58,9 @@ export default function Footer({ socialLinks = [] }: FooterProps) {
             <p className="mt-5 max-w-xl text-lg leading-8 text-slate-300">{t('description')}</p>
           </div>
 
-          <div className="flex flex-col gap-4 md:items-end">
+          <div className={`flex flex-col gap-4 ${isArabic ? 'md:items-start' : 'md:items-end'}`}>
             <span className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">{t('social')}</span>
-            <div className="flex flex-wrap gap-3 md:justify-end">
+            <div className={`flex flex-wrap gap-3 ${isArabic ? 'md:justify-start' : 'md:justify-end'}`}>
               {displayLinks.map((link) => {
                 const href =
                   link.type.toLowerCase() === 'email' && !link.value.startsWith('mailto:')
@@ -72,7 +74,7 @@ export default function Footer({ socialLinks = [] }: FooterProps) {
                     target={link.type.toLowerCase() === 'email' ? '_self' : '_blank'}
                     rel="noreferrer"
                     aria-label={link.label}
-                    className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-slate-200 transition hover:border-[#8df6c8]/30 hover:bg-white/[0.07] hover:text-white"
+                    className={`inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-slate-200 transition hover:border-[#8df6c8]/30 hover:bg-white/[0.07] hover:text-white ${isArabic ? 'flex-row-reverse' : ''}`}
                   >
                     {getIcon(link.type)}
                     <span>{link.label}</span>

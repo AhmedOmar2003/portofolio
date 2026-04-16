@@ -17,6 +17,7 @@ function splitLines(content?: string | null) {
 
 export default async function ServicesPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
+  const isArabic = locale === 'ar';
   const t = await getTranslations({ locale, namespace: 'ServicesPage' });
   const supabase = await createClient();
 
@@ -109,7 +110,7 @@ export default async function ServicesPage({ params }: { params: Promise<{ local
 
             <Link href="/contact" className="btn btn-primary w-fit text-sm">
               {t('cta')}
-              <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+              <ArrowUpRight className={`h-4 w-4 ${isArabic ? 'rtl-flip' : ''}`} aria-hidden="true" />
             </Link>
           </div>
         </section>

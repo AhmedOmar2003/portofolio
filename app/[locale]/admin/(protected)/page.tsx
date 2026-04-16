@@ -5,21 +5,91 @@ import { createClient } from '@/utils/supabase/server'
 
 export default async function AdminOverviewPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
+  const isArabic = locale === 'ar'
+  const dateLocale = isArabic ? 'ar-EG' : 'en-US'
   const supabase = await createClient()
+
+  const copy = isArabic
+    ? {
+        stats: {
+          totalViews: 'إجمالي الزيارات',
+          uniqueVisitors: 'زوار فريدين',
+          projects: 'المشاريع',
+          unreadMessages: 'رسائل جديدة',
+        },
+        areas: {
+          hero: 'الهيرو والهوية',
+          about: 'عني والمهارات',
+          projects: 'المشاريع',
+          articles: 'المقالات',
+          services: 'الخدمات',
+          contact: 'التواصل',
+        },
+        areaDescriptions: {
+          hero: 'حدّث الانطباع الأول: العنوان، اللوجو، والروابط.',
+          about: 'تحكم في النبذة، المهارات، الأدوات، والخبرة.',
+          projects: 'إدارة المشاريع المميزة ودراسات الحالة والميديا.',
+          articles: 'انشر مقالاتك وأفكارك المهنية بشكل منظم.',
+          services: 'نظّم بطاقات الخدمات بما يتماشى مع الموقع.',
+          contact: 'عدّل وسائل التواصل ومسارات التواصل معاك.',
+        },
+        overviewKicker: 'نظرة عامة',
+        overviewTitle: 'لوحة إدارة البورتفوليو',
+        overviewSubtitle:
+          'تابع أداء الموقع، ونظّم المحتوى المميز، وحافظ على تجربة متسقة بين الموقع العام ولوحة الإدارة.',
+        contentKicker: 'أقسام المحتوى',
+        contentTitle: 'إدارة كل جزء في البورتفوليو',
+        open: 'افتح',
+        inboxKicker: 'آخر الرسائل',
+        inboxTitle: 'ملخص صندوق الوارد',
+        noMessages: 'لسه مفيش رسائل جديدة.',
+        statusNew: 'جديد',
+      }
+    : {
+        stats: {
+          totalViews: 'Total Views',
+          uniqueVisitors: 'Unique Visitors',
+          projects: 'Projects',
+          unreadMessages: 'Unread Messages',
+        },
+        areas: {
+          hero: 'Hero & Brand',
+          about: 'About & Skills',
+          projects: 'Projects',
+          articles: 'Articles',
+          services: 'Services',
+          contact: 'Contact',
+        },
+        areaDescriptions: {
+          hero: 'Update the first impression, hero copy, logo, and links.',
+          about: 'Control biography, skills, tools, and experience timeline.',
+          projects: 'Manage featured work, case studies, links, and media.',
+          articles: 'Publish insights, essays, and thought leadership content.',
+          services: 'Keep expertise cards and offer structure aligned with the site.',
+          contact: 'Edit methods, social links, and inbound contact paths.',
+        },
+        overviewKicker: 'Overview',
+        overviewTitle: 'Portfolio control center',
+        overviewSubtitle:
+          'Monitor traffic, manage featured content, and keep every part of the portfolio consistent with the public experience.',
+        contentKicker: 'Content Areas',
+        contentTitle: 'Manage every part of the portfolio',
+        open: 'Open',
+        inboxKicker: 'Recent Messages',
+        inboxTitle: 'Inbox snapshot',
+        noMessages: 'No recent messages yet.',
+        statusNew: 'new',
+      }
 
   const [
     { count: projectsCount },
     { count: unreadMessagesCount },
-    { count: servicesCount },
-    { count: articlesCount },
     { count: totalViews },
     { data: recentMessages },
     { data: uniqueVisitors },
   ] = await Promise.all([
     supabase.from('projects').select('*', { count: 'exact', head: true }),
     supabase.from('contact_messages').select('*', { count: 'exact', head: true }).eq('status', 'new'),
-    supabase.from('services').select('*', { count: 'exact', head: true }),
-    supabase.from('articles').select('*', { count: 'exact', head: true }),
     supabase.from('page_views').select('*', { count: 'exact', head: true }),
     supabase.from('contact_messages').select('*').order('created_at', { ascending: false }).limit(4),
     supabase.from('page_views').select('visitor_id'),
@@ -28,28 +98,28 @@ export default async function AdminOverviewPage({ params }: { params: Promise<{ 
   const uniqueVisitorsCount = new Set(uniqueVisitors?.map((entry) => entry.visitor_id) || []).size
 
   const stats = [
-    { label: 'Total Views', value: totalViews || 0, icon: Eye },
-    { label: 'Unique Visitors', value: uniqueVisitorsCount, icon: Users },
-    { label: 'Projects', value: projectsCount || 0, icon: Briefcase },
-    { label: 'Unread Messages', value: unreadMessagesCount || 0, icon: Mail },
+    { label: copy.stats.totalViews, value: totalViews || 0, icon: Eye },
+    { label: copy.stats.uniqueVisitors, value: uniqueVisitorsCount, icon: Users },
+    { label: copy.stats.projects, value: projectsCount || 0, icon: Briefcase },
+    { label: copy.stats.unreadMessages, value: unreadMessagesCount || 0, icon: Mail },
   ]
 
   const controlAreas = [
-    { title: 'Hero & Brand', description: 'Update the first impression, hero copy, logo, and links.', href: `/${locale}/admin/settings`, icon: Sparkles },
-    { title: 'About & Skills', description: 'Control biography, skills, tools, and experience timeline.', href: `/${locale}/admin/about`, icon: Users },
-    { title: 'Projects', description: 'Manage featured work, case studies, links, and media.', href: `/${locale}/admin/projects`, icon: Briefcase },
-    { title: 'Articles', description: 'Publish insights, essays, and thought leadership content.', href: `/${locale}/admin/articles`, icon: FileText },
-    { title: 'Services', description: 'Keep expertise cards and offer structure aligned with the site.', href: `/${locale}/admin/services`, icon: Settings },
-    { title: 'Contact', description: 'Edit methods, social links, and inbound contact paths.', href: `/${locale}/admin/contact`, icon: Mail },
+    { title: copy.areas.hero, description: copy.areaDescriptions.hero, href: `/${locale}/admin/settings`, icon: Sparkles },
+    { title: copy.areas.about, description: copy.areaDescriptions.about, href: `/${locale}/admin/about`, icon: Users },
+    { title: copy.areas.projects, description: copy.areaDescriptions.projects, href: `/${locale}/admin/projects`, icon: Briefcase },
+    { title: copy.areas.articles, description: copy.areaDescriptions.articles, href: `/${locale}/admin/articles`, icon: FileText },
+    { title: copy.areas.services, description: copy.areaDescriptions.services, href: `/${locale}/admin/services`, icon: Settings },
+    { title: copy.areas.contact, description: copy.areaDescriptions.contact, href: `/${locale}/admin/contact`, icon: Mail },
   ]
 
   return (
     <div className="space-y-8">
       <section className="admin-card px-6 py-8 md:px-8">
-        <p className="admin-kicker">Overview</p>
-        <h1 className="mt-3 text-3xl font-semibold tracking-[-0.05em] text-white">Portfolio control center</h1>
+        <p className="admin-kicker">{copy.overviewKicker}</p>
+        <h1 className="mt-3 text-3xl font-semibold tracking-[-0.05em] text-white">{copy.overviewTitle}</h1>
         <p className="mt-3 max-w-3xl text-base leading-7 text-slate-300">
-          Monitor traffic, manage featured content, and keep every part of the portfolio consistent with the public experience.
+          {copy.overviewSubtitle}
         </p>
       </section>
 
@@ -71,8 +141,8 @@ export default async function AdminOverviewPage({ params }: { params: Promise<{ 
         <div className="admin-card px-6 py-7 md:px-8">
           <div className="mb-6 flex items-center justify-between">
             <div>
-              <p className="admin-kicker">Content Areas</p>
-              <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-white">Manage every part of the portfolio</h2>
+              <p className="admin-kicker">{copy.contentKicker}</p>
+              <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-white">{copy.contentTitle}</h2>
             </div>
           </div>
 
@@ -89,8 +159,12 @@ export default async function AdminOverviewPage({ params }: { params: Promise<{ 
                 <h3 className="mt-4 text-lg font-semibold text-white">{area.title}</h3>
                 <p className="mt-2 text-sm leading-6 text-slate-400">{area.description}</p>
                 <span className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[#8df6c8]">
-                  Open
-                  <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
+                  {copy.open}
+                  <ArrowRight
+                    className={`h-4 w-4 transition-transform duration-200 ${
+                      isArabic ? 'rtl-flip group-hover:-translate-x-1' : 'group-hover:translate-x-1'
+                    }`}
+                  />
                 </span>
               </Link>
             ))}
@@ -98,8 +172,8 @@ export default async function AdminOverviewPage({ params }: { params: Promise<{ 
         </div>
 
         <div className="admin-card px-6 py-7">
-          <p className="admin-kicker">Recent Messages</p>
-          <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-white">Inbox snapshot</h2>
+          <p className="admin-kicker">{copy.inboxKicker}</p>
+          <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-white">{copy.inboxTitle}</h2>
 
           <div className="mt-6 space-y-4">
             {recentMessages && recentMessages.length > 0 ? (
@@ -108,10 +182,10 @@ export default async function AdminOverviewPage({ params }: { params: Promise<{ 
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <p className="text-sm font-semibold text-white">{message.name}</p>
-                      <p className="mt-1 text-xs text-slate-500">{new Date(message.created_at).toLocaleDateString('en-US')}</p>
+                      <p className="mt-1 text-xs text-slate-500">{new Date(message.created_at).toLocaleDateString(dateLocale)}</p>
                     </div>
                     <span className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ${message.status === 'new' ? 'bg-emerald-400/10 text-emerald-200' : 'bg-white/8 text-slate-400'}`}>
-                      {message.status || 'new'}
+                      {message.status === 'new' && isArabic ? copy.statusNew : message.status || copy.statusNew}
                     </span>
                   </div>
                   <p className="mt-3 line-clamp-3 text-sm leading-6 text-slate-300">{message.message}</p>
@@ -119,7 +193,7 @@ export default async function AdminOverviewPage({ params }: { params: Promise<{ 
               ))
             ) : (
               <div className="rounded-[1.2rem] border border-dashed border-white/10 bg-white/[0.02] p-8 text-center text-sm text-slate-500">
-                No recent messages yet.
+                {copy.noMessages}
               </div>
             )}
           </div>

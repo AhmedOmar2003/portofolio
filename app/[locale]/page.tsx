@@ -52,6 +52,7 @@ function normalizeName(entry: unknown, fallback = '') {
 
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
+  const isArabic = locale === 'ar';
   const t = await getTranslations({ locale, namespace: 'HomePage' });
   const supabase = await createClient();
 
@@ -83,6 +84,9 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const principleCards = splitLines(localizedValue(aboutData as Record<string, unknown>, 'philosophy', locale)).slice(0, 3);
   const principles = principleCards.length ? principleCards : [t('principle1'), t('principle2'), t('principle3')];
   const condensedPrinciples = principles.slice(0, 2);
+  const projectDescriptionFallback = isArabic
+    ? t('projectDescriptionFallbackAr')
+    : t('projectDescriptionFallbackEn');
 
   const featuredProjects = (projectsData || []).map((project) => ({
     title: localizedValue(project as Record<string, unknown>, 'name', locale),
@@ -90,7 +94,11 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     year: project.start_date
       ? new Date(project.start_date).toLocaleDateString(getLocaleDateFormat(locale), { year: 'numeric' })
       : t('projectYearFallback'),
-    description: formatPreview(localizedValue(project as Record<string, unknown>, 'description', locale), t('projectDescriptionFallbackEn'), 138),
+    description: formatPreview(
+      localizedValue(project as Record<string, unknown>, 'description', locale),
+      projectDescriptionFallback,
+      138
+    ),
     href: `/projects/${project.slug}`,
     imageUrl: project.images && project.images.length > 0 ? project.images[0] : undefined,
     role: t('projectRoleValue'),
@@ -149,7 +157,10 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
   return (
     <main className="relative overflow-hidden text-zinc-50 selection:bg-[#8df6c8] selection:text-slate-950">
-      <a href="#main-content" className="sr-only-focusable fixed left-4 top-4 z-[60] rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-950">
+      <a
+        href="#main-content"
+        className="sr-only-focusable skip-link-anchor fixed z-[60] rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-950"
+      >
         {t('skipToContent')}
       </a>
 
@@ -204,7 +215,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             <SectionHeading overline={t('featuredProjects')} title={t('featuredProjectsTitle')} subtitle={t('featuredProjectsSub')} />
             <Link href="/projects" className="btn btn-secondary w-fit px-5 py-3 text-sm">
               {t('viewAllProjects')}
-              <MoveRight className="h-4 w-4" aria-hidden="true" />
+              <MoveRight className={`h-4 w-4 ${isArabic ? 'rtl-flip' : ''}`} aria-hidden="true" />
             </Link>
           </div>
 
@@ -257,7 +268,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
         <section id="contact" className="mx-auto max-w-[1380px] py-10 md:py-14">
           <div className="section-shell overflow-hidden px-6 py-8 md:px-8 md:py-10">
-            <div className="absolute right-0 top-0 h-64 w-64 rounded-full bg-[#8df6c8]/10 blur-[120px]" />
+            <div className={`absolute top-0 h-64 w-64 rounded-full bg-[#8df6c8]/10 blur-[120px] ${isArabic ? 'left-0' : 'right-0'}`} />
             <div className="relative grid gap-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
               <div>
                 <SectionHeading overline={t('contactEyebrow')} title={t('contactTitle')} subtitle={t('contactSubtitle')} />
@@ -279,11 +290,11 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
                 ) : null}
               </div>
 
-              <div className="flex w-full flex-col gap-3 sm:w-auto lg:items-end">
+              <div className={`flex w-full flex-col gap-3 sm:w-auto ${isArabic ? 'lg:items-start' : 'lg:items-end'}`}>
                 {primaryContact ? (
                   <a href={formatContactHref(primaryContact)} className="btn btn-primary w-full justify-center text-sm sm:w-[18rem] sm:text-base">
                     {t('contactPrimary')}
-                    <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+                    <ArrowUpRight className={`h-4 w-4 ${isArabic ? 'rtl-flip' : ''}`} aria-hidden="true" />
                   </a>
                 ) : null}
                 <Link href="/contact" className="btn btn-secondary w-full justify-center text-sm sm:w-[18rem] sm:text-base">

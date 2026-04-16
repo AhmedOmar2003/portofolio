@@ -7,7 +7,9 @@
     "articles": "Articles",
     "contact": "Contact",
     "eyebrow": "Digital Product Designer",
-    "toggleLanguage": "Toggle language"
+    "toggleLanguage": "Toggle language",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
   },
   "Hero": {
     "greeting": "I am",

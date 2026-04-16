@@ -3,7 +3,7 @@
 import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowDownRight, ArrowUpRight, Mail, Sparkles } from 'lucide-react';
 import Image from 'next/image';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 interface HeroProps {
   title?: string;
@@ -14,6 +14,8 @@ interface HeroProps {
 
 export default function Hero({ title, subtitle, projectCount, serviceCount }: HeroProps) {
   const t = useTranslations('Hero');
+  const locale = useLocale();
+  const isArabic = locale === 'ar';
   const shouldReduceMotion = useReducedMotion();
 
   const displayTitle = title || t('title');
@@ -54,7 +56,7 @@ export default function Hero({ title, subtitle, projectCount, serviceCount }: He
           initial={shouldReduceMotion ? false : { opacity: 0, y: 32 }}
           animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="relative z-10"
+          className={`relative z-10 ${isArabic ? 'text-right' : ''}`}
         >
           <div className="eyebrow mb-5">{t('eyebrow')}</div>
 
@@ -83,7 +85,7 @@ export default function Hero({ title, subtitle, projectCount, serviceCount }: He
           <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
             <a href="#projects" className="btn btn-primary w-full text-sm sm:w-auto sm:text-base">
               {t('ctaPrimary')}
-              <ArrowDownRight className="h-4 w-4" aria-hidden="true" />
+              <ArrowDownRight className={`h-4 w-4 ${isArabic ? 'rtl-flip' : ''}`} aria-hidden="true" />
             </a>
             <a href="#contact" className="btn btn-secondary w-full text-sm sm:w-auto sm:text-base">
               <Mail className="h-4 w-4" aria-hidden="true" />
@@ -145,13 +147,13 @@ export default function Hero({ title, subtitle, projectCount, serviceCount }: He
             <motion.div
               animate={shouldReduceMotion ? undefined : { y: [0, -10, 0] }}
               transition={{ duration: 6.5, repeat: Infinity, ease: 'easeInOut' }}
-              className="absolute left-1 top-2 max-w-[210px] rounded-[1.35rem] border border-white/12 bg-[rgba(10,16,27,0.78)] px-4 py-4 backdrop-blur-xl sm:left-0 sm:top-8 sm:max-w-[250px] sm:rounded-[1.6rem] sm:px-5 sm:py-5 lg:max-w-[270px] lg:rounded-[1.75rem]"
+              className={`absolute top-2 max-w-[210px] rounded-[1.35rem] border border-white/12 bg-[rgba(10,16,27,0.78)] px-4 py-4 backdrop-blur-xl sm:top-8 sm:max-w-[250px] sm:rounded-[1.6rem] sm:px-5 sm:py-5 lg:max-w-[270px] lg:rounded-[1.75rem] ${isArabic ? 'right-1 sm:right-0 text-right' : 'left-1 sm:left-0'}`}
             >
               <p className="text-xs uppercase tracking-[0.3em] text-slate-400">{t('introLabel')}</p>
               <div className="mt-3 flex items-start justify-between gap-4">
                 <p className="text-xs font-medium leading-6 text-white sm:text-sm sm:leading-7">{t('availability')}</p>
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-emerald-300/30 bg-emerald-300/10 text-[#8df6c8] sm:h-10 sm:w-10">
-                  <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+                  <ArrowUpRight className={`h-4 w-4 ${isArabic ? 'rtl-flip' : ''}`} aria-hidden="true" />
                 </span>
               </div>
             </motion.div>
@@ -159,7 +161,7 @@ export default function Hero({ title, subtitle, projectCount, serviceCount }: He
             <motion.div
               animate={shouldReduceMotion ? undefined : { y: [0, 12, 0] }}
               transition={{ duration: 7.2, repeat: Infinity, ease: 'easeInOut' }}
-              className="absolute bottom-0 right-0 max-w-[205px] rounded-[1.35rem] border border-[#8df6c8]/20 bg-gradient-to-br from-[#8df6c8]/12 via-[rgba(10,16,27,0.8)] to-[#6ad7ff]/10 px-4 py-4 backdrop-blur-xl sm:bottom-4 sm:right-2 sm:max-w-[240px] sm:rounded-[1.6rem] sm:px-5 sm:py-5 lg:max-w-[260px]"
+              className={`absolute bottom-0 max-w-[205px] rounded-[1.35rem] border border-[#8df6c8]/20 bg-gradient-to-br from-[#8df6c8]/12 via-[rgba(10,16,27,0.8)] to-[#6ad7ff]/10 px-4 py-4 backdrop-blur-xl sm:bottom-4 sm:max-w-[240px] sm:rounded-[1.6rem] sm:px-5 sm:py-5 lg:max-w-[260px] ${isArabic ? 'left-0 sm:left-2 text-right' : 'right-0 sm:right-2'}`}
             >
               <p className="text-[0.7rem] uppercase tracking-[0.24em] text-slate-300">{t('impactLabel')}</p>
               <p className="mt-3 text-sm font-semibold leading-6 text-white sm:text-base sm:leading-7">{t('impactTitle')}</p>

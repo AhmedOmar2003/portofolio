@@ -13,6 +13,7 @@ type MessageState = { type: 'success' | 'error'; text: string } | null
 export default function ServiceEditorPage({ params }: { params: Promise<{ locale: string; id: string }> }) {
   const resolvedParams = use(params)
   const { locale, id } = resolvedParams
+  const isArabic = locale === 'ar'
   const isNew = id === 'new'
   const router = useRouter()
   const supabase = createClient()
@@ -124,8 +125,8 @@ export default function ServiceEditorPage({ params }: { params: Promise<{ locale
   return (
     <div className="mx-auto max-w-5xl space-y-6 pb-20">
       <Link href={`/${locale}/admin/services`} className="inline-flex items-center gap-2 text-sm font-medium text-slate-400 transition hover:text-white">
-        <ArrowLeft className="h-4 w-4" />
-        Back to services
+        <ArrowLeft className={`h-4 w-4 ${isArabic ? 'rtl-flip' : ''}`} />
+        {isArabic ? 'رجوع للخدمات' : 'Back to services'}
       </Link>
 
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">

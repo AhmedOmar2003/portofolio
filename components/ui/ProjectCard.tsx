@@ -3,6 +3,7 @@
 import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
 import Image from 'next/image';
+import { useLocale } from 'next-intl';
 import { Link } from '@/i18n/routing';
 
 interface ProjectCardProps {
@@ -36,6 +37,8 @@ export default function ProjectCard({
   index,
 }: ProjectCardProps) {
   const shouldReduceMotion = useReducedMotion();
+  const locale = useLocale();
+  const isArabic = locale === 'ar';
 
   return (
     <motion.article
@@ -78,8 +81,17 @@ export default function ProjectCard({
               </span>
             </div>
 
-            <div className="absolute bottom-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-white text-slate-950 shadow-[0_16px_40px_rgba(255,255,255,0.18)] transition duration-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 sm:bottom-5 sm:right-5 sm:h-12 sm:w-12">
-              <ArrowUpRight className="h-4 w-4 transition duration-500 group-hover:rotate-45 sm:h-5 sm:w-5" aria-hidden="true" />
+            <div
+              className={`absolute bottom-4 flex h-10 w-10 items-center justify-center rounded-full bg-white text-slate-950 shadow-[0_16px_40px_rgba(255,255,255,0.18)] transition duration-500 group-hover:-translate-y-0.5 sm:bottom-5 sm:h-12 sm:w-12 ${
+                isArabic
+                  ? 'left-4 group-hover:-translate-x-0.5 sm:left-5'
+                  : 'right-4 group-hover:translate-x-0.5 sm:right-5'
+              }`}
+            >
+              <ArrowUpRight
+                className={`h-4 w-4 transition duration-500 group-hover:rotate-45 sm:h-5 sm:w-5 ${isArabic ? 'rtl-flip' : ''}`}
+                aria-hidden="true"
+              />
             </div>
           </div>
 
@@ -102,7 +114,12 @@ export default function ProjectCard({
 
             <div className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-[#8df6c8]">
               {labels.cta}
-              <ArrowUpRight className="h-4 w-4 transition duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden="true" />
+              <ArrowUpRight
+                className={`h-4 w-4 transition duration-300 group-hover:-translate-y-0.5 ${
+                  isArabic ? 'rtl-flip' : 'group-hover:translate-x-0.5'
+                }`}
+                aria-hidden="true"
+              />
             </div>
           </div>
         </div>

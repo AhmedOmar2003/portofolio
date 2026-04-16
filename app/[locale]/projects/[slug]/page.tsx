@@ -30,20 +30,26 @@ function formatDateLabel(value: string | null | undefined, locale: string) {
   }).format(date);
 }
 
-function formatExternalLink(key: string) {
-  const labels: Record<string, string> = {
-    live_demo: 'Live Demo',
-    github: 'Repository',
-    behance: 'Behance',
-    dribbble: 'Dribbble',
-    figma: 'Figma Prototype',
+function formatExternalLink(key: string, locale: string) {
+  const labels: Record<string, { en: string; ar: string }> = {
+    live_demo: { en: 'Live Demo', ar: 'النسخة الحية' },
+    github: { en: 'Repository', ar: 'المصدر البرمجي' },
+    behance: { en: 'Behance', ar: 'Behance' },
+    dribbble: { en: 'Dribbble', ar: 'Dribbble' },
+    figma: { en: 'Figma Prototype', ar: 'نموذج Figma' },
   };
 
-  return labels[key] || key.replace(/_/g, ' ');
+  const label = labels[key];
+  if (!label) {
+    return key.replace(/_/g, ' ');
+  }
+
+  return isArabicLocale(locale) ? label.ar : label.en;
 }
 
 export default async function ProjectCaseStudyPage(props: { params: Promise<{ slug: string; locale: string }> }) {
   const { slug, locale } = await props.params;
+  const isArabic = isArabicLocale(locale);
   const supabase = await createClient();
 
   const { data: project } = await supabase.from('projects').select('*').eq('slug', slug).single();
@@ -64,37 +70,37 @@ export default async function ProjectCaseStudyPage(props: { params: Promise<{ sl
   const sections = [
     {
       id: 'problem',
-      title: isArabicLocale(locale) ? 'المشكلة' : 'Problem',
+      title: isArabic ? 'المشكلة' : 'Problem',
       content: splitParagraphs(problem),
     },
     {
       id: 'process',
-      title: isArabicLocale(locale) ? 'عملية التصميم' : 'Design Process',
+      title: isArabic ? 'عملية التصميم' : 'Design Process',
       content: splitParagraphs(process),
     },
     {
       id: 'solution',
-      title: isArabicLocale(locale) ? 'النتائج والأثر' : 'Results & Impact',
+      title: isArabic ? 'النتائج والأثر' : 'Results & Impact',
       content: splitParagraphs(solution),
     },
   ].filter((section) => section.content.length > 0);
 
   const metaItems = [
     {
-      label: isArabicLocale(locale) ? 'التصنيف' : 'Category',
-      value: project.category || (isArabicLocale(locale) ? 'تصميم منتجات رقمية' : 'Digital Product Design'),
+      label: isArabic ? 'التصنيف' : 'Category',
+      value: project.category || (isArabic ? 'تصميم منتجات رقمية' : 'Digital Product Design'),
     },
     {
-      label: isArabicLocale(locale) ? 'بداية المشروع' : 'Started',
+      label: isArabic ? 'بداية المشروع' : 'Started',
       value: formatDateLabel(project.start_date, locale),
     },
     {
-      label: isArabicLocale(locale) ? 'نهاية المشروع' : 'Completed',
+      label: isArabic ? 'نهاية المشروع' : 'Completed',
       value: formatDateLabel(project.end_date, locale),
     },
     {
-      label: isArabicLocale(locale) ? 'الدور' : 'Role',
-      value: isArabicLocale(locale) ? 'مصمم منتجات رئيسي' : 'Lead Product Designer',
+      label: isArabic ? 'الدور' : 'Role',
+      value: isArabic ? 'مصمم منتجات رئيسي' : 'Lead Product Designer',
     },
   ];
 
@@ -105,14 +111,14 @@ export default async function ProjectCaseStudyPage(props: { params: Promise<{ sl
           href="/projects"
           className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2.5 text-sm text-slate-300 transition hover:border-white/20 hover:text-white"
         >
-          <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-          {isArabicLocale(locale) ? 'رجوع للمشاريع' : 'Back to projects'}
+          <ArrowLeft className={`h-4 w-4 ${isArabic ? 'rtl-flip' : ''}`} aria-hidden="true" />
+          {isArabic ? 'رجوع للمشاريع' : 'Back to projects'}
         </Link>
 
         <section className="section-shell overflow-hidden px-6 py-8 md:px-10 md:py-10">
           <div className="grid gap-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(320px,0.55fr)] lg:gap-12">
             <div>
-              <span className="eyebrow mb-6">{isArabicLocale(locale) ? 'دراسة حالة' : 'Case Study'}</span>
+              <span className="eyebrow mb-6">{isArabic ? 'دراسة حالة' : 'Case Study'}</span>
               <h1 className="text-balance text-4xl font-semibold tracking-[-0.05em] text-white sm:text-5xl lg:text-[4.5rem] lg:leading-[0.98]">
                 {title}
               </h1>
@@ -138,7 +144,7 @@ export default async function ProjectCaseStudyPage(props: { params: Promise<{ sl
             ) : (
               <div className="flex aspect-[16/9] items-center justify-center rounded-[2rem] border border-white/10 bg-[linear-gradient(135deg,rgba(141,246,200,0.12),rgba(106,215,255,0.08))]">
                 <span className="text-sm uppercase tracking-[0.2em] text-slate-400">
-                    {isArabicLocale(locale) ? 'صورة المشروع قريبًا' : 'Project visual coming soon'}
+                    {isArabic ? 'صورة المشروع قريبًا' : 'Project visual coming soon'}
                 </span>
               </div>
             )}
@@ -148,10 +154,10 @@ export default async function ProjectCaseStudyPage(props: { params: Promise<{ sl
         <section className="grid gap-8 py-12 lg:grid-cols-[minmax(0,0.7fr)_minmax(0,1.3fr)] lg:gap-12">
           <div className="section-shell px-6 py-6">
               <h2 className="text-sm font-semibold uppercase tracking-[0.22em] text-slate-500">
-              {isArabicLocale(locale) ? 'نظرة سريعة' : 'Quick Overview'}
+              {isArabic ? 'نظرة سريعة' : 'Quick Overview'}
               </h2>
               <p className="mt-4 text-base leading-8 text-slate-300">
-              {isArabicLocale(locale)
+              {isArabic
                 ? 'الدراسة متقسمة بشكل واضح لتوضيح التحدي وطريقة التصميم والنتيجة النهائية.'
                 : 'This case study is organized to surface the challenge, design approach, and final outcome with clarity.'}
               </p>
@@ -159,7 +165,7 @@ export default async function ProjectCaseStudyPage(props: { params: Promise<{ sl
             {Object.keys(externalLinks).length > 0 ? (
               <div className="mt-8">
                 <h3 className="text-sm font-semibold uppercase tracking-[0.22em] text-slate-500">
-                  {isArabicLocale(locale) ? 'روابط المشروع' : 'Project Links'}
+                  {isArabic ? 'روابط المشروع' : 'Project Links'}
                 </h3>
                 <div className="mt-4 flex flex-col gap-3">
                   {Object.entries(externalLinks).map(([key, value]) => (
@@ -170,8 +176,8 @@ export default async function ProjectCaseStudyPage(props: { params: Promise<{ sl
                       rel="noreferrer"
                       className="inline-flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-slate-200 transition hover:border-[#8df6c8]/30 hover:text-white"
                     >
-                      <span>{formatExternalLink(key)}</span>
-                      <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+                      <span>{formatExternalLink(key, locale)}</span>
+                      <ArrowUpRight className={`h-4 w-4 ${isArabic ? 'rtl-flip' : ''}`} aria-hidden="true" />
                     </a>
                   ))}
                 </div>
@@ -196,7 +202,7 @@ export default async function ProjectCaseStudyPage(props: { params: Promise<{ sl
         {galleryImages.length > 0 ? (
           <section className="py-6">
             <div className="mb-6">
-              <span className="eyebrow">{isArabicLocale(locale) ? 'المعرض' : 'Gallery'}</span>
+              <span className="eyebrow">{isArabic ? 'المعرض' : 'Gallery'}</span>
             </div>
             <div className="grid gap-5 md:grid-cols-2">
               {galleryImages.map((image: string, index: number) => (

@@ -18,6 +18,7 @@ function splitLines(content?: string | null) {
 
 export default async function AboutPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
+  const isArabic = locale === 'ar';
   const t = await getTranslations({ locale, namespace: 'AboutPage' });
   const supabase = await createClient();
 
@@ -116,7 +117,7 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
               <div className="mt-8">
                 <Link href="/projects" className="btn btn-secondary text-sm">
                   {t('cta')}
-                  <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+                  <ArrowUpRight className={`h-4 w-4 ${isArabic ? 'rtl-flip' : ''}`} aria-hidden="true" />
                 </Link>
               </div>
             </div>

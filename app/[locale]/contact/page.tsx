@@ -27,6 +27,7 @@ function formatHref(type: string, value: string) {
 
 export default async function ContactPage(props: { params: Promise<{ locale: string }> }) {
   const { locale } = await props.params;
+  const isArabic = locale === 'ar';
   const t = await getTranslations({ locale, namespace: 'ContactPage' });
   const supabase = await createClient();
 
@@ -96,7 +97,7 @@ export default async function ContactPage(props: { params: Promise<{ locale: str
                         className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-slate-200 transition hover:border-[#8df6c8]/30 hover:text-white"
                       >
                         <span>{method.label}</span>
-                        <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+                        <ArrowUpRight className={`h-4 w-4 ${isArabic ? 'rtl-flip' : ''}`} aria-hidden="true" />
                       </a>
                     ))}
                   </div>

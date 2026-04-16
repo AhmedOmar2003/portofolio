@@ -15,6 +15,7 @@ function splitParagraphs(content?: string | null) {
 
 export default async function ArticleDetailPage(props: { params: Promise<{ slug: string; locale: string }> }) {
   const { slug, locale } = await props.params;
+  const isArabic = isArabicLocale(locale);
   const supabase = await createClient();
 
   const { data: article } = await supabase.from('articles').select('*').eq('slug', slug).single();
@@ -42,8 +43,8 @@ export default async function ArticleDetailPage(props: { params: Promise<{ slug:
           href="/articles"
           className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2.5 text-sm text-slate-300 transition hover:border-white/20 hover:text-white"
         >
-          <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-          {isArabicLocale(locale) ? 'رجوع للمقالات' : 'Back to articles'}
+          <ArrowLeft className={`h-4 w-4 ${isArabic ? 'rtl-flip' : ''}`} aria-hidden="true" />
+          {isArabic ? 'رجوع للمقالات' : 'Back to articles'}
         </Link>
 
         <article className="section-shell overflow-hidden px-6 py-8 md:px-10 md:py-10">

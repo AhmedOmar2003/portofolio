@@ -1,7 +1,9 @@
 import { createClient } from '@/utils/supabase/server';
 import { Search, Eye, TrendingUp, AlertTriangle, CheckCircle2 } from 'lucide-react';
 
-export default async function AdminSEOPage() {
+export default async function AdminSEOPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const isArabic = locale === 'ar';
   const supabase = await createClient();
 
   // Fetch all necessary data
@@ -31,15 +33,16 @@ export default async function AdminSEOPage() {
     
     return {
       id: p.id,
+      typeKey: 'project',
       title: p.name_en,
-      type: 'Project',
+      type: isArabic ? 'مشروع' : 'Project',
       slug: p.slug,
       views: viewsBySlug[p.slug] || 0,
       seoScore: (hasGoodDescription ? 50 : 0) + (hasCleanSlug ? 50 : 0),
       issues: [
-        !hasGoodDescription ? "Meta description Too short/long" : null,
-        !hasCleanSlug ? "Slug is not URL-friendly" : null,
-        missingMetadata ? "Missing critical metadata" : null,
+        !hasGoodDescription ? (isArabic ? 'الوصف التعريفي قصير جدًا أو طويل جدًا' : 'Meta description Too short/long') : null,
+        !hasCleanSlug ? (isArabic ? 'الرابط غير مناسب لمحركات البحث' : 'Slug is not URL-friendly') : null,
+        missingMetadata ? (isArabic ? 'في بيانات ناقصة مهمة' : 'Missing critical metadata') : null,
       ].filter(Boolean) as string[]
     };
   });
@@ -51,14 +54,15 @@ export default async function AdminSEOPage() {
     
     return {
       id: a.id,
+      typeKey: 'article',
       title: a.title_en,
-      type: 'Article',
+      type: isArabic ? 'مقال' : 'Article',
       slug: a.slug,
       views: viewsBySlug[a.slug] || 0,
       seoScore: (hasGoodExcerpt ? 50 : 0) + (hasCleanSlug ? 50 : 0),
       issues: [
-        !hasGoodExcerpt ? "Excerpt not optimized for Search" : null,
-        !hasCleanSlug ? "Slug is not URL-friendly" : null,
+        !hasGoodExcerpt ? (isArabic ? 'ملخص المقال غير مناسب للبحث' : 'Excerpt not optimized for Search') : null,
+        !hasCleanSlug ? (isArabic ? 'الرابط غير مناسب لمحركات البحث' : 'Slug is not URL-friendly') : null,
       ].filter(Boolean) as string[]
     };
   });
@@ -73,29 +77,33 @@ export default async function AdminSEOPage() {
     <div className="space-y-8">
       <div>
         <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-3">
-          <Search className="w-8 h-8 text-brand-primary" /> SEO & Performance
+          <Search className="w-8 h-8 text-brand-primary" /> {isArabic ? 'SEO والأداء' : 'SEO & Performance'}
         </h1>
-        <p className="text-white/60">Analyze content traffic and discover opportunities to improve search ranking.</p>
+        <p className="text-white/60">
+          {isArabic
+            ? 'تابع أداء المحتوى واكتشف فرص تحسين الظهور في نتائج البحث.'
+            : 'Analyze content traffic and discover opportunities to improve search ranking.'}
+        </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-white/80 font-medium">Global SEO Score</span>
+            <span className="text-white/80 font-medium">{isArabic ? 'التقييم العام للـSEO' : 'Global SEO Score'}</span>
             <TrendingUp className="w-5 h-5 text-brand-primary" />
           </div>
           <span className="text-4xl font-bold text-white">{avgSeoScore}%</span>
         </div>
         <div className="bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-white/80 font-medium">Content Views</span>
+            <span className="text-white/80 font-medium">{isArabic ? 'إجمالي المشاهدات' : 'Content Views'}</span>
             <Eye className="w-5 h-5 text-blue-400" />
           </div>
           <span className="text-4xl font-bold text-white">{totalContentViews}</span>
         </div>
         <div className="bg-white/5 border border-red-500/20 rounded-2xl p-6 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-red-400 font-medium">Optimization Alerts</span>
+            <span className="text-red-400 font-medium">{isArabic ? 'تنبيهات التحسين' : 'Optimization Alerts'}</span>
             <AlertTriangle className="w-5 h-5 text-red-400" />
           </div>
           <span className="text-4xl font-bold text-red-500">{itemsNeedingFixes}</span>
@@ -103,28 +111,28 @@ export default async function AdminSEOPage() {
       </div>
 
       <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden p-6">
-        <h2 className="text-xl font-bold text-white mb-6">Content Health Audit</h2>
+        <h2 className="text-xl font-bold text-white mb-6">{isArabic ? 'تقرير صحة المحتوى' : 'Content Health Audit'}</h2>
         
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse min-w-[800px]">
+          <table className={`w-full border-collapse min-w-[800px] ${isArabic ? 'text-right' : 'text-left'}`}>
             <thead>
               <tr className="border-b border-white/10 text-white/40 text-sm">
-                <th className="pb-4 font-medium uppercase tracking-wider">Title / Slug</th>
-                <th className="pb-4 font-medium uppercase tracking-wider">Type</th>
-                <th className="pb-4 font-medium uppercase tracking-wider">Views</th>
-                <th className="pb-4 font-medium uppercase tracking-wider">Score</th>
-                <th className="pb-4 font-medium uppercase tracking-wider">Status</th>
+                <th className="pb-4 font-medium uppercase tracking-wider">{isArabic ? 'العنوان / الرابط' : 'Title / Slug'}</th>
+                <th className="pb-4 font-medium uppercase tracking-wider">{isArabic ? 'النوع' : 'Type'}</th>
+                <th className="pb-4 font-medium uppercase tracking-wider">{isArabic ? 'المشاهدات' : 'Views'}</th>
+                <th className="pb-4 font-medium uppercase tracking-wider">{isArabic ? 'التقييم' : 'Score'}</th>
+                <th className="pb-4 font-medium uppercase tracking-wider">{isArabic ? 'الحالة' : 'Status'}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
               {allContent.map((item) => (
-                <tr key={`${item.type}-${item.id}`} className="hover:bg-white/5 transition-colors">
+                <tr key={`${item.typeKey}-${item.id}`} className="hover:bg-white/5 transition-colors">
                   <td className="py-4 pr-4">
                     <p className="font-medium text-white mb-1">{item.title}</p>
-                    <p className="text-xs text-white/40">/{item.type.toLowerCase()}s/{item.slug || 'missing-slug'}</p>
+                    <p className="text-xs text-white/40">/{item.typeKey}s/{item.slug || 'missing-slug'}</p>
                   </td>
                   <td className="py-4">
-                    <span className={`px-3 py-1 text-xs rounded-full font-medium ${item.type === 'Project' ? 'bg-orange-500/10 text-orange-400' : 'bg-purple-500/10 text-purple-400'}`}>
+                    <span className={`px-3 py-1 text-xs rounded-full font-medium ${item.typeKey === 'project' ? 'bg-orange-500/10 text-orange-400' : 'bg-purple-500/10 text-purple-400'}`}>
                       {item.type}
                     </span>
                   </td>
@@ -140,7 +148,7 @@ export default async function AdminSEOPage() {
                   <td className="py-4">
                     {item.issues.length === 0 ? (
                       <span className="flex items-center gap-1 text-green-400 text-sm font-medium">
-                        <CheckCircle2 className="w-4 h-4" /> Perfect
+                        <CheckCircle2 className="w-4 h-4" /> {isArabic ? 'ممتاز' : 'Perfect'}
                       </span>
                     ) : (
                       <div className="flex flex-col gap-1">
@@ -158,7 +166,7 @@ export default async function AdminSEOPage() {
           </table>
           {allContent.length === 0 && (
             <div className="py-12 text-center text-white/40">
-              No content published yet to analyze.
+              {isArabic ? 'لسه مفيش محتوى منشور للتحليل.' : 'No content published yet to analyze.'}
             </div>
           )}
         </div>

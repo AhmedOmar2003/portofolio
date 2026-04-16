@@ -2,11 +2,13 @@
 
 import { useState } from 'react';
 import { AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 import { sendContactEmail } from '@/app/actions/contact';
 
 export default function ContactForm() {
+  const locale = useLocale();
+  const isArabic = locale === 'ar';
   const t = useTranslations('ContactForm');
   const [isPending, setIsPending] = useState(false);
   const [status, setStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
@@ -31,7 +33,7 @@ export default function ContactForm() {
   }
 
   return (
-    <div className="surface-panel rounded-[1.9rem] p-6 sm:p-8">
+    <div className={`surface-panel rounded-[1.9rem] p-6 sm:p-8 ${isArabic ? 'text-right' : ''}`}>
       <div className="mb-6">
         <span className="eyebrow mb-4">{t('eyebrow')}</span>
         <h3 className="text-2xl font-semibold tracking-[-0.04em] text-white">{t('title')}</h3>
@@ -42,7 +44,7 @@ export default function ContactForm() {
         {status ? (
           <div
             role="status"
-            className={`mb-6 flex items-start gap-3 rounded-2xl border px-4 py-4 text-sm ${
+            className={`mb-6 flex items-start gap-3 rounded-2xl border px-4 py-4 text-sm ${isArabic ? 'flex-row-reverse' : ''} ${
               status.type === 'success'
                 ? 'border-emerald-400/20 bg-emerald-400/10 text-emerald-200'
                 : 'border-rose-400/20 bg-rose-400/10 text-rose-200'
@@ -68,6 +70,7 @@ export default function ContactForm() {
               id="name"
               name="name"
               type="text"
+              dir={isArabic ? 'rtl' : 'ltr'}
               required
               disabled={isPending}
               placeholder={t('namePlaceholder')}
@@ -83,6 +86,7 @@ export default function ContactForm() {
               id="email"
               name="email"
               type="email"
+              dir="ltr"
               required
               disabled={isPending}
               placeholder={t('emailPlaceholder')}
@@ -99,6 +103,7 @@ export default function ContactForm() {
             id="subject"
             name="subject"
             type="text"
+            dir={isArabic ? 'rtl' : 'ltr'}
             disabled={isPending}
             placeholder={t('subjectPlaceholder')}
             className="w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3.5 text-white placeholder:text-slate-500 disabled:opacity-60"
@@ -113,6 +118,7 @@ export default function ContactForm() {
             id="message"
             name="message"
             rows={6}
+            dir={isArabic ? 'rtl' : 'ltr'}
             required
             disabled={isPending}
             placeholder={t('messagePlaceholder')}

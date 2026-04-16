@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
+import { Cairo, Geist, Geist_Mono } from 'next/font/google';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 
@@ -22,6 +22,12 @@ const geistMono = Geist_Mono({
   display: 'swap',
 });
 
+const cairo = Cairo({
+  variable: '--font-cairo',
+  subsets: ['arabic', 'latin'],
+  display: 'swap',
+});
+
 export async function generateMetadata({
   params,
 }: {
@@ -33,7 +39,7 @@ export async function generateMetadata({
   const { data: settings } = await supabase
     .from('site_settings')
     .select('hero_title_en, hero_title_ar, hero_subtitle_en, hero_subtitle_ar')
-    .single();
+      .single();
 
   return {
     title:
@@ -81,7 +87,7 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale} dir={isArabicLocale(locale) ? 'rtl' : 'ltr'}>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-zinc-950 text-zinc-50 font-sans flex min-h-screen flex-col`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} ${cairo.variable} ${isArabicLocale(locale) ? 'font-ar' : ''} antialiased bg-zinc-950 text-zinc-50 font-sans flex min-h-screen flex-col`}>
         <NextIntlClientProvider locale={locale} messages={messages}>
           <AnalyticsTracker />
           <Navbar />
