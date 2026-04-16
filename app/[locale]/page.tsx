@@ -318,21 +318,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
                 </Link>
               </div>
 
-              {contactsData && contactsData.length > 0 ? (
-                <div className="mt-10 pt-8 border-t border-white/10 flex flex-wrap gap-6 justify-center w-full max-w-md">
-                  {contactsData.map((method) => (
-                    <a
-                      key={`${method.type}-${method.value}`}
-                      href={formatContactHref(method as ContactMethod)}
-                      target={method.type.toLowerCase() === 'email' ? '_self' : '_blank'}
-                      rel="noreferrer"
-                      className="text-slate-400 hover:text-white text-sm transition"
-                    >
-                      {localizedValue(method as Record<string, unknown>, 'label', locale)}
-                    </a>
-                  ))}
-                </div>
-              ) : null}
+
             </div>
           </div>
         </section>

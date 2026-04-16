@@ -36,7 +36,15 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
     ? splitLines(philosophy)
     : [t('principle1'), t('principle2'), t('principle3')];
 
-  const strengths = [t('strength1'), t('strength2'), t('strength3'), t('strength4')];
+  // Read strengths from DB (saved by admin), fallback to translation keys
+  const dbStrengths = (() => {
+    const raw = isArabic
+      ? (aboutData as Record<string, unknown>)?.strengths_ar
+      : (aboutData as Record<string, unknown>)?.strengths_en;
+    if (Array.isArray(raw) && raw.length > 0) return raw.map(String);
+    return null;
+  })();
+  const strengths = dbStrengths ?? [t('strength1'), t('strength2'), t('strength3'), t('strength4')];
 
   return (
     <main className="px-6 pb-24 pt-32 md:px-10 lg:px-12 lg:pt-36">
