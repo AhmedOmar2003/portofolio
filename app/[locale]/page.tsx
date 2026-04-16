@@ -253,16 +253,16 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
               </div>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-16 grid gap-x-12 gap-y-16 sm:grid-cols-2 lg:grid-cols-3">
               {finalServices.map((service, index) => (
-                <article key={service.id} className="group relative flex flex-col rounded-3xl border border-white/10 bg-white/[0.02] p-8 transition-colors hover:bg-white/[0.04]">
-                  <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#8df6c8]/10 text-xl font-bold text-[#8df6c8]">
-                    {index + 1}
-                  </div>
-                  <h3 className={`mb-4 text-2xl font-bold text-white ${isArabic ? 'leading-tight' : 'tracking-[-0.03em]'}`}>
+                <article key={service.id} className="group relative flex flex-col border-t border-white/10 pt-8 transition-colors hover:border-[#8df6c8]/40">
+                  <span className="mb-5 block text-sm font-semibold tracking-widest text-[#8df6c8] opacity-80 uppercase transition-opacity group-hover:opacity-100">
+                    0{index + 1} //
+                  </span>
+                  <h3 className={`mb-4 text-2xl font-semibold text-white ${isArabic ? 'leading-tight' : 'tracking-[-0.03em]'}`}>
                     {service.title}
                   </h3>
-                  <p className={`text-base text-slate-300 ${isArabic ? 'leading-8' : 'leading-7'}`}>
+                  <p className={`text-base text-slate-400 ${isArabic ? 'leading-8' : 'leading-7'}`}>
                     {service.desc}
                   </p>
                 </article>
