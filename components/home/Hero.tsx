@@ -22,22 +22,7 @@ export default function Hero({ title, subtitle, projectCount, serviceCount }: He
   const displaySubtitle = subtitle || t('positioning');
   const heroTitle = displayTitle.split('\n');
 
-  const heroStats = [
-    {
-      value: `${projectCount.toString().padStart(2, '0')}+`,
-      label: t('statProjects'),
-    },
-    {
-      value: `${serviceCount.toString().padStart(2, '0')}+`,
-      label: t('statServices'),
-    },
-    {
-      value: 'UX / UI',
-      label: t('statBilingual'),
-    },
-  ];
 
-  const traits = [t('traitResearch'), t('traitSystems'), t('traitAccessibility')];
 
   return (
     <section
@@ -60,64 +45,37 @@ export default function Hero({ title, subtitle, projectCount, serviceCount }: He
         >
           <div className="eyebrow mb-5">{t('eyebrow')}</div>
 
-          <div className="mb-7 max-w-4xl space-y-5">
+          <div className="mb-9 max-w-4xl space-y-6">
             <h1
               id="hero-heading"
-              className={`text-balance text-[2.8rem] font-semibold text-white sm:text-6xl lg:text-[5.6rem] ${isArabic ? 'tracking-normal leading-[1.1] lg:leading-[1.15]' : 'tracking-[-0.06em] lg:leading-[0.95]'}`}
+              className={`text-balance text-5xl font-semibold text-white sm:text-6xl lg:text-[4.5rem] ${isArabic ? 'tracking-normal leading-[1.2] lg:leading-[1.25]' : 'tracking-[-0.04em] leading-[1.1] lg:leading-[1.18]'}`}
             >
-              <span className="block text-white/92">{heroTitle[0]}</span>
+              <span className="block pb-1 text-white/92">{heroTitle[0]}</span>
               {heroTitle.length > 1 ? (
-                <span className="mt-2 block bg-gradient-to-r from-[#f8fafc] via-[#c7f9e2] to-[#7dd3fc] bg-clip-text text-transparent">
+                <span className="mt-2 block bg-gradient-to-r from-[#f8fafc] via-[#c7f9e2] to-[#7dd3fc] bg-clip-text pb-2 text-transparent">
                   {heroTitle.slice(1).join(' ')}
                 </span>
               ) : (
-                <span className="mt-2 block bg-gradient-to-r from-[#f8fafc] via-[#d8eafe] to-[#8df6c8] bg-clip-text text-transparent">
+                <span className="mt-2 block bg-gradient-to-r from-[#f8fafc] via-[#d8eafe] to-[#8df6c8] bg-clip-text pb-2 text-transparent">
                   {t('headlineAccent')}
                 </span>
               )}
             </h1>
 
-            <p className={`max-w-2xl text-balance text-base text-slate-300 sm:text-xl ${isArabic ? 'leading-8 sm:leading-[2.2rem]' : 'leading-7 sm:leading-8'}`}>
+            <p className={`max-w-2xl text-balance text-lg text-slate-300 sm:text-xl lg:text-2xl ${isArabic ? 'leading-8 sm:leading-[2.2rem]' : 'leading-8 sm:leading-9'}`}>
               {displaySubtitle}
             </p>
           </div>
 
-          <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
-            <a href="#projects" className="btn btn-primary w-full text-sm sm:w-auto sm:text-base">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+            <a href="#projects" className="btn btn-primary w-full px-8 py-3.5 text-base sm:w-auto">
               {t('ctaPrimary')}
-              <ArrowDownRight className={`h-4 w-4 ${isArabic ? 'rtl-flip' : ''}`} aria-hidden="true" />
+              <ArrowDownRight className={`h-4 w-4 ${isArabic ? 'mr-2 ml-0 rtl-flip' : 'ml-2 mr-0'}`} aria-hidden="true" />
             </a>
-            <a href="#contact" className="btn btn-secondary w-full text-sm sm:w-auto sm:text-base">
-              <Mail className="h-4 w-4" aria-hidden="true" />
+            <a href="#contact" className="btn btn-secondary w-full px-8 py-3.5 text-base transition-colors hover:bg-white/[0.05] sm:w-auto">
+              <Mail className={`h-4 w-4 ${isArabic ? 'ml-2 mr-0' : 'mr-2 ml-0'}`} aria-hidden="true" />
               {t('ctaSecondary')}
             </a>
-          </div>
-
-          <div className="mb-8 grid gap-3 sm:grid-cols-3 sm:gap-4">
-            {heroStats.map((stat, index) => (
-              <motion.div
-                key={stat.label}
-                initial={shouldReduceMotion ? false : { opacity: 0, y: 24 }}
-                animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
-                transition={{ duration: 0.55, delay: 0.1 + index * 0.08, ease: [0.16, 1, 0.3, 1] }}
-                className="surface-panel rounded-[1.35rem] px-4 py-4 sm:rounded-[1.5rem] sm:px-5 sm:py-5"
-              >
-                <p className={`mb-1 text-[1.75rem] font-semibold text-white sm:text-3xl ${isArabic ? 'tracking-normal' : 'tracking-[-0.05em]'}`}>{stat.value}</p>
-                <p className={`text-sm text-slate-400 ${isArabic ? 'leading-7' : 'leading-6'}`}>{stat.label}</p>
-              </motion.div>
-            ))}
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2.5 text-sm text-slate-300 sm:gap-3">
-            {traits.map((trait) => (
-              <span
-                key={trait}
-                className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3.5 py-2 text-[0.82rem] backdrop-blur-xl sm:px-4 sm:text-sm"
-              >
-                <Sparkles className="h-3.5 w-3.5 text-[#8df6c8]" aria-hidden="true" />
-                {trait}
-              </span>
-            ))}
           </div>
         </motion.div>
 
