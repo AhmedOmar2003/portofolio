@@ -4,6 +4,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { useLocale } from 'next-intl';
 
 interface SectionHeadingProps {
+  id?: string;
   title: string;
   subtitle?: string;
   alignment?: 'left' | 'center';
@@ -11,6 +12,7 @@ interface SectionHeadingProps {
 }
 
 export default function SectionHeading({
+  id,
   title,
   subtitle,
   alignment = 'left',
@@ -36,7 +38,7 @@ export default function SectionHeading({
       {overline ? <span className="eyebrow">{overline}</span> : null}
 
       <div className={`max-w-3xl ${textBlockClass}`}>
-        <h2 className={`text-balance text-[2.15rem] font-semibold text-white sm:text-4xl lg:text-[3rem] ${isArabic ? 'tracking-normal leading-[1.2] lg:leading-[1.2]' : 'tracking-[-0.05em] lg:leading-[1.04]'}`}>
+        <h2 id={id} className={`text-balance text-[2.15rem] font-semibold text-white sm:text-4xl lg:text-[3rem] ${isArabic ? 'tracking-normal leading-[1.2] lg:leading-[1.2]' : 'tracking-[-0.05em] lg:leading-[1.04]'}`}>
           {title}
         </h2>
         {subtitle ? (

@@ -172,10 +172,11 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       />
 
       <div id="main-content" className="px-6 pb-10 md:px-10 lg:px-12">
-        <section id="about" className="mx-auto max-w-[1380px] py-16 md:py-24">
+        <section id="about" aria-labelledby="about-heading" className="mx-auto max-w-[1380px] py-16 md:py-24">
           <div className="section-shell grid gap-10 px-6 py-8 md:px-10 md:py-12 lg:grid-cols-2 lg:gap-16">
             <div>
               <SectionHeading
+                id="about-heading"
                 overline={t('aboutEyebrow')}
                 title={localizedValue(aboutData as Record<string, unknown>, 'title', locale, t('aboutTitle'))}
                 subtitle={localizedValue(aboutData as Record<string, unknown>, 'intro', locale, t('aboutSubtitle'))}
@@ -210,9 +211,9 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           </div>
         </section>
 
-        <section id="projects" className="mx-auto max-w-[1380px] py-16 md:py-24">
+        <section id="projects" aria-labelledby="projects-heading" className="mx-auto max-w-[1380px] py-16 md:py-24">
           <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-            <SectionHeading overline={t('featuredProjects')} title={t('featuredProjectsTitle')} subtitle={t('featuredProjectsSub')} />
+            <SectionHeading id="projects-heading" overline={t('featuredProjects')} title={t('featuredProjectsTitle')} subtitle={t('featuredProjectsSub')} />
             <Link href="/projects" className="btn btn-secondary w-fit px-5 py-3 text-sm">
               {t('viewAllProjects')}
               <MoveRight className={`h-4 w-4 ${isArabic ? 'rtl-flip' : ''}`} aria-hidden="true" />
@@ -238,39 +239,43 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           </div>
         </section>
 
-        <section id="skills" className="mx-auto max-w-[1380px] py-16 md:py-24">
+        <section id="skills" aria-labelledby="skills-heading" className="mx-auto max-w-[1380px] py-16 md:py-24">
           <div className="flex flex-col gap-10">
             <div className="max-w-3xl">
-              <SectionHeading overline={t('skillsEyebrow')} title={t('skillsTitle')} subtitle={t('skillsSubtitle')} />
+              <SectionHeading id="skills-heading" overline={t('skillsEyebrow')} title={t('skillsTitle')} subtitle={t('skillsSubtitle')} />
 
-              <div className="mt-6 flex flex-wrap gap-2.5">
+              <div className="mt-8 flex flex-wrap gap-3">
                 {finalSkillClusters.map((skill) => (
-                  <span key={skill} className="rounded-full border border-white/8 bg-white/[0.03] px-4 py-2.5 text-sm text-slate-200">
+                  <span key={skill} className="rounded-full border border-white/10 bg-white/[0.04] px-5 py-2.5 text-[0.9rem] font-medium text-slate-200">
                     {skill}
                   </span>
                 ))}
               </div>
             </div>
 
-            <div className="grid gap-5 md:grid-cols-3">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {finalServices.map((service, index) => (
-                <article key={service.id} className={`rounded-[1.45rem] border border-white/8 p-6 lg:p-8 ${index === 0 ? 'bg-[linear-gradient(160deg,rgba(141,246,200,0.16),rgba(255,255,255,0.03))]' : 'bg-white/[0.03]'}`}>
-                  <span className="inline-flex rounded-full border border-white/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
-                    0{index + 1}
-                  </span>
-                  <h3 className={`mt-5 text-[1.45rem] font-semibold text-white ${isArabic ? 'tracking-normal leading-tight' : 'tracking-[-0.04em]'}`}>{service.title}</h3>
-                  <p className={`mt-3 text-sm text-slate-300 sm:text-base ${isArabic ? 'leading-8' : 'leading-7'}`}>{service.desc}</p>
+                <article key={service.id} className="group relative flex flex-col rounded-3xl border border-white/10 bg-white/[0.02] p-8 transition-colors hover:bg-white/[0.04]">
+                  <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#8df6c8]/10 text-xl font-bold text-[#8df6c8]">
+                    {index + 1}
+                  </div>
+                  <h3 className={`mb-4 text-2xl font-bold text-white ${isArabic ? 'leading-tight' : 'tracking-[-0.03em]'}`}>
+                    {service.title}
+                  </h3>
+                  <p className={`text-base text-slate-300 ${isArabic ? 'leading-8' : 'leading-7'}`}>
+                    {service.desc}
+                  </p>
                 </article>
               ))}
             </div>
           </div>
         </section>
 
-        <section id="contact" className="mx-auto max-w-[1000px] py-16 md:py-24">
+        <section id="contact" aria-labelledby="contact-heading" className="mx-auto max-w-[1000px] py-16 md:py-24">
           <div className="section-shell relative overflow-hidden px-6 py-12 text-center md:px-12 md:py-16 flex flex-col items-center rounded-3xl">
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-64 w-64 rounded-full bg-[#8df6c8]/10 blur-[120px]" />
             <div className="relative z-10 flex flex-col items-center w-full">
-              <SectionHeading alignment="center" overline={t('contactEyebrow')} title={t('contactTitle')} subtitle={t('contactSubtitle')} />
+              <SectionHeading id="contact-heading" alignment="center" overline={t('contactEyebrow')} title={t('contactTitle')} subtitle={t('contactSubtitle')} />
 
               <div className="mt-8 flex flex-col w-full sm:w-auto sm:flex-row gap-4 justify-center items-center">
                 {primaryContact ? (
