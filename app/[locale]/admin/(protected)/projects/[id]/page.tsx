@@ -322,26 +322,40 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
 
           <section className="admin-card px-6 py-6">
             <h2 className="text-xl font-semibold text-white">Gallery images</h2>
-            <div className="mt-6 space-y-4">
-              {formData.images.map((imgUrl, index) => (
-                <div key={`${imgUrl}-${index}`} className="group relative overflow-hidden rounded-[1.2rem] border border-white/10">
-                  <Image src={imgUrl} alt={`Project asset ${index + 1}`} width={640} height={360} className="h-40 w-full object-cover" />
-                  <button
-                    type="button"
-                    onClick={() => handleChange('images', formData.images.filter((_, imageIndex) => imageIndex !== index))}
-                    className="absolute right-3 top-3 rounded-xl border border-rose-400/20 bg-rose-400/10 p-2 text-rose-200 opacity-0 transition group-hover:opacity-100"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
+            <p className="mt-1 text-sm text-slate-500">Up to 4 images — first is the cover shown on the project card.</p>
+            <div className="mt-6 space-y-5">
+              {(['Cover', 'Supporting 1', 'Supporting 2', 'Supporting 3'] as const).map((label, index) => (
+                <div key={label}>
+                  <p className="admin-label mb-2">Image {index + 1} — {label}</p>
+                  {formData.images[index] ? (
+                    <div className="group relative overflow-hidden rounded-[1.2rem] border border-white/10">
+                      <Image src={formData.images[index]} alt={`Project asset ${index + 1}`} width={640} height={360} className="h-40 w-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updated = [...formData.images];
+                          updated.splice(index, 1);
+                          handleChange('images', updated);
+                        }}
+                        className="absolute right-3 top-3 rounded-xl border border-rose-400/20 bg-rose-400/10 p-2 text-rose-200 opacity-0 transition group-hover:opacity-100"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  ) : (
+                    <MediaUpload
+                      bucket="portfolio-media"
+                      folder="projects"
+                      accept="image/*"
+                      onUploadSuccess={(url) => {
+                        const updated = [...formData.images];
+                        updated[index] = url;
+                        handleChange('images', updated);
+                      }}
+                    />
+                  )}
                 </div>
               ))}
-
-              <MediaUpload
-                bucket="portfolio-media"
-                folder="projects"
-                accept="image/*"
-                onUploadSuccess={(url) => handleChange('images', [...formData.images, url])}
-              />
             </div>
           </section>
         </div>

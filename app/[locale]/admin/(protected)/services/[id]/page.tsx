@@ -28,7 +28,9 @@ export default function ServiceEditorPage({ params }: { params: Promise<{ locale
     description_ar: '',
     detailed_content_en: '',
     detailed_content_ar: '',
-    icon_image_url: '',
+    image_1_url: '',
+    image_2_url: '',
+    image_3_url: '',
     is_featured: false,
     view_order: 0,
   })
@@ -52,7 +54,9 @@ export default function ServiceEditorPage({ params }: { params: Promise<{ locale
         description_ar: data.description_ar || '',
         detailed_content_en: data.detailed_content_en || '',
         detailed_content_ar: data.detailed_content_ar || '',
-        icon_image_url: data.icon_image_url || '',
+        image_1_url: data.image_1_url || '',
+        image_2_url: data.image_2_url || '',
+        image_3_url: data.image_3_url || '',
         is_featured: data.is_featured || false,
         view_order: data.view_order || 0,
       })
@@ -90,7 +94,9 @@ export default function ServiceEditorPage({ params }: { params: Promise<{ locale
       description_ar: formData.description_ar,
       detailed_content_en: formData.detailed_content_en,
       detailed_content_ar: formData.detailed_content_ar,
-      icon_image_url: formData.icon_image_url,
+      image_1_url: formData.image_1_url,
+      image_2_url: formData.image_2_url,
+      image_3_url: formData.image_3_url,
       is_featured: formData.is_featured,
       view_order: formData.view_order,
     }
@@ -209,16 +215,42 @@ export default function ServiceEditorPage({ params }: { params: Promise<{ locale
           </section>
 
           <section className="admin-card px-6 py-6">
-            <h2 className="text-xl font-semibold text-white">Service icon</h2>
-            <div className="mt-6">
-              <MediaUpload
-                bucket="portfolio-media"
-                folder="services"
-                accept="image/*"
-                currentUrl={formData.icon_image_url}
-                onUploadSuccess={(url) => handleChange('icon_image_url', url)}
-                onRemove={() => handleChange('icon_image_url', '')}
-              />
+            <h2 className="text-xl font-semibold text-white">Service images</h2>
+            <p className="mt-1 text-sm text-slate-500">Up to 3 images — first is the main cover.</p>
+            <div className="mt-6 space-y-5">
+              <div>
+                <p className="admin-label mb-2">Image 1 — Cover</p>
+                <MediaUpload
+                  bucket="portfolio-media"
+                  folder="services"
+                  accept="image/*"
+                  currentUrl={formData.image_1_url}
+                  onUploadSuccess={(url) => handleChange('image_1_url', url)}
+                  onRemove={() => handleChange('image_1_url', '')}
+                />
+              </div>
+              <div>
+                <p className="admin-label mb-2">Image 2 — Supporting</p>
+                <MediaUpload
+                  bucket="portfolio-media"
+                  folder="services"
+                  accept="image/*"
+                  currentUrl={formData.image_2_url}
+                  onUploadSuccess={(url) => handleChange('image_2_url', url)}
+                  onRemove={() => handleChange('image_2_url', '')}
+                />
+              </div>
+              <div>
+                <p className="admin-label mb-2">Image 3 — Supporting</p>
+                <MediaUpload
+                  bucket="portfolio-media"
+                  folder="services"
+                  accept="image/*"
+                  currentUrl={formData.image_3_url}
+                  onUploadSuccess={(url) => handleChange('image_3_url', url)}
+                  onRemove={() => handleChange('image_3_url', '')}
+                />
+              </div>
             </div>
           </section>
         </div>
