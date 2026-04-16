@@ -73,8 +73,8 @@ export default function AdminSidebar({ locale }: { locale: string }) {
       icon: Mail,
     },
     {
-      name: isArabic ? 'SEO والأداء' : 'SEO & Perf',
-      hint: isArabic ? 'البحث والتحليلات' : 'Search and tracking',
+      name: isArabic ? 'التحليلات' : 'Analytics',
+      hint: isArabic ? 'إحصائيات وزيارات' : 'Stats & traffic',
       href: `/${locale}/admin/seo`,
       icon: Search,
     },
@@ -99,10 +99,8 @@ export default function AdminSidebar({ locale }: { locale: string }) {
           <h1 className="mt-4 text-2xl font-semibold tracking-[-0.04em] text-white">
             {isArabic ? 'لوحة تحكم أحمد عصام' : 'Ahmed Essam Admin'}
           </h1>
-          <p className="mt-2 text-sm leading-6 text-slate-400">
-            {isArabic
-              ? 'إدارة البورتفوليو بشكل منظم: محتوى واضح، شكل احترافي، وتحديثات سهلة.'
-              : 'Manage the portfolio like a product: clear structure, polished content, and scalable updates.'}
+          <p className="mt-2 text-sm leading-6 text-slate-500">
+            {isArabic ? 'إدارة البورتفوليو بشكل منظم وسريع.' : 'Manage content, track visitors, stay in control.'}
           </p>
         </div>
 

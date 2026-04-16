@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { ArrowUpRight, Check } from 'lucide-react';
+import { ArrowUpRight, Check, Mail, MessageCircle } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 
 import { Link } from '@/i18n/routing';
@@ -22,7 +22,13 @@ export default async function ServicesPage({ params }: { params: Promise<{ local
   const t = await getTranslations({ locale, namespace: 'ServicesPage' });
   const supabase = await createClient();
 
-  const { data: servicesData } = await supabase.from('services').select('*').order('view_order', { ascending: true });
+  const [{ data: servicesData }, { data: siteSettings }] = await Promise.all([
+    supabase.from('services').select('*').order('view_order', { ascending: true }),
+    supabase.from('site_settings').select('whatsapp_number, contact_email').single(),
+  ]);
+
+  const whatsappNumber = (siteSettings as Record<string, unknown> | null)?.whatsapp_number as string | undefined;
+  const contactEmail = (siteSettings as Record<string, unknown> | null)?.contact_email as string | undefined;
 
   const servicesList = (servicesData || []).map((service, index) => {
     const title = localizedValue(service as Record<string, unknown>, 'title', locale);
@@ -99,6 +105,30 @@ export default async function ServicesPage({ params }: { params: Promise<{ local
                         </li>
                       ))}
                     </ul>
+                  </div>
+
+                  {/* Request CTA */}
+                  <div className={`mt-8 flex flex-wrap gap-3 ${isArabic ? 'flex-row-reverse' : ''}`}>
+                    {whatsappNumber && (
+                      <a
+                        href={`https://wa.me/${whatsappNumber.replace(/\D/g, '')}?text=${encodeURIComponent(isArabic ? `مرحبا، أريد الاستفسار عن خدمة: ${service.title}` : `Hi, I'd like to inquire about: ${service.title}`)}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className={`inline-flex items-center gap-2 rounded-2xl border border-[#8df6c8]/20 bg-[#8df6c8]/10 px-5 py-3 text-sm font-semibold text-[#8df6c8] transition hover:bg-[#8df6c8]/20 ${isArabic ? 'flex-row-reverse' : ''}`}
+                      >
+                        <MessageCircle className="h-4 w-4" aria-hidden="true" />
+                        {isArabic ? 'طلب عبر واتساب' : 'Request via WhatsApp'}
+                      </a>
+                    )}
+                    {contactEmail && (
+                      <a
+                        href={`mailto:${contactEmail}?subject=${encodeURIComponent(isArabic ? `استفسار عن خدمة: ${service.title}` : `Inquiry: ${service.title}`)}`}
+                        className={`inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.03] px-5 py-3 text-sm font-semibold text-slate-300 transition hover:border-white/20 hover:text-white ${isArabic ? 'flex-row-reverse' : ''}`}
+                      >
+                        <Mail className="h-4 w-4" aria-hidden="true" />
+                        {isArabic ? 'طلب عبر الإيميل' : 'Request via Email'}
+                      </a>
+                    )}
                   </div>
                 </div>
               </div>

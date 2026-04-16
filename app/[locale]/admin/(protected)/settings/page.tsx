@@ -22,6 +22,7 @@ export default function SiteSettingsAdminPage() {
     hero_subtitle_en: '',
     hero_subtitle_ar: '',
     social_links: { twitter: '', behance: '', linkedin: '', dribbble: '' },
+    whatsapp_number: '',
   })
 
   useEffect(() => {
@@ -44,6 +45,7 @@ export default function SiteSettingsAdminPage() {
           hero_subtitle_en: data.hero_subtitle_en || '',
           hero_subtitle_ar: data.hero_subtitle_ar || '',
           social_links: data.social_links || { twitter: '', behance: '', linkedin: '', dribbble: '' },
+          whatsapp_number: data.whatsapp_number || '',
         })
       }
     } catch (error) {
@@ -78,6 +80,7 @@ export default function SiteSettingsAdminPage() {
       hero_subtitle_ar: formData.hero_subtitle_ar,
       default_language: 'ar',
       social_links: formData.social_links,
+      whatsapp_number: formData.whatsapp_number,
     }
 
     try {
@@ -209,6 +212,21 @@ export default function SiteSettingsAdminPage() {
                   />
                 </div>
               ))}
+            </div>
+          </section>
+
+          <section className="admin-card px-6 py-6">
+            <h2 className="text-xl font-semibold text-white">رقم واتساب</h2>
+            <p className="mt-1 text-sm text-slate-500">يُستخدم في زر "طلب خدمة" في صفحة الخدمات.</p>
+            <div className="mt-5">
+              <label className="admin-label">WhatsApp number (with country code)</label>
+              <input
+                type="tel"
+                className="admin-input"
+                value={formData.whatsapp_number}
+                onChange={(e) => handleChange('whatsapp_number', e.target.value)}
+                placeholder="+20xxxxxxxxxx"
+              />
             </div>
           </section>
         </div>

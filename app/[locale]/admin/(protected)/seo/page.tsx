@@ -1,176 +1,219 @@
-import { createClient } from '@/utils/supabase/server';
-import { Search, Eye, TrendingUp, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { createClient } from '@/utils/supabase/server'
+import { BarChart3, Eye, FileText, Globe, Layers, TrendingUp } from 'lucide-react'
 
-export default async function AdminSEOPage({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale } = await params;
-  const isArabic = locale === 'ar';
-  const supabase = await createClient();
+export default async function AdminAnalyticsPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params
+  const isArabic = locale === 'ar'
+  const supabase = await createClient()
 
-  // Fetch all necessary data
   const [
+    { data: pageViewsRaw },
     { data: projects },
-    { data: articles },
-    { data: pageViews }
+    { data: services },
   ] = await Promise.all([
-    supabase.from('projects').select('id, name_en, slug, description_en, is_featured'),
-    supabase.from('articles').select('id, title_en, slug, excerpt_en'),
-    supabase.from('page_views').select('slug')
-  ]);
+    supabase.from('page_views').select('path, slug, visitor_id, created_at'),
+    supabase.from('projects').select('id, name_en, name_ar, slug'),
+    supabase.from('services').select('id, title_en, title_ar, view_order'),
+  ])
 
-  // Aggregate views per slug manually since we didn't index visitor_id natively for distinct aggregation
-  const viewsBySlug: Record<string, number> = {};
-  pageViews?.forEach(pv => {
-    if (pv.slug) {
-      viewsBySlug[pv.slug] = (viewsBySlug[pv.slug] || 0) + 1;
-    }
-  });
+  // ── Total / Unique visitors ──────────────────────────────────────────────
+  const totalViews = pageViewsRaw?.length ?? 0
+  const uniqueVisitors = new Set(pageViewsRaw?.map((v) => v.visitor_id) ?? []).size
 
-  // Calculate SEO Health for Projects
-  const projectStats = (projects || []).map(p => {
-    const hasGoodDescription = p.description_en && p.description_en.length > 50 && p.description_en.length < 160;
-    const hasCleanSlug = p.slug && /^[a-z0-9-]+$/.test(p.slug) && !p.slug.includes('project-');
-    const missingMetadata = !p.description_en || !p.slug;
-    
-    return {
+  // ── Views by page path ───────────────────────────────────────────────────
+  const pathCounts: Record<string, number> = {}
+  pageViewsRaw?.forEach((v) => {
+    const p = v.path
+    pathCounts[p] = (pathCounts[p] ?? 0) + 1
+  })
+  const topPages = Object.entries(pathCounts)
+    .sort(([, a], [, b]) => b - a)
+    .slice(0, 8)
+    .map(([path, views]) => ({ path, views }))
+
+  // ── Views by slug (for projects) ─────────────────────────────────────────
+  const slugCounts: Record<string, number> = {}
+  pageViewsRaw?.forEach((v) => {
+    if (v.slug) slugCounts[v.slug] = (slugCounts[v.slug] ?? 0) + 1
+  })
+
+  const projectsWithViews = (projects ?? [])
+    .map((p) => ({
       id: p.id,
-      typeKey: 'project',
-      title: p.name_en,
-      type: isArabic ? 'مشروع' : 'Project',
+      name: isArabic ? (p.name_ar || p.name_en) : p.name_en,
       slug: p.slug,
-      views: viewsBySlug[p.slug] || 0,
-      seoScore: (hasGoodDescription ? 50 : 0) + (hasCleanSlug ? 50 : 0),
-      issues: [
-        !hasGoodDescription ? (isArabic ? 'الوصف التعريفي قصير جدًا أو طويل جدًا' : 'Meta description Too short/long') : null,
-        !hasCleanSlug ? (isArabic ? 'الرابط غير مناسب لمحركات البحث' : 'Slug is not URL-friendly') : null,
-        missingMetadata ? (isArabic ? 'في بيانات ناقصة مهمة' : 'Missing critical metadata') : null,
-      ].filter(Boolean) as string[]
-    };
-  });
+      views: slugCounts[p.slug] ?? 0,
+    }))
+    .sort((a, b) => b.views - a.views)
 
-  // Calculate SEO Health for Articles
-  const articleStats = (articles || []).map(a => {
-    const hasGoodExcerpt = a.excerpt_en && a.excerpt_en.length > 50 && a.excerpt_en.length < 160;
-    const hasCleanSlug = a.slug && /^[a-z0-9-]+$/.test(a.slug);
-    
-    return {
-      id: a.id,
-      typeKey: 'article',
-      title: a.title_en,
-      type: isArabic ? 'مقال' : 'Article',
-      slug: a.slug,
-      views: viewsBySlug[a.slug] || 0,
-      seoScore: (hasGoodExcerpt ? 50 : 0) + (hasCleanSlug ? 50 : 0),
-      issues: [
-        !hasGoodExcerpt ? (isArabic ? 'ملخص المقال غير مناسب للبحث' : 'Excerpt not optimized for Search') : null,
-        !hasCleanSlug ? (isArabic ? 'الرابط غير مناسب لمحركات البحث' : 'Slug is not URL-friendly') : null,
-      ].filter(Boolean) as string[]
-    };
-  });
+  // ── Services (sorted by view_order as our "engagement" proxy since no views tracked yet) ─
+  const serviceList = (services ?? []).map((s) => ({
+    id: s.id,
+    name: isArabic ? (s.title_ar || s.title_en) : s.title_en,
+  }))
 
-  const allContent = [...projectStats, ...articleStats].sort((a, b) => b.views - a.views); // Sort by highest traffic
-
-  const totalContentViews = allContent.reduce((sum, item) => sum + item.views, 0);
-  const avgSeoScore = allContent.length > 0 ? Math.round(allContent.reduce((sum, item) => sum + item.seoScore, 0) / allContent.length) : 0;
-  const itemsNeedingFixes = allContent.filter(item => item.issues.length > 0).length;
+  // ── Trend: views per day last 7 days ─────────────────────────────────────
+  const last7 = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date()
+    d.setDate(d.getDate() - (6 - i))
+    return d.toISOString().split('T')[0]
+  })
+  const viewsByDay: Record<string, number> = {}
+  last7.forEach((d) => { viewsByDay[d] = 0 })
+  pageViewsRaw?.forEach((v) => {
+    const day = new Date(v.created_at).toISOString().split('T')[0]
+    if (day in viewsByDay) viewsByDay[day]++
+  })
+  const maxDay = Math.max(...Object.values(viewsByDay), 1)
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
+
+      {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-3">
-          <Search className="w-8 h-8 text-brand-primary" /> {isArabic ? 'SEO والأداء' : 'SEO & Performance'}
+        <p className="admin-kicker">{isArabic ? 'التحليلات' : 'Analytics'}</p>
+        <h1 className="mt-2 text-3xl font-semibold tracking-[-0.05em] text-white">
+          {isArabic ? 'إحصائيات الموقع' : 'Site Insights'}
         </h1>
-        <p className="text-white/60">
+        <p className="mt-2 text-sm text-slate-500">
           {isArabic
-            ? 'تابع أداء المحتوى واكتشف فرص تحسين الظهور في نتائج البحث.'
-            : 'Analyze content traffic and discover opportunities to improve search ranking.'}
+            ? 'بيانات حقيقية من زوار موقعك — الصفحات الأكثر زيارة، والمشاريع المشاهدة.'
+            : 'Real traffic data — top pages, most-viewed projects and visitor trends.'}
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col justify-between">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-white/80 font-medium">{isArabic ? 'التقييم العام للـSEO' : 'Global SEO Score'}</span>
-            <TrendingUp className="w-5 h-5 text-brand-primary" />
+      {/* Summary stats */}
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
+        {[
+          { label: isArabic ? 'إجمالي الزيارات' : 'Total Views',     value: totalViews,      icon: Eye },
+          { label: isArabic ? 'زوار فريدون'      : 'Unique Visitors', value: uniqueVisitors,  icon: Globe },
+          { label: isArabic ? 'صفحات مطلوبة'    : 'Unique Pages',    value: topPages.length, icon: TrendingUp },
+        ].map((s) => (
+          <div key={s.label} className="admin-card px-5 py-5">
+            <div className={`inline-flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] text-[#8df6c8]`}>
+              <s.icon className="h-4 w-4" />
+            </div>
+            <p className="mt-4 text-3xl font-semibold tracking-[-0.04em] text-white">{s.value}</p>
+            <p className="mt-1 text-sm text-slate-500">{s.label}</p>
           </div>
-          <span className="text-4xl font-bold text-white">{avgSeoScore}%</span>
-        </div>
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col justify-between">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-white/80 font-medium">{isArabic ? 'إجمالي المشاهدات' : 'Content Views'}</span>
-            <Eye className="w-5 h-5 text-blue-400" />
-          </div>
-          <span className="text-4xl font-bold text-white">{totalContentViews}</span>
-        </div>
-        <div className="bg-white/5 border border-red-500/20 rounded-2xl p-6 flex flex-col justify-between">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-red-400 font-medium">{isArabic ? 'تنبيهات التحسين' : 'Optimization Alerts'}</span>
-            <AlertTriangle className="w-5 h-5 text-red-400" />
-          </div>
-          <span className="text-4xl font-bold text-red-500">{itemsNeedingFixes}</span>
-        </div>
+        ))}
       </div>
 
-      <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden p-6">
-        <h2 className="text-xl font-bold text-white mb-6">{isArabic ? 'تقرير صحة المحتوى' : 'Content Health Audit'}</h2>
-        
-        <div className="overflow-x-auto">
-          <table className={`w-full border-collapse min-w-[800px] ${isArabic ? 'text-right' : 'text-left'}`}>
-            <thead>
-              <tr className="border-b border-white/10 text-white/40 text-sm">
-                <th className="pb-4 font-medium uppercase tracking-wider">{isArabic ? 'العنوان / الرابط' : 'Title / Slug'}</th>
-                <th className="pb-4 font-medium uppercase tracking-wider">{isArabic ? 'النوع' : 'Type'}</th>
-                <th className="pb-4 font-medium uppercase tracking-wider">{isArabic ? 'المشاهدات' : 'Views'}</th>
-                <th className="pb-4 font-medium uppercase tracking-wider">{isArabic ? 'التقييم' : 'Score'}</th>
-                <th className="pb-4 font-medium uppercase tracking-wider">{isArabic ? 'الحالة' : 'Status'}</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-white/5">
-              {allContent.map((item) => (
-                <tr key={`${item.typeKey}-${item.id}`} className="hover:bg-white/5 transition-colors">
-                  <td className="py-4 pr-4">
-                    <p className="font-medium text-white mb-1">{item.title}</p>
-                    <p className="text-xs text-white/40">/{item.typeKey}s/{item.slug || 'missing-slug'}</p>
-                  </td>
-                  <td className="py-4">
-                    <span className={`px-3 py-1 text-xs rounded-full font-medium ${item.typeKey === 'project' ? 'bg-orange-500/10 text-orange-400' : 'bg-purple-500/10 text-purple-400'}`}>
-                      {item.type}
+      <div className="grid gap-5 xl:grid-cols-2">
+
+        {/* Daily trend bar chart */}
+        <section className="admin-card px-6 py-6">
+          <div className="mb-6 flex items-center gap-2">
+            <BarChart3 className="h-4 w-4 text-[#8df6c8]" />
+            <h2 className="text-base font-semibold text-white">{isArabic ? 'الزيارات – آخر 7 أيام' : 'Views – Last 7 Days'}</h2>
+          </div>
+          <div className="flex h-36 items-end gap-2">
+            {last7.map((day) => {
+              const count = viewsByDay[day]
+              const height = Math.max(4, Math.round((count / maxDay) * 136))
+              const label = new Date(day).toLocaleDateString(isArabic ? 'ar-EG' : 'en-US', { weekday: 'short' })
+              return (
+                <div key={day} className="group flex flex-1 flex-col items-center gap-1">
+                  <div
+                    className="relative w-full rounded-t-lg bg-[#8df6c8]/20 transition-all group-hover:bg-[#8df6c8]/40"
+                    style={{ height: `${height}px` }}
+                  >
+                    <span className="absolute -top-6 left-1/2 -translate-x-1/2 whitespace-nowrap text-xs text-white opacity-0 group-hover:opacity-100">
+                      {count}
                     </span>
-                  </td>
-                  <td className="py-4 text-white font-mono">{item.views}</td>
-                  <td className="py-4">
-                    <div className="flex items-center gap-2">
-                      <div className="flex-1 max-w-[100px] h-2 bg-white/10 rounded-full overflow-hidden">
-                        <div className={`h-full ${item.seoScore >= 80 ? 'bg-green-500' : item.seoScore >= 50 ? 'bg-yellow-500' : 'bg-red-500'}`} style={{ width: `${item.seoScore}%` }} />
+                  </div>
+                  <span className="text-[10px] text-slate-600">{label}</span>
+                </div>
+              )
+            })}
+          </div>
+        </section>
+
+        {/* Top pages */}
+        <section className="admin-card px-6 py-6">
+          <div className="mb-5 flex items-center gap-2">
+            <Globe className="h-4 w-4 text-[#8df6c8]" />
+            <h2 className="text-base font-semibold text-white">{isArabic ? 'أكثر الصفحات زيارة' : 'Top Pages'}</h2>
+          </div>
+          {topPages.length > 0 ? (
+            <div className="space-y-3">
+              {topPages.map(({ path, views }, i) => {
+                const pct = Math.round((views / topPages[0].views) * 100)
+                return (
+                  <div key={path} className="flex items-center gap-3">
+                    <span className="w-5 text-xs font-semibold text-slate-600">{i + 1}</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="truncate text-sm text-white">{path}</p>
+                      <div className="mt-1 h-1 rounded-full bg-white/8">
+                        <div className="h-full rounded-full bg-[#8df6c8]/50" style={{ width: `${pct}%` }} />
                       </div>
-                      <span className="text-sm font-bold text-white/80">{item.seoScore}</span>
                     </div>
-                  </td>
-                  <td className="py-4">
-                    {item.issues.length === 0 ? (
-                      <span className="flex items-center gap-1 text-green-400 text-sm font-medium">
-                        <CheckCircle2 className="w-4 h-4" /> {isArabic ? 'ممتاز' : 'Perfect'}
-                      </span>
-                    ) : (
-                      <div className="flex flex-col gap-1">
-                        {item.issues.map((issue, idx) => (
-                          <span key={idx} className="flex items-center gap-1 text-yellow-500 text-xs">
-                            <AlertTriangle className="w-3 h-3" /> {issue}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          {allContent.length === 0 && (
-            <div className="py-12 text-center text-white/40">
-              {isArabic ? 'لسه مفيش محتوى منشور للتحليل.' : 'No content published yet to analyze.'}
+                    <span className="text-sm font-semibold text-slate-300">{views}</span>
+                  </div>
+                )
+              })}
             </div>
+          ) : (
+            <p className="text-sm text-slate-500">{isArabic ? 'لا توجد بيانات زيارات.' : 'No visit data yet.'}</p>
           )}
-        </div>
+        </section>
+
+        {/* Most viewed projects */}
+        <section className="admin-card px-6 py-6">
+          <div className="mb-5 flex items-center gap-2">
+            <FileText className="h-4 w-4 text-[#8df6c8]" />
+            <h2 className="text-base font-semibold text-white">{isArabic ? 'أكثر المشاريع مشاهدة' : 'Most-Viewed Projects'}</h2>
+          </div>
+          {projectsWithViews.length > 0 ? (
+            <div className="space-y-3">
+              {projectsWithViews.slice(0, 6).map((p, i) => {
+                const maxV = projectsWithViews[0].views
+                const pct = maxV > 0 ? Math.round((p.views / maxV) * 100) : 0
+                return (
+                  <div key={p.id} className="flex items-center gap-3">
+                    <span className="w-5 text-xs font-semibold text-slate-600">{i + 1}</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="truncate text-sm text-white">{p.name}</p>
+                      <div className="mt-1 h-1 rounded-full bg-white/8">
+                        <div className="h-full rounded-full bg-[#8df6c8]/50" style={{ width: `${Math.max(pct, 2)}%` }} />
+                      </div>
+                    </div>
+                    <span className="text-sm font-semibold text-slate-300">{p.views}</span>
+                  </div>
+                )
+              })}
+            </div>
+          ) : (
+            <p className="text-sm text-slate-500">{isArabic ? 'لا توجد مشاريع.' : 'No projects yet.'}</p>
+          )}
+        </section>
+
+        {/* Services list */}
+        <section className="admin-card px-6 py-6">
+          <div className="mb-5 flex items-center gap-2">
+            <Layers className="h-4 w-4 text-[#8df6c8]" />
+            <h2 className="text-base font-semibold text-white">{isArabic ? 'الخدمات المتاحة' : 'Available Services'}</h2>
+          </div>
+          <p className="mb-4 text-xs text-slate-500">
+            {isArabic
+              ? 'سيتم تتبع طلبات الخدمة من خلال رسائل التواصل. الخدمات معروضة حسب الترتيب.'
+              : 'Service requests come in via contact form/WhatsApp. Listed by display order.'}
+          </p>
+          {serviceList.length > 0 ? (
+            <div className="space-y-2">
+              {serviceList.map((s, i) => (
+                <div key={s.id} className="flex items-center gap-3 rounded-xl border border-white/8 bg-white/[0.02] px-4 py-2.5">
+                  <span className="text-xs font-semibold text-[#8df6c8]">0{i + 1}</span>
+                  <p className="text-sm text-white">{s.name}</p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-slate-500">{isArabic ? 'لا توجد خدمات.' : 'No services yet.'}</p>
+          )}
+        </section>
+
       </div>
     </div>
-  );
+  )
 }
