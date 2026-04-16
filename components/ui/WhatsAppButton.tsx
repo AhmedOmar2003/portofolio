@@ -16,7 +16,7 @@ export default function WhatsAppButton() {
       whileHover={shouldReduceMotion ? undefined : { y: -2 }}
       whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
       transition={{ delay: 0.4, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-      className="fixed bottom-[calc(env(safe-area-inset-bottom)+0.9rem)] right-4 z-50 flex h-12 w-12 items-center justify-center rounded-full border border-white/16 bg-[linear-gradient(135deg,#8df6c8_0%,#6ad7ff_100%)] text-[#041019] shadow-[0_18px_40px_rgba(106,215,255,0.22)] backdrop-blur-xl sm:right-5 sm:h-14 sm:w-14 md:bottom-[calc(env(safe-area-inset-bottom)+2rem)] md:right-8"
+      className="site-whatsapp fixed bottom-[calc(env(safe-area-inset-bottom)+0.9rem)] right-4 z-50 flex h-12 w-12 items-center justify-center rounded-full border border-white/16 bg-[linear-gradient(135deg,#8df6c8_0%,#6ad7ff_100%)] text-[#041019] shadow-[0_18px_40px_rgba(106,215,255,0.22)] backdrop-blur-xl sm:right-5 sm:h-14 sm:w-14 md:bottom-[calc(env(safe-area-inset-bottom)+2rem)] md:right-8"
     >
       <span className="absolute inset-0 rounded-full border border-white/14" />
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="24" height="24" fill="currentColor" aria-hidden="true">

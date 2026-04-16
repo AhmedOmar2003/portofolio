@@ -41,7 +41,7 @@ export default function Footer({ socialLinks = [] }: FooterProps) {
   const displayLinks = socialLinks.length > 0 ? socialLinks : fallbacks;
 
   return (
-    <footer className="px-6 pb-8 pt-12 md:px-10 lg:px-12">
+    <footer className="site-footer px-6 pb-8 pt-12 md:px-10 lg:px-12">
       <motion.div
         initial={shouldReduceMotion ? false : { opacity: 0, y: 30 }}
         whileInView={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}

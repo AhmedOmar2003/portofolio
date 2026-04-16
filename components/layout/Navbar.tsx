@@ -45,7 +45,7 @@ export default function Navbar() {
   };
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 px-4 pt-4 md:px-6">
+    <header className="site-navbar fixed inset-x-0 top-0 z-50 px-4 pt-4 md:px-6">
       <div
         className={`mx-auto max-w-[1360px] rounded-[1.7rem] border transition duration-500 ${
           isScrolled || isMobileMenuOpen

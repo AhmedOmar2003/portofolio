@@ -80,7 +80,7 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#04070f] px-6 py-16">
+    <main className="admin-login-page relative flex min-h-screen items-center justify-center overflow-hidden bg-[#04070f] px-6 py-16">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(141,246,200,0.16),transparent_32%),linear-gradient(180deg,rgba(9,14,27,0.94),rgba(4,7,15,1))]" />
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:72px_72px] opacity-20" />
 

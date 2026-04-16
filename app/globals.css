@@ -237,6 +237,15 @@ textarea:focus-visible {
     linear-gradient(180deg, #050816 0%, #060912 100%);
 }
 
+body:has(.admin-shell) .site-navbar,
+body:has(.admin-shell) .site-footer,
+body:has(.admin-shell) .site-whatsapp,
+body:has(.admin-login-page) .site-navbar,
+body:has(.admin-login-page) .site-footer,
+body:has(.admin-login-page) .site-whatsapp {
+  display: none !important;
+}
+
 .admin-card {
   border-radius: 1.5rem;
   border: 1px solid rgba(255, 255, 255, 0.08);
