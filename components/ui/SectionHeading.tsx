@@ -38,11 +38,11 @@ export default function SectionHeading({
       {overline ? <span className="eyebrow">{overline}</span> : null}
 
       <div className={`max-w-3xl ${textBlockClass}`}>
-        <h2 className="text-balance text-[2.15rem] font-semibold tracking-[-0.05em] text-white sm:text-4xl lg:text-[3rem] lg:leading-[1.04]">
+        <h2 className={`text-balance text-[2.15rem] font-semibold text-white sm:text-4xl lg:text-[3rem] ${isArabic ? 'tracking-normal leading-[1.2] lg:leading-[1.2]' : 'tracking-[-0.05em] lg:leading-[1.04]'}`}>
           {title}
         </h2>
         {subtitle ? (
-          <p className="mt-4 max-w-2xl text-base leading-7 text-slate-300 sm:text-lg sm:leading-8">
+          <p className={`mt-4 max-w-2xl text-base text-slate-300 sm:text-lg ${isArabic ? 'leading-8 sm:leading-9' : 'leading-7 sm:leading-8'}`}>
             {subtitle}
           </p>
         ) : null}

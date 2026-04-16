@@ -63,7 +63,7 @@ export default function Hero({ title, subtitle, projectCount, serviceCount }: He
           <div className="mb-7 max-w-4xl space-y-5">
             <h1
               id="hero-heading"
-              className="text-balance text-[2.8rem] font-semibold tracking-[-0.06em] text-white sm:text-6xl lg:text-[5.6rem] lg:leading-[0.95]"
+              className={`text-balance text-[2.8rem] font-semibold text-white sm:text-6xl lg:text-[5.6rem] ${isArabic ? 'tracking-normal leading-[1.1] lg:leading-[1.15]' : 'tracking-[-0.06em] lg:leading-[0.95]'}`}
             >
               <span className="block text-white/92">{heroTitle[0]}</span>
               {heroTitle.length > 1 ? (
@@ -77,7 +77,7 @@ export default function Hero({ title, subtitle, projectCount, serviceCount }: He
               )}
             </h1>
 
-            <p className="max-w-2xl text-balance text-base leading-7 text-slate-300 sm:text-xl sm:leading-8">
+            <p className={`max-w-2xl text-balance text-base text-slate-300 sm:text-xl ${isArabic ? 'leading-8 sm:leading-[2.2rem]' : 'leading-7 sm:leading-8'}`}>
               {displaySubtitle}
             </p>
           </div>
@@ -102,8 +102,8 @@ export default function Hero({ title, subtitle, projectCount, serviceCount }: He
                 transition={{ duration: 0.55, delay: 0.1 + index * 0.08, ease: [0.16, 1, 0.3, 1] }}
                 className="surface-panel rounded-[1.35rem] px-4 py-4 sm:rounded-[1.5rem] sm:px-5 sm:py-5"
               >
-                <p className="mb-1 text-[1.75rem] font-semibold tracking-[-0.05em] text-white sm:text-3xl">{stat.value}</p>
-                <p className="text-sm leading-6 text-slate-400">{stat.label}</p>
+                <p className={`mb-1 text-[1.75rem] font-semibold text-white sm:text-3xl ${isArabic ? 'tracking-normal' : 'tracking-[-0.05em]'}`}>{stat.value}</p>
+                <p className={`text-sm text-slate-400 ${isArabic ? 'leading-7' : 'leading-6'}`}>{stat.label}</p>
               </motion.div>
             ))}
           </div>

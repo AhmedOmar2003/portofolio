@@ -172,7 +172,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       />
 
       <div id="main-content" className="px-6 pb-10 md:px-10 lg:px-12">
-        <section id="about" className="mx-auto max-w-[1380px] py-8 md:py-12">
+        <section id="about" className="mx-auto max-w-[1380px] py-16 md:py-24">
           <div className="section-shell grid gap-8 px-6 py-7 md:px-8 md:py-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-12">
             <div>
               <SectionHeading
@@ -203,14 +203,14 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
                   <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-[#8df6c8]/20 bg-[#8df6c8]/10 text-[#8df6c8]">
                     <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
                   </div>
-                  <p className="text-base leading-7 text-slate-100">{point}</p>
+                  <p className={`text-base text-slate-100 ${isArabic ? 'leading-8' : 'leading-7'}`}>{point}</p>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        <section id="projects" className="mx-auto max-w-[1380px] py-10 md:py-14">
+        <section id="projects" className="mx-auto max-w-[1380px] py-16 md:py-24">
           <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <SectionHeading overline={t('featuredProjects')} title={t('featuredProjectsTitle')} subtitle={t('featuredProjectsSub')} />
             <Link href="/projects" className="btn btn-secondary w-fit px-5 py-3 text-sm">
@@ -238,7 +238,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           </div>
         </section>
 
-        <section id="skills" className="mx-auto max-w-[1380px] py-10 md:py-14">
+        <section id="skills" className="mx-auto max-w-[1380px] py-16 md:py-24">
           <div className="grid gap-8 lg:grid-cols-[minmax(0,0.88fr)_minmax(0,1.12fr)] lg:gap-12">
             <div>
               <SectionHeading overline={t('skillsEyebrow')} title={t('skillsTitle')} subtitle={t('skillsSubtitle')} />
@@ -258,15 +258,15 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
                   <span className="inline-flex rounded-full border border-white/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
                     0{index + 1}
                   </span>
-                  <h3 className="mt-4 text-[1.45rem] font-semibold tracking-[-0.04em] text-white">{service.title}</h3>
-                  <p className="mt-3 text-sm leading-7 text-slate-300 sm:text-base">{service.desc}</p>
+                  <h3 className={`mt-4 text-[1.45rem] font-semibold text-white ${isArabic ? 'tracking-normal leading-tight' : 'tracking-[-0.04em]'}`}>{service.title}</h3>
+                  <p className={`mt-3 text-sm text-slate-300 sm:text-base ${isArabic ? 'leading-8' : 'leading-7'}`}>{service.desc}</p>
                 </article>
               ))}
             </div>
           </div>
         </section>
 
-        <section id="contact" className="mx-auto max-w-[1380px] py-10 md:py-14">
+        <section id="contact" className="mx-auto max-w-[1380px] py-16 md:py-24">
           <div className="section-shell overflow-hidden px-6 py-8 md:px-8 md:py-10">
             <div className={`absolute top-0 h-64 w-64 rounded-full bg-[#8df6c8]/10 blur-[120px] ${isArabic ? 'left-0' : 'right-0'}`} />
             <div className="relative grid gap-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
