@@ -49,18 +49,20 @@ export default function Footer({ socialLinks = [] }: FooterProps) {
         transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
         className="section-shell mx-auto max-w-[1380px] px-6 py-10 md:px-10"
       >
-        <div className="grid gap-10 md:grid-cols-[minmax(0,1.3fr)_minmax(0,0.7fr)] md:items-end">
-          <div>
-            <span className="eyebrow mb-5">{t('eyebrow')}</span>
-            <h2 className="max-w-2xl text-balance text-3xl font-semibold tracking-[-0.05em] text-white sm:text-4xl lg:text-[3.2rem]">
-              {t('title')}
-            </h2>
-            <p className="mt-5 max-w-xl text-lg leading-8 text-slate-300">{t('description')}</p>
-          </div>
+        <div className="flex flex-col items-center text-center max-w-3xl mx-auto">
+          <span className="eyebrow mb-5">{t('eyebrow')}</span>
+          <h2 className={`text-balance font-semibold text-white ${isArabic ? 'text-4xl leading-tight sm:text-5xl lg:text-6xl' : 'text-3xl sm:text-4xl lg:text-[3.2rem] tracking-[-0.05em] leading-tight'}`}>
+            {t('title')}
+          </h2>
+          <p className="mt-6 text-lg leading-8 text-slate-400">
+            {t('description')}
+          </p>
 
-          <div className={`flex flex-col gap-4 ${isArabic ? 'md:items-start' : 'md:items-end'}`}>
-            <span className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">{t('social')}</span>
-            <div className={`flex flex-wrap gap-3 ${isArabic ? 'md:justify-start' : 'md:justify-end'}`}>
+          <div className="mt-12 flex flex-col items-center gap-5">
+            <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[#8df6c8]/60">
+              {t('social')}
+            </span>
+            <div className={`flex flex-wrap justify-center gap-3 ${isArabic ? 'rtl-flip-children' : ''}`}>
               {displayLinks.map((link) => {
                 const href =
                   link.type.toLowerCase() === 'email' && !link.value.startsWith('mailto:')
@@ -74,7 +76,7 @@ export default function Footer({ socialLinks = [] }: FooterProps) {
                     target={link.type.toLowerCase() === 'email' ? '_self' : '_blank'}
                     rel="noreferrer"
                     aria-label={link.label}
-                    className={`inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-slate-200 transition hover:border-[#8df6c8]/30 hover:bg-white/[0.07] hover:text-white ${isArabic ? 'flex-row-reverse' : ''}`}
+                    className={`inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-5 py-3.5 text-sm font-medium text-slate-200 transition-all hover:-translate-y-1 hover:border-[#8df6c8]/40 hover:bg-white/[0.08] hover:text-white hover:shadow-[0_10px_20px_rgba(141,246,200,0.05)] ${isArabic ? 'flex-row-reverse' : ''}`}
                   >
                     {getIcon(link.type)}
                     <span>{link.label}</span>
