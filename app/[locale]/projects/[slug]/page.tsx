@@ -151,8 +151,8 @@ export default async function ProjectCaseStudyPage(props: { params: Promise<{ sl
           )}
 
           {/* Meta strip */}
-          <div className={`mt-10 border-t border-white/10 pt-8 ${isArabic ? 'ml-auto max-w-4xl text-right' : ''}`}>
-            <div className={`flex flex-wrap gap-4 ${isArabic ? 'flex-row-reverse' : ''}`}>
+          <div className={`mt-10 border-t border-white/10 pt-8 ${isArabic ? 'ml-auto w-full max-w-4xl text-right' : ''}`}>
+            <div className={`flex w-full flex-wrap gap-4 ${isArabic ? 'flex-row-reverse justify-end' : ''}`}>
               {metaItems.map((item) => (
                 <div key={item.label} className={`${isArabic ? 'text-right' : ''}`}>
                   <p className="text-xs font-semibold uppercase tracking-widest text-slate-600">{item.label}</p>
@@ -166,7 +166,7 @@ export default async function ProjectCaseStudyPage(props: { params: Promise<{ sl
             </div>
 
             {availableLinks.length > 0 ? (
-              <div className={`mt-6 flex flex-wrap items-center gap-3 ${isArabic ? 'flex-row-reverse' : ''}`}>
+              <div className={`mt-6 flex w-full flex-wrap items-center gap-3 ${isArabic ? 'flex-row-reverse justify-end' : ''}`}>
                 {liveDemoEntry ? (
                   <a
                     href={String(liveDemoEntry[1])}
