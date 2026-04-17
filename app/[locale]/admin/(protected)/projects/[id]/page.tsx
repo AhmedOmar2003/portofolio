@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation'
 
 import MediaUpload from '@/components/admin/MediaUpload'
 import { createClient } from '@/utils/supabase/client'
+import { getProjectTypeLabel, normalizeProjectType, type ProjectType } from '@/utils/project-type'
 
 type MessageState = { type: 'success' | 'error'; text: string } | null
 
@@ -62,7 +63,7 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
     name_en: '',
     name_ar: '',
     slug: '',
-    category: '',
+    project_type: 'design' as ProjectType,
     description_en: '',
     description_ar: '',
     problem_en: '',
@@ -98,7 +99,7 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
           name_en: data.name_en || '',
           name_ar: data.name_ar || '',
           slug: data.slug || '',
-          category: data.category || '',
+          project_type: normalizeProjectType(data.category),
           description_en: data.description_en || '',
           description_ar: data.description_ar || '',
           problem_en: data.problem_en || '',
@@ -164,7 +165,7 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
       name_en: formData.name_en,
       name_ar: formData.name_ar,
       slug: formData.slug,
-      category: formData.category,
+      category: formData.project_type,
       description_en: formData.description_en,
       description_ar: formData.description_ar,
       problem_en: formData.problem_en,
@@ -263,8 +264,18 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
                 <input className="admin-input" value={formData.slug} onChange={(e) => handleChange('slug', e.target.value)} placeholder="smart-banking-app" />
               </div>
               <div>
-                <label className="admin-label">Category</label>
-                <input className="admin-input" value={formData.category} onChange={(e) => handleChange('category', e.target.value)} placeholder="Product Design, SaaS, UX Audit..." />
+                <label className="admin-label">Project type</label>
+                <select
+                  className="admin-input"
+                  value={formData.project_type}
+                  onChange={(e) => handleChange('project_type', e.target.value as ProjectType)}
+                >
+                  <option value="design">{getProjectTypeLabel('design', locale)}</option>
+                  <option value="programming">{getProjectTypeLabel('programming', locale)}</option>
+                </select>
+                <p className="admin-helper mt-2">
+                  {isArabic ? 'اختار نوع المشروع: تصميم أو برمجة.' : 'Choose one project type: Design or Programming.'}
+                </p>
               </div>
               <div className="md:col-span-2">
                 <label className="admin-label">Project summary (English)</label>

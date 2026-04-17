@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { Link } from '@/i18n/routing';
 import ProjectGalleryCarousel from '@/components/projects/ProjectGalleryCarousel';
 import { getLocaleDateFormat, isArabicLocale, localizedValue } from '@/utils/locale-content';
+import { getProjectTypeLabel, normalizeProjectType } from '@/utils/project-type';
 import { createClient } from '@/utils/supabase/server';
 
 function splitParagraphs(content?: string | null) {
@@ -14,7 +15,11 @@ function formatDateLabel(value: string | null | undefined, locale: string) {
   if (!value) return isArabicLocale(locale) ? 'غير محدد' : 'Not specified';
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value;
-  return new Intl.DateTimeFormat(getLocaleDateFormat(locale), { year: 'numeric', month: 'short' }).format(date);
+  return new Intl.DateTimeFormat(getLocaleDateFormat(locale), {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  }).format(date);
 }
 
 function formatExternalLink(key: string, locale: string) {
@@ -89,6 +94,8 @@ export default async function ProjectCaseStudyPage(props: { params: Promise<{ sl
   const availableLinks = Object.entries(externalLinks).filter(([, value]) => typeof value === 'string' && value.trim().length > 0);
   const liveDemoEntry = availableLinks.find(([key]) => key === 'live_demo');
   const secondaryLinkEntries = availableLinks.filter(([key]) => key !== 'live_demo');
+  const projectType = normalizeProjectType(project.category);
+  const projectTypeLabel = getProjectTypeLabel(projectType, locale);
 
   const sections = [
     { id: 'idea',        label: isArabic ? 'الفكرة'              : 'The Idea',      content: splitParagraphs(idea) },
@@ -96,12 +103,20 @@ export default async function ProjectCaseStudyPage(props: { params: Promise<{ sl
     { id: 'ui_ux',       label: isArabic ? 'تصميم واجهة المستخدم' : 'UI/UX Design',  content: splitParagraphs(ui_ux) },
   ].filter((s) => s.content.length > 0);
 
-  const metaItems = [
-    { label: isArabic ? 'التصنيف'       : 'Category',  value: project.category ?? (isArabic ? 'تصميم رقمي' : 'Digital Design') },
-    { label: isArabic ? 'بداية المشروع' : 'Started',   value: formatDateLabel(project.start_date, locale) },
-    { label: isArabic ? 'نهاية المشروع' : 'Completed', value: formatDateLabel(project.end_date, locale) },
-    { label: isArabic ? 'الدور'         : 'Role',      value: isArabic ? 'مصمم ومطور' : 'Designer & Developer' },
-  ];
+  const metaItems = isArabic
+    ? [
+        { label: 'التصنيف', value: projectTypeLabel },
+        // In the current RTL visual order, this keeps "بداية المشروع" before "نهاية المشروع".
+        { label: 'نهاية المشروع', value: formatDateLabel(project.end_date, locale) },
+        { label: 'بداية المشروع', value: formatDateLabel(project.start_date, locale) },
+        { label: 'الدور', value: 'مصمم ومطور' },
+      ]
+    : [
+        { label: 'Category', value: projectTypeLabel },
+        { label: 'Started', value: formatDateLabel(project.start_date, locale) },
+        { label: 'Completed', value: formatDateLabel(project.end_date, locale) },
+        { label: 'Role', value: 'Designer & Developer' },
+      ];
 
   return (
     <main className="px-6 pb-24 pt-32 md:px-10 lg:px-12 lg:pt-36">

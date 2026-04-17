@@ -6,6 +6,7 @@ import SectionHeading from '@/components/ui/SectionHeading';
 import ProjectCard from '@/components/ui/ProjectCard';
 import { Link } from '@/i18n/routing';
 import { getLocaleDateFormat, localizedValue } from '@/utils/locale-content';
+import { getProjectTypeLabel, normalizeProjectType } from '@/utils/project-type';
 import { createClient } from '@/utils/supabase/server';
 
 export const revalidate = 3600;
@@ -63,7 +64,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     { data: aboutData },
     { data: contactsData },
   ] = await Promise.all([
-    supabase.from('projects').select('*').eq('is_featured', true).order('created_at', { ascending: false }).limit(2),
+    supabase.from('projects').select('*').order('created_at', { ascending: false }).limit(2),
     supabase.from('services').select('*').eq('is_featured', true).order('view_order', { ascending: true }).limit(2),
     supabase
       .from('site_settings')
@@ -90,7 +91,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
   const featuredProjects = (projectsData || []).map((project) => ({
     title: localizedValue(project as Record<string, unknown>, 'name', locale),
-    category: project.category || t('projectCategoryFallback'),
+    category: getProjectTypeLabel(normalizeProjectType(project.category), locale),
     year: project.start_date
       ? new Date(project.start_date).toLocaleDateString(getLocaleDateFormat(locale), { year: 'numeric' })
       : t('projectYearFallback'),
@@ -111,7 +112,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       : [
           {
             title: t('sampleProjectTitle1'),
-            category: t('sampleProjectCategory1'),
+            category: getProjectTypeLabel('design', locale),
             year: '2025',
             description: t('sampleProjectDescription1'),
             href: '/projects',
@@ -121,7 +122,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           },
           {
             title: t('sampleProjectTitle2'),
-            category: t('sampleProjectCategory2'),
+            category: getProjectTypeLabel('programming', locale),
             year: '2024',
             description: t('sampleProjectDescription2'),
             href: '/projects',
