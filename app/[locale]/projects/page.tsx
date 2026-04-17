@@ -21,15 +21,16 @@ export default async function ProjectsPage({ params }: { params: Promise<{ local
 
   const { data: projectsData } = await supabase
     .from('projects')
-    .select('id, name_en, name_ar, slug, category, description_en, description_ar, solution_en, solution_ar, images, start_date, is_featured')
+    .select('id, name_en, name_ar, slug, category, description_en, description_ar, solution_en, solution_ar, images, start_date, is_featured, external_links')
     .order('created_at', { ascending: false });
 
   const allProjects = (projectsData || []).map((p, index) => {
-    const projectType = normalizeProjectType(p.category);
+    const externalLinks = (p.external_links || {}) as Record<string, unknown>;
+    const projectType = normalizeProjectType(externalLinks.project_type);
     return {
     title:       localizedValue(p as Record<string, unknown>, 'name', locale) || p.name_en,
     type:        projectType,
-    category:    getProjectTypeLabel(projectType, locale),
+    category:    p.category || home('projectCategoryFallback'),
     year:        p.start_date
                    ? new Date(p.start_date).toLocaleDateString(getLocaleDateFormat(locale), { year: 'numeric' })
                    : home('projectYearFallback'),

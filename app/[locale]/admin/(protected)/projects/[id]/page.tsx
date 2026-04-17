@@ -63,6 +63,7 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
     name_en: '',
     name_ar: '',
     slug: '',
+    category: '',
     project_type: 'design' as ProjectType,
     description_en: '',
     description_ar: '',
@@ -80,7 +81,7 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
     is_featured: false,
     images: [] as string[],
     videos: [] as string[],
-    external_links: { live_demo: '', github: '' },
+    external_links: { live_demo: '', github: '', project_type: 'design' as ProjectType },
   })
 
   useEffect(() => {
@@ -95,11 +96,15 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
       if (error) throw error
 
       if (data) {
+        const externalLinks = (data.external_links || {}) as { live_demo?: string; github?: string; project_type?: string }
+        const normalizedProjectType = normalizeProjectType(externalLinks.project_type)
+
         setFormData({
           name_en: data.name_en || '',
           name_ar: data.name_ar || '',
           slug: data.slug || '',
-          project_type: normalizeProjectType(data.category),
+          category: data.category || '',
+          project_type: normalizedProjectType,
           description_en: data.description_en || '',
           description_ar: data.description_ar || '',
           problem_en: data.problem_en || '',
@@ -116,7 +121,11 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
           is_featured: data.is_featured || false,
           images: data.images || [],
           videos: data.videos || [],
-          external_links: data.external_links || { live_demo: '', github: '' },
+          external_links: {
+            live_demo: externalLinks.live_demo || '',
+            github: externalLinks.github || '',
+            project_type: normalizedProjectType,
+          },
         })
       }
     } catch (error) {
@@ -165,7 +174,7 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
       name_en: formData.name_en,
       name_ar: formData.name_ar,
       slug: formData.slug,
-      category: formData.project_type,
+      category: formData.category,
       description_en: formData.description_en,
       description_ar: formData.description_ar,
       problem_en: formData.problem_en,
@@ -182,7 +191,11 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
       is_featured: formData.is_featured,
       images: formData.images.slice(0, 4), // Enforce 4 images max
       videos: formData.videos.slice(0, 1), // Enforce 1 video max
-      external_links: formData.external_links,
+      external_links: {
+        live_demo: formData.external_links.live_demo || '',
+        github: formData.external_links.github || '',
+        project_type: formData.project_type,
+      },
     }
 
     try {
@@ -262,6 +275,18 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
               <div>
                 <label className="admin-label">Slug</label>
                 <input className="admin-input" value={formData.slug} onChange={(e) => handleChange('slug', e.target.value)} placeholder="smart-banking-app" />
+              </div>
+              <div>
+                <label className="admin-label">Category</label>
+                <input
+                  className="admin-input"
+                  value={formData.category}
+                  onChange={(e) => handleChange('category', e.target.value)}
+                  placeholder={isArabic ? 'ويب، موبايل، داشبورد...' : 'Web App, Mobile App, Dashboard...'}
+                />
+                <p className="admin-helper mt-2">
+                  {isArabic ? 'التصنيف يوضح شكل/منصة المشروع.' : 'Category describes the platform or format of the project.'}
+                </p>
               </div>
               <div>
                 <label className="admin-label">Project type</label>

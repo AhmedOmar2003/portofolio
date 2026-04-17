@@ -91,11 +91,16 @@ export default async function ProjectCaseStudyPage(props: { params: Promise<{ sl
   const videoPresentation = videoUrl ? getVideoPresentation(videoUrl) : null
   const externalLinks: Record<string, string> = project.external_links ?? {};
   const technologies = Array.isArray(project.technologies) ? project.technologies : [];
-  const availableLinks = Object.entries(externalLinks).filter(([, value]) => typeof value === 'string' && value.trim().length > 0);
+  const availableLinks = Object.entries(externalLinks).filter(
+    ([key, value]) => key !== 'project_type' && typeof value === 'string' && value.trim().length > 0
+  );
   const liveDemoEntry = availableLinks.find(([key]) => key === 'live_demo');
   const secondaryLinkEntries = availableLinks.filter(([key]) => key !== 'live_demo');
-  const projectType = normalizeProjectType(project.category);
+  const projectType = normalizeProjectType(externalLinks.project_type);
   const projectTypeLabel = getProjectTypeLabel(projectType, locale);
+  const categoryLabel = typeof project.category === 'string' && project.category.trim().length > 0
+    ? project.category
+    : (isArabic ? 'تصميم رقمي' : 'Digital Design');
 
   const sections = [
     { id: 'idea',        label: isArabic ? 'الفكرة'              : 'The Idea',      content: splitParagraphs(idea) },
@@ -105,14 +110,16 @@ export default async function ProjectCaseStudyPage(props: { params: Promise<{ sl
 
   const metaItems = isArabic
     ? [
-        { label: 'التصنيف', value: projectTypeLabel },
+        { label: 'التصنيف', value: categoryLabel },
+        { label: 'نوع المشروع', value: projectTypeLabel },
         // In the current RTL visual order, this keeps "بداية المشروع" before "نهاية المشروع".
         { label: 'نهاية المشروع', value: formatDateLabel(project.end_date, locale) },
         { label: 'بداية المشروع', value: formatDateLabel(project.start_date, locale) },
         { label: 'الدور', value: 'مصمم ومطور' },
       ]
     : [
-        { label: 'Category', value: projectTypeLabel },
+        { label: 'Category', value: categoryLabel },
+        { label: 'Project Type', value: projectTypeLabel },
         { label: 'Started', value: formatDateLabel(project.start_date, locale) },
         { label: 'Completed', value: formatDateLabel(project.end_date, locale) },
         { label: 'Role', value: 'Designer & Developer' },
