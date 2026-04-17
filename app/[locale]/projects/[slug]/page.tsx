@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import { ArrowLeft, ArrowUpRight } from 'lucide-react';
 import { notFound } from 'next/navigation';
 
@@ -78,8 +77,11 @@ export default async function ProjectCaseStudyPage(props: { params: Promise<{ sl
   const problem     = localizedValue(project as Record<string, unknown>, 'problem', locale);
   const ui_ux       = localizedValue(project as Record<string, unknown>, 'ui_ux', locale);
 
-  const heroImage    = project.images?.[0] ?? null;
-  const galleryImages: string[] = Array.isArray(project.images) ? project.images.slice(1, 4) : [];
+  const rawProjectImages: unknown[] = Array.isArray(project.images) ? project.images : [];
+  const projectImages: string[] = rawProjectImages.filter(
+    (img): img is string => typeof img === 'string' && img.trim().length > 0
+  );
+  const heroImage = projectImages[0] ?? null;
   const videoUrl     = Array.isArray(project.videos) && project.videos.length > 0 ? project.videos[0] : null;
   const videoPresentation = videoUrl ? getVideoPresentation(videoUrl) : null
   const externalLinks: Record<string, string> = project.external_links ?? {};
@@ -172,19 +174,11 @@ export default async function ProjectCaseStudyPage(props: { params: Promise<{ sl
           </div>
         </section>
 
-        {/* Hero image */}
-        {heroImage ? (
-          <div className="relative aspect-[16/9] overflow-hidden rounded-3xl border border-white/10">
-            <Image
-              src={heroImage}
-              alt={title}
-              fill
-              priority
-              sizes="(max-width: 768px) 100vw, 90vw"
-              className="object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#04070f]/40 to-transparent" />
-          </div>
+        {/* Project images slider (includes cover + additional images) */}
+        {projectImages.length > 0 ? (
+          <section>
+            <ProjectGalleryCarousel images={projectImages} title={title} isArabic={isArabic} />
+          </section>
         ) : null}
 
         {/* Content sections */}
@@ -243,14 +237,6 @@ export default async function ProjectCaseStudyPage(props: { params: Promise<{ sl
                 </article>
               )}
             </div>
-          </section>
-        )}
-
-        {/* Gallery */}
-        {galleryImages.length > 0 && (
-          <section>
-            <p className="eyebrow mb-8 block">{isArabic ? 'معرض الصور' : 'Gallery'}</p>
-            <ProjectGalleryCarousel images={galleryImages} title={title} isArabic={isArabic} />
           </section>
         )}
 
