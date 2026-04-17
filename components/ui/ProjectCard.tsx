@@ -22,6 +22,8 @@ interface ProjectCardProps {
     cta: string;
   };
   index: number;
+  projectType?: 'design' | 'programming';
+  projectTypeBadge?: string;
 }
 
 export default function ProjectCard({
@@ -33,6 +35,8 @@ export default function ProjectCard({
   imageUrl,
   labels,
   index,
+  projectType,
+  projectTypeBadge,
 }: ProjectCardProps) {
   const shouldReduceMotion = useReducedMotion();
   const locale = useLocale();
@@ -65,6 +69,17 @@ export default function ProjectCard({
               <span className="text-sm text-slate-500" aria-hidden="true">{title}</span>
             </div>
           )}
+          {projectTypeBadge ? (
+            <span
+              className={`absolute top-3 inline-flex items-center rounded-full border px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.14em] backdrop-blur ${
+                projectType === 'programming'
+                  ? 'border-sky-300/40 bg-sky-300/15 text-sky-100'
+                  : 'border-emerald-300/40 bg-emerald-300/15 text-emerald-100'
+              } ${isArabic ? 'left-3' : 'right-3'}`}
+            >
+              {projectTypeBadge}
+            </span>
+          ) : null}
         </div>
 
         <div className="flex flex-1 flex-col p-6 sm:p-8">
