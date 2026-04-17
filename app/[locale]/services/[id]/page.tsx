@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { ArrowLeft, ArrowUpRight, Check, Mail, MessageCircle } from 'lucide-react';
+import { ArrowLeft, ArrowUpRight, Mail, MessageCircle } from 'lucide-react';
 import { notFound } from 'next/navigation';
 
 import { Link } from '@/i18n/routing';
@@ -151,12 +151,9 @@ export default async function ServiceDetailPage(props: {
                   <li
                     key={i}
                     className={`flex items-start gap-3 text-base text-slate-300 ${
-                      isArabic ? 'w-full flex-row-reverse text-right leading-8' : 'leading-7'
+                      isArabic ? 'w-full text-right leading-8' : 'leading-7'
                     }`}
                   >
-                    <span className="mt-1 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-[#8df6c8]/20 bg-[#8df6c8]/10 text-[#8df6c8]">
-                      <Check className="h-3 w-3" aria-hidden="true" />
-                    </span>
                     <span className={isArabic ? 'flex-1' : ''}>{item}</span>
                   </li>
                 ))}
