@@ -216,14 +216,14 @@ export default function ServiceEditorPage({ params }: { params: Promise<{ locale
 
           <section className="admin-card px-6 py-6">
             <h2 className="text-xl font-semibold text-white">Service images</h2>
-            <p className="mt-1 text-sm text-slate-500">Up to 3 images (WebP) — first is the main cover.</p>
+            <p className="mt-1 text-sm text-slate-500">Up to 3 images (PNG/JPG/JPEG/WebP) — first is the main cover. Images are auto-converted to WebP.</p>
             <div className="mt-6 space-y-5">
               <div>
                 <p className="admin-label mb-2">Image 1 — Cover</p>
                 <MediaUpload
                   bucket="portfolio-media"
                   folder="services"
-                  accept="image/webp"
+                  accept="image/*"
                   currentUrl={formData.image_1_url}
                   onUploadSuccess={(url) => handleChange('image_1_url', url)}
                   onRemove={() => handleChange('image_1_url', '')}
@@ -234,7 +234,7 @@ export default function ServiceEditorPage({ params }: { params: Promise<{ locale
                 <MediaUpload
                   bucket="portfolio-media"
                   folder="services"
-                  accept="image/webp"
+                  accept="image/*"
                   currentUrl={formData.image_2_url}
                   onUploadSuccess={(url) => handleChange('image_2_url', url)}
                   onRemove={() => handleChange('image_2_url', '')}
@@ -245,7 +245,7 @@ export default function ServiceEditorPage({ params }: { params: Promise<{ locale
                 <MediaUpload
                   bucket="portfolio-media"
                   folder="services"
-                  accept="image/webp"
+                  accept="image/*"
                   currentUrl={formData.image_3_url}
                   onUploadSuccess={(url) => handleChange('image_3_url', url)}
                   onRemove={() => handleChange('image_3_url', '')}

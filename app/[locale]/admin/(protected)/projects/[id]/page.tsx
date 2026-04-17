@@ -391,7 +391,7 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
 
           <section className="admin-card px-6 py-6">
             <h2 className="text-xl font-semibold text-white">Media Gallery</h2>
-            <p className="mt-1 text-sm text-slate-500">Up to 4 images max (WebP recommended), 1 video optional.</p>
+            <p className="mt-1 text-sm text-slate-500">Up to 4 images max (PNG/JPG/JPEG/WebP). Images are auto-converted to WebP.</p>
             <div className="mt-6 space-y-5">
               {(['Hero Cover', 'Gallery 1', 'Gallery 2', 'Gallery 3'] as const).map((label, index) => (
                 <div key={label}>
@@ -415,7 +415,7 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
                     <MediaUpload
                       bucket="portfolio-media"
                       folder="projects"
-                      accept="image/webp"
+                      accept="image/*"
                       onUploadSuccess={(url) => {
                         const updated = [...formData.images];
                         updated[index] = url;

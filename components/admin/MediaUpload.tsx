@@ -20,21 +20,60 @@ export default function MediaUpload({
   currentUrl,
   onUploadSuccess,
   onRemove,
-  accept = 'image/webp'
+  accept = 'image/*'
 }: MediaUploadProps) {
   const [isUploading, setIsUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   
   const supabase = createClient()
 
+  const convertImageToWebp = async (file: File) => {
+    const alreadyWebp = file.type === 'image/webp' || file.name.toLowerCase().endsWith('.webp')
+    if (alreadyWebp) return file
+
+    const sourceUrl = URL.createObjectURL(file)
+
+    try {
+      const image = await new Promise<HTMLImageElement>((resolve, reject) => {
+        const img = new window.Image()
+        img.onload = () => resolve(img)
+        img.onerror = () => reject(new Error('Unable to read the selected image.'))
+        img.src = sourceUrl
+      })
+
+      const canvas = document.createElement('canvas')
+      canvas.width = image.naturalWidth || image.width
+      canvas.height = image.naturalHeight || image.height
+
+      const context = canvas.getContext('2d')
+      if (!context) {
+        throw new Error('WebP conversion is not supported in this browser.')
+      }
+
+      context.drawImage(image, 0, 0, canvas.width, canvas.height)
+
+      const webpBlob = await new Promise<Blob | null>((resolve) => {
+        canvas.toBlob(resolve, 'image/webp', 0.86)
+      })
+
+      if (!webpBlob) {
+        throw new Error('Failed to convert the image to WebP.')
+      }
+
+      const baseName = file.name.replace(/\.[^/.]+$/, '')
+      return new File([webpBlob], `${baseName}.webp`, { type: 'image/webp' })
+    } finally {
+      URL.revokeObjectURL(sourceUrl)
+    }
+  }
+
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
 
-    const requiresWebp = accept.includes('image/webp')
-    const isWebp = file.type === 'image/webp' || file.name.toLowerCase().endsWith('.webp')
-    if (requiresWebp && !isWebp) {
-      setError('Please upload a WebP image (.webp) only.')
+    const isImageUpload = accept.includes('image')
+    if (isImageUpload && !file.type.startsWith('image/')) {
+      setError('Please upload an image file (PNG, JPG, JPEG, or WebP).')
       return
     }
 
@@ -42,14 +81,15 @@ export default function MediaUpload({
     setError(null)
 
     try {
-      const fileExt = requiresWebp ? 'webp' : file.name.split('.').pop()
+      const uploadFile = isImageUpload ? await convertImageToWebp(file) : file
+      const fileExt = isImageUpload ? 'webp' : (file.name.split('.').pop() || 'bin')
       const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`
       const filePath = `${folder}/${fileName}`
 
       const { error: uploadError } = await supabase.storage
         .from(bucket)
-        .upload(filePath, file, {
-          contentType: file.type || undefined,
+        .upload(filePath, uploadFile, {
+          contentType: uploadFile.type || undefined,
           upsert: false
         })
 
@@ -118,7 +158,7 @@ export default function MediaUpload({
               <span className="font-semibold text-white">Click to upload</span> or drag and drop
             </p>
             <p className="text-xs">
-              {accept === 'image/webp' ? 'WebP only (.webp)' : accept}
+              {accept.includes('image') ? 'PNG, JPG, JPEG, WebP (auto-converted to WebP)' : accept}
             </p>
           </div>
           <input

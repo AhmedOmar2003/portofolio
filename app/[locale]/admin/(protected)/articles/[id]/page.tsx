@@ -264,7 +264,7 @@ export default function ArticleEditorPage({ params }: { params: Promise<{ locale
               <MediaUpload
                 bucket="portfolio-media"
                 folder="articles"
-                accept="image/webp"
+                accept="image/*"
                 currentUrl={formData.cover_image_url}
                 onUploadSuccess={(url) => handleChange('cover_image_url', url)}
                 onRemove={() => handleChange('cover_image_url', '')}
