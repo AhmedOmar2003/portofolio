@@ -71,12 +71,18 @@ export default function ProjectCard({
           )}
           {projectTypeBadge ? (
             <span
-              className={`absolute top-3 inline-flex items-center rounded-full border px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.14em] backdrop-blur ${
+              className={`absolute top-3 inline-flex items-center gap-2 rounded-full border bg-[rgba(2,10,20,0.86)] px-3 py-1.5 text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-white backdrop-blur-md shadow-[0_10px_28px_rgba(0,0,0,0.55)] ${
                 projectType === 'programming'
-                  ? 'border-sky-300/40 bg-sky-300/15 text-sky-100'
-                  : 'border-emerald-300/40 bg-emerald-300/15 text-emerald-100'
+                  ? 'border-sky-300/75'
+                  : 'border-emerald-300/75'
               } ${isArabic ? 'left-3' : 'right-3'}`}
             >
+              <span
+                className={`h-1.5 w-1.5 rounded-full shadow-[0_0_10px_rgba(255,255,255,0.35)] ${
+                  projectType === 'programming' ? 'bg-sky-300' : 'bg-emerald-300'
+                }`}
+                aria-hidden="true"
+              />
               {projectTypeBadge}
             </span>
           ) : null}
