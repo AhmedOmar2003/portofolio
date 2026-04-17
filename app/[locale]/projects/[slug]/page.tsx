@@ -28,6 +28,41 @@ function formatExternalLink(key: string, locale: string) {
   return isArabicLocale(locale) ? (labels[key]?.ar ?? key) : (labels[key]?.en ?? key.replace(/_/g, ' '));
 }
 
+function getVideoPresentation(url: string) {
+  const value = url.trim()
+  if (!value) return null
+
+  try {
+    const parsed = new URL(value)
+    const host = parsed.hostname.toLowerCase()
+
+    if (host.includes('youtube.com')) {
+      const videoId = parsed.searchParams.get('v')
+      if (videoId) {
+        return { kind: 'embed' as const, src: `https://www.youtube.com/embed/${videoId}` }
+      }
+    }
+
+    if (host.includes('youtu.be')) {
+      const videoId = parsed.pathname.replace('/', '')
+      if (videoId) {
+        return { kind: 'embed' as const, src: `https://www.youtube.com/embed/${videoId}` }
+      }
+    }
+
+    if (host.includes('vimeo.com')) {
+      const videoId = parsed.pathname.split('/').filter(Boolean)[0]
+      if (videoId) {
+        return { kind: 'embed' as const, src: `https://player.vimeo.com/video/${videoId}` }
+      }
+    }
+  } catch {
+    return { kind: 'direct' as const, src: value }
+  }
+
+  return { kind: 'direct' as const, src: value }
+}
+
 export default async function ProjectCaseStudyPage(props: { params: Promise<{ slug: string; locale: string }> }) {
   const { slug, locale } = await props.params;
   const isArabic = isArabicLocale(locale);
@@ -45,6 +80,7 @@ export default async function ProjectCaseStudyPage(props: { params: Promise<{ sl
   const heroImage    = project.images?.[0] ?? null;
   const galleryImages: string[] = Array.isArray(project.images) ? project.images.slice(1, 4) : [];
   const videoUrl     = Array.isArray(project.videos) && project.videos.length > 0 ? project.videos[0] : null;
+  const videoPresentation = videoUrl ? getVideoPresentation(videoUrl) : null
   const externalLinks: Record<string, string> = project.external_links ?? {};
   const technologies = Array.isArray(project.technologies) ? project.technologies : [];
 
@@ -210,17 +246,27 @@ export default async function ProjectCaseStudyPage(props: { params: Promise<{ sl
         )}
 
         {/* Video Player */}
-        {videoUrl && (
+        {videoPresentation && (
           <section>
             <p className="eyebrow mb-8 block">{isArabic ? 'فيديو عرض المشروع' : 'Project Showcase'}</p>
             <div className="relative aspect-video w-full overflow-hidden rounded-3xl border border-white/10 bg-black shadow-2xl">
-              <video 
-                src={videoUrl} 
-                controls 
-                controlsList="nodownload"
-                className="h-full w-full object-cover" 
-                poster={heroImage || undefined}
-              />
+              {videoPresentation.kind === 'embed' ? (
+                <iframe
+                  src={videoPresentation.src}
+                  className="h-full w-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  title={isArabic ? 'فيديو المشروع' : 'Project video'}
+                />
+              ) : (
+                <video
+                  src={videoPresentation.src}
+                  controls
+                  controlsList="nodownload"
+                  className="h-full w-full object-cover"
+                  poster={heroImage || undefined}
+                />
+              )}
             </div>
           </section>
         )}
