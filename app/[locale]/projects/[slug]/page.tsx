@@ -88,9 +88,9 @@ export default async function ProjectCaseStudyPage(props: { params: Promise<{ sl
   const secondaryLinkEntries = availableLinks.filter(([key]) => key !== 'live_demo');
 
   const sections = [
-    { id: 'idea',     label: isArabic ? 'الفكرة'               : 'The Idea',      content: splitParagraphs(idea) },
-    { id: 'problem',  label: isArabic ? 'المشكلة'             : 'The Problem',   content: splitParagraphs(problem) },
-    { id: 'ui_ux',    label: isArabic ? 'تصميم واجهة المستخدم'  : 'UI/UX Design',  content: splitParagraphs(ui_ux) },
+    { id: 'idea',        label: isArabic ? 'الفكرة'              : 'The Idea',      content: splitParagraphs(idea) },
+    { id: 'challenges',  label: isArabic ? 'التحديات'            : 'Challenges',    content: splitParagraphs(problem) },
+    { id: 'ui_ux',       label: isArabic ? 'تصميم واجهة المستخدم' : 'UI/UX Design',  content: splitParagraphs(ui_ux) },
   ].filter((s) => s.content.length > 0);
 
   const metaItems = [

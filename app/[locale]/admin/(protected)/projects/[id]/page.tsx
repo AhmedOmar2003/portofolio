@@ -299,11 +299,11 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
                 />
               </div>
               <div>
-                <label className="admin-label">The Problem (English)</label>
+                <label className="admin-label">Challenges (English)</label>
                 <textarea className="admin-textarea min-h-[150px]" value={formData.problem_en} onChange={(e) => handleChange('problem_en', e.target.value)} />
               </div>
               <div>
-                <label className="admin-label">المشكلة (العربية)</label>
+                <label className="admin-label">التحديات (العربية)</label>
                 <textarea
                   dir="rtl"
                   className="admin-textarea min-h-[150px] text-right"
