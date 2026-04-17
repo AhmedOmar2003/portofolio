@@ -151,7 +151,7 @@ export default async function ProjectCaseStudyPage(props: { params: Promise<{ sl
           )}
 
           {/* Meta strip */}
-          <div className="mt-10 border-t border-white/10 pt-8">
+          <div className={`mt-10 border-t border-white/10 pt-8 ${isArabic ? 'ml-auto max-w-4xl text-right' : ''}`}>
             <div className={`flex flex-wrap gap-4 ${isArabic ? 'flex-row-reverse' : ''}`}>
               {metaItems.map((item) => (
                 <div key={item.label} className={`${isArabic ? 'text-right' : ''}`}>
