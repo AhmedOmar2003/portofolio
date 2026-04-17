@@ -3,6 +3,7 @@ import { ArrowLeft, ArrowUpRight } from 'lucide-react';
 import { notFound } from 'next/navigation';
 
 import { Link } from '@/i18n/routing';
+import ProjectGalleryCarousel from '@/components/projects/ProjectGalleryCarousel';
 import { getLocaleDateFormat, isArabicLocale, localizedValue } from '@/utils/locale-content';
 import { createClient } from '@/utils/supabase/server';
 
@@ -249,19 +250,7 @@ export default async function ProjectCaseStudyPage(props: { params: Promise<{ sl
         {galleryImages.length > 0 && (
           <section>
             <p className="eyebrow mb-8 block">{isArabic ? 'معرض الصور' : 'Gallery'}</p>
-            <div className={`grid gap-5 ${galleryImages.length === 1 ? 'grid-cols-1' : galleryImages.length === 2 ? 'md:grid-cols-2' : 'md:grid-cols-2'}`}>
-              {galleryImages.map((img: string, i: number) => (
-                <div key={i} className={`relative overflow-hidden rounded-3xl border border-white/10 ${galleryImages.length === 3 && i === 2 ? 'md:col-span-2 aspect-[21/9]' : 'aspect-[4/3]'}`}>
-                  <Image
-                    src={img}
-                    alt={`${title} — image ${i + 2}`}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                    className="object-cover transition-transform duration-700 ease-out hover:scale-105"
-                  />
-                </div>
-              ))}
-            </div>
+            <ProjectGalleryCarousel images={galleryImages} title={title} isArabic={isArabic} />
           </section>
         )}
 
