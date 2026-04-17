@@ -58,6 +58,7 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
 
   const [loading, setLoading] = useState(!isNew)
   const [saving, setSaving] = useState(false)
+  const [mediaSyncing, setMediaSyncing] = useState(false)
   const [message, setMessage] = useState<MessageState>(null)
   const [formData, setFormData] = useState({
     name_en: '',
@@ -90,6 +91,11 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
     }
   }, [isNew, id])
 
+  const normalizeImages = (images: string[]) =>
+    images
+      .filter((img): img is string => typeof img === 'string' && img.trim().length > 0)
+      .slice(0, 4)
+
   const fetchProject = async () => {
     try {
       const { data, error } = await supabase.from('projects').select('*').eq('id', id).single()
@@ -119,7 +125,7 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
           start_date: data.start_date || '',
           end_date: data.end_date || '',
           is_featured: data.is_featured || false,
-          images: data.images || [],
+          images: normalizeImages(Array.isArray(data.images) ? data.images : []),
           videos: data.videos || [],
           external_links: {
             live_demo: externalLinks.live_demo || '',
@@ -150,6 +156,39 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
   const handleVideoUrlChange = (value: string) => {
     const normalized = value.trim()
     handleChange('videos', normalized ? [normalized] : [])
+  }
+
+  const persistProjectImages = async (nextImages: string[]) => {
+    if (isNew) return true
+
+    setMediaSyncing(true)
+    const normalized = normalizeImages(nextImages)
+
+    try {
+      const { error } = await supabase.from('projects').update({ images: normalized }).eq('id', id)
+      if (error) throw error
+      setMessage({ type: 'success', text: 'Image changes saved.' })
+      setTimeout(() => setMessage(null), 1800)
+      return true
+    } catch (error) {
+      console.error('Error syncing project images:', error)
+      setMessage({ type: 'error', text: 'Could not save image deletion. Please try again.' })
+      return false
+    } finally {
+      setMediaSyncing(false)
+    }
+  }
+
+  const handleRemoveProjectImage = async (index: number) => {
+    const previous = [...formData.images]
+    const updated = previous.filter((_, currentIndex) => currentIndex !== index)
+
+    handleChange('images', updated)
+
+    const synced = await persistProjectImages(updated)
+    if (!synced) {
+      handleChange('images', previous)
+    }
   }
 
   const generateSlug = () => {
@@ -189,7 +228,7 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
       start_date: formData.start_date || null,
       end_date: formData.end_date || null,
       is_featured: formData.is_featured,
-      images: formData.images.slice(0, 4), // Enforce 4 images max
+      images: normalizeImages(formData.images),
       videos: formData.videos.slice(0, 1), // Enforce 1 video max
       external_links: {
         live_demo: formData.external_links.live_demo || '',
@@ -437,12 +476,9 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
                       <Image src={formData.images[index]} alt={`Project asset ${index + 1}`} width={640} height={360} className="h-40 w-full object-cover" />
                       <button
                         type="button"
-                        onClick={() => {
-                          const updated = [...formData.images];
-                          updated.splice(index, 1);
-                          handleChange('images', updated);
-                        }}
-                        className="absolute right-3 top-3 rounded-xl border border-rose-400/20 bg-rose-400/10 p-2 text-rose-200 opacity-0 transition group-hover:opacity-100"
+                        onClick={() => void handleRemoveProjectImage(index)}
+                        disabled={mediaSyncing}
+                        className="absolute right-3 top-3 rounded-xl border border-rose-400/20 bg-rose-400/10 p-2 text-rose-200 opacity-0 transition group-hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-60"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>

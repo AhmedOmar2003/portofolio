@@ -9,6 +9,7 @@ import MediaUpload from '@/components/admin/MediaUpload'
 import { createClient } from '@/utils/supabase/client'
 
 type MessageState = { type: 'success' | 'error'; text: string } | null
+type ServiceImageField = 'image_1_url' | 'image_2_url' | 'image_3_url'
 
 function getVideoPreview(url: string) {
   const value = url.trim()
@@ -55,6 +56,7 @@ export default function ServiceEditorPage({ params }: { params: Promise<{ locale
 
   const [loading, setLoading] = useState(!isNew)
   const [saving, setSaving] = useState(false)
+  const [mediaSyncing, setMediaSyncing] = useState(false)
   const [message, setMessage] = useState<MessageState>(null)
   const [formData, setFormData] = useState({
     title_en: '',
@@ -121,6 +123,27 @@ export default function ServiceEditorPage({ params }: { params: Promise<{ locale
     handleChange('video_url', value.trim())
   }
 
+  const handleRemoveServiceImage = async (field: ServiceImageField) => {
+    const previous = formData[field]
+    handleChange(field, '')
+
+    if (isNew) return
+
+    setMediaSyncing(true)
+    try {
+      const { error } = await supabase.from('services').update({ [field]: null }).eq('id', id)
+      if (error) throw error
+      setMessage({ type: 'success', text: 'Image removed and saved.' })
+      setTimeout(() => setMessage(null), 1800)
+    } catch (error) {
+      console.error('Error removing service image:', error)
+      handleChange(field, previous)
+      setMessage({ type: 'error', text: 'Could not remove image. Please try again.' })
+    } finally {
+      setMediaSyncing(false)
+    }
+  }
+
   const handleSave = async () => {
     if (!formData.title_en) {
       setMessage({ type: 'error', text: 'Service title is required.' })
@@ -137,9 +160,9 @@ export default function ServiceEditorPage({ params }: { params: Promise<{ locale
       description_ar: formData.description_ar,
       detailed_content_en: formData.detailed_content_en,
       detailed_content_ar: formData.detailed_content_ar,
-      image_1_url: formData.image_1_url,
-      image_2_url: formData.image_2_url,
-      image_3_url: formData.image_3_url,
+      image_1_url: formData.image_1_url.trim() || null,
+      image_2_url: formData.image_2_url.trim() || null,
+      image_3_url: formData.image_3_url.trim() || null,
       service_link_url: formData.service_link_url,
       video_url: formData.video_url,
       is_featured: formData.is_featured,
@@ -324,7 +347,7 @@ export default function ServiceEditorPage({ params }: { params: Promise<{ locale
                   accept="image/*"
                   currentUrl={formData.image_1_url}
                   onUploadSuccess={(url) => handleChange('image_1_url', url)}
-                  onRemove={() => handleChange('image_1_url', '')}
+                  onRemove={mediaSyncing ? undefined : () => void handleRemoveServiceImage('image_1_url')}
                 />
               </div>
               <div>
@@ -335,7 +358,7 @@ export default function ServiceEditorPage({ params }: { params: Promise<{ locale
                   accept="image/*"
                   currentUrl={formData.image_2_url}
                   onUploadSuccess={(url) => handleChange('image_2_url', url)}
-                  onRemove={() => handleChange('image_2_url', '')}
+                  onRemove={mediaSyncing ? undefined : () => void handleRemoveServiceImage('image_2_url')}
                 />
               </div>
               <div>
@@ -346,7 +369,7 @@ export default function ServiceEditorPage({ params }: { params: Promise<{ locale
                   accept="image/*"
                   currentUrl={formData.image_3_url}
                   onUploadSuccess={(url) => handleChange('image_3_url', url)}
-                  onRemove={() => handleChange('image_3_url', '')}
+                  onRemove={mediaSyncing ? undefined : () => void handleRemoveServiceImage('image_3_url')}
                 />
               </div>
             </div>
