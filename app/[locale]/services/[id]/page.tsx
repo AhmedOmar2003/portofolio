@@ -106,7 +106,7 @@ export default async function ServiceDetailPage(props: {
           )}
 
           {serviceLinkUrl ? (
-            <div className={`mt-7 flex ${isArabic ? 'justify-end' : ''}`}>
+            <div className={`mt-7 ${isArabic ? 'text-right' : ''}`}>
               <a
                 href={serviceLinkUrl}
                 target="_blank"
@@ -143,12 +143,12 @@ export default async function ServiceDetailPage(props: {
               <p className="mb-6 text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
                 {isArabic ? 'ما ستحصل عليه' : 'What you get'}
               </p>
-              <ul className="space-y-4">
+              <ul className="space-y-4" dir={isArabic ? 'rtl' : 'ltr'}>
                 {deliverables.map((item, i) => (
                   <li
                     key={i}
                     className={`flex items-start gap-3 text-base text-slate-300 ${
-                      isArabic ? 'flex-row-reverse justify-end leading-8 text-right' : 'leading-7'
+                      isArabic ? 'justify-end leading-8 text-right' : 'leading-7'
                     }`}
                   >
                     <span className="mt-1 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-[#8df6c8]/20 bg-[#8df6c8]/10 text-[#8df6c8]">
