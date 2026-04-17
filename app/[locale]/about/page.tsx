@@ -69,12 +69,12 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
             <div className="relative aspect-square md:aspect-[4/5] p-2">
                {/* Behind Image (App) */}
                <div className="absolute right-0 top-0 h-[75%] w-[75%] overflow-hidden rounded-[2rem] border border-white/10 shadow-2xl transition-all duration-700 hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(141,246,200,0.1)]">
-                 <Image src="/modern_ui_design.png" alt="Premium Mobile App UI dashboard" fill className="object-cover opacity-80 mix-blend-luminosity transition-all duration-500 hover:mix-blend-normal" />
+                 <Image src="/modern_ui_design.webp" alt="Premium Mobile App UI dashboard" fill className="object-cover opacity-80 mix-blend-luminosity transition-all duration-500 hover:mix-blend-normal" />
                </div>
 
                {/* Forefront Image (Website) */}
                <div className="absolute bottom-0 left-0 z-10 h-[65%] w-[85%] overflow-hidden rounded-[2rem] border border-white/15 shadow-2xl bg-[#09090b] transition-all duration-700 hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(141,246,200,0.1)]">
-                 <Image src="/modern_code_editor.png" alt="Modern Code Editor glassmorphism dashboard" fill className="object-cover opacity-80 mix-blend-luminosity transition-all duration-500 hover:mix-blend-normal" />
+                 <Image src="/modern_code_editor.webp" alt="Modern Code Editor glassmorphism dashboard" fill className="object-cover opacity-80 mix-blend-luminosity transition-all duration-500 hover:mix-blend-normal" />
                  <div className="absolute inset-0 bg-gradient-to-t from-[#04070f] via-transparent to-transparent opacity-60" />
                </div>
             </div>

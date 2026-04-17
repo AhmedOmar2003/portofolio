@@ -20,7 +20,7 @@ export default function MediaUpload({
   currentUrl,
   onUploadSuccess,
   onRemove,
-  accept = 'image/*'
+  accept = 'image/webp'
 }: MediaUploadProps) {
   const [isUploading, setIsUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -31,17 +31,27 @@ export default function MediaUpload({
     const file = e.target.files?.[0]
     if (!file) return
 
+    const requiresWebp = accept.includes('image/webp')
+    const isWebp = file.type === 'image/webp' || file.name.toLowerCase().endsWith('.webp')
+    if (requiresWebp && !isWebp) {
+      setError('Please upload a WebP image (.webp) only.')
+      return
+    }
+
     setIsUploading(true)
     setError(null)
 
     try {
-      const fileExt = file.name.split('.').pop()
+      const fileExt = requiresWebp ? 'webp' : file.name.split('.').pop()
       const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`
       const filePath = `${folder}/${fileName}`
 
       const { error: uploadError } = await supabase.storage
         .from(bucket)
-        .upload(filePath, file)
+        .upload(filePath, file, {
+          contentType: file.type || undefined,
+          upsert: false
+        })
 
       if (uploadError) {
         throw uploadError
@@ -108,7 +118,7 @@ export default function MediaUpload({
               <span className="font-semibold text-white">Click to upload</span> or drag and drop
             </p>
             <p className="text-xs">
-              {accept === 'image/*' ? 'PNG, JPG, WebP, GIF' : accept}
+              {accept === 'image/webp' ? 'WebP only (.webp)' : accept}
             </p>
           </div>
           <input

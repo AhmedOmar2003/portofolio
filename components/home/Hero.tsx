@@ -92,7 +92,7 @@ export default function Hero({ title, subtitle, projectCount, serviceCount }: He
               className="absolute inset-x-4 bottom-4 top-12 overflow-hidden rounded-[1.8rem] border border-white/10 bg-slate-950/60 shadow-[0_28px_80px_rgba(2,8,23,0.48)] sm:inset-x-8 sm:bottom-8 sm:top-10 sm:rounded-[2.2rem] sm:shadow-[0_40px_120px_rgba(2,8,23,0.55)] lg:inset-x-10 lg:bottom-10 lg:top-10"
             >
               <Image
-                src="/profile.png"
+                src="/profile.webp"
                 alt="Ahmed Essam Maher portrait"
                 fill
                 priority

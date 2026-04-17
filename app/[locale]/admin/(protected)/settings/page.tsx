@@ -177,7 +177,7 @@ export default function SiteSettingsAdminPage() {
                 <MediaUpload
                   bucket="portfolio-media"
                   folder="settings"
-                  accept="image/*"
+                  accept="image/webp"
                   currentUrl={formData.logo_url}
                   onUploadSuccess={(url) => handleChange('logo_url', url)}
                   onRemove={() => handleChange('logo_url', '')}
@@ -188,7 +188,7 @@ export default function SiteSettingsAdminPage() {
                 <MediaUpload
                   bucket="portfolio-media"
                   folder="settings"
-                  accept="image/*"
+                  accept="image/webp"
                   currentUrl={formData.favicon_url}
                   onUploadSuccess={(url) => handleChange('favicon_url', url)}
                   onRemove={() => handleChange('favicon_url', '')}
