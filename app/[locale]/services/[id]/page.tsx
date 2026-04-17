@@ -9,10 +9,7 @@ import { createClient } from '@/utils/supabase/server';
 export const revalidate = 3600;
 
 function splitLines(content?: string | null) {
-  return (content || '')
-    .split('\n')
-    .map((s) => s.replace(/^[-•]\s*/, '').trim())
-    .filter(Boolean);
+  return (content || '').split('\n').map((s) => s.trim()).filter(Boolean);
 }
 
 function getVideoPresentation(url: string) {
