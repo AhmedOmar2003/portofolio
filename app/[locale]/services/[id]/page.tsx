@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { ArrowLeft, Check, Mail, MessageCircle } from 'lucide-react';
+import { ArrowLeft, ArrowUpRight, Check, Mail, MessageCircle } from 'lucide-react';
 import { notFound } from 'next/navigation';
 
 import { Link } from '@/i18n/routing';
@@ -10,6 +10,41 @@ export const revalidate = 3600;
 
 function splitLines(content?: string | null) {
   return (content || '').split('\n').map((s) => s.trim()).filter(Boolean);
+}
+
+function getVideoPresentation(url: string) {
+  const value = url.trim()
+  if (!value) return null
+
+  try {
+    const parsed = new URL(value)
+    const host = parsed.hostname.toLowerCase()
+
+    if (host.includes('youtube.com')) {
+      const videoId = parsed.searchParams.get('v')
+      if (videoId) {
+        return { kind: 'embed' as const, src: `https://www.youtube.com/embed/${videoId}` }
+      }
+    }
+
+    if (host.includes('youtu.be')) {
+      const videoId = parsed.pathname.replace('/', '')
+      if (videoId) {
+        return { kind: 'embed' as const, src: `https://www.youtube.com/embed/${videoId}` }
+      }
+    }
+
+    if (host.includes('vimeo.com')) {
+      const videoId = parsed.pathname.split('/').filter(Boolean)[0]
+      if (videoId) {
+        return { kind: 'embed' as const, src: `https://player.vimeo.com/video/${videoId}` }
+      }
+    }
+  } catch {
+    return { kind: 'direct' as const, src: value }
+  }
+
+  return { kind: 'direct' as const, src: value }
 }
 
 export default async function ServiceDetailPage(props: {
@@ -36,6 +71,9 @@ export default async function ServiceDetailPage(props: {
   if (service.image_1_url) images.push(service.image_1_url as string);
   if (service.image_2_url) images.push(service.image_2_url as string);
   if (service.image_3_url) images.push(service.image_3_url as string);
+  const serviceLinkUrl = typeof service.service_link_url === 'string' ? service.service_link_url.trim() : '';
+  const serviceVideoUrl = typeof service.video_url === 'string' ? service.video_url.trim() : '';
+  const videoPresentation = serviceVideoUrl ? getVideoPresentation(serviceVideoUrl) : null;
 
   const whatsappNumber = (siteSettings as Record<string, unknown> | null)?.whatsapp_number as string | undefined;
   const contactEmail   = (siteSettings as Record<string, unknown> | null)?.contact_email as string | undefined;
@@ -66,6 +104,20 @@ export default async function ServiceDetailPage(props: {
               {description}
             </p>
           )}
+
+          {serviceLinkUrl ? (
+            <div className={`mt-7 flex ${isArabic ? 'justify-end' : ''}`}>
+              <a
+                href={serviceLinkUrl}
+                target="_blank"
+                rel="noreferrer"
+                className={`group inline-flex items-center gap-2 rounded-full border border-[#8df6c8]/45 bg-gradient-to-r from-[#8df6c8] to-[#6ad7ff] px-5 py-2.5 text-sm font-semibold text-[#02131b] shadow-[0_10px_30px_rgba(106,215,255,0.3)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_34px_rgba(106,215,255,0.4)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8df6c8] focus-visible:ring-offset-2 focus-visible:ring-offset-[#050816] ${isArabic ? 'flex-row-reverse' : ''}`}
+              >
+                {isArabic ? 'رابط الخدمة' : 'Service Link'}
+                <ArrowUpRight className={`h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 ${isArabic ? 'rtl-flip' : ''}`} aria-hidden="true" />
+              </a>
+            </div>
+          ) : null}
         </section>
 
         {/* Main image */}
@@ -93,7 +145,12 @@ export default async function ServiceDetailPage(props: {
               </p>
               <ul className="space-y-4">
                 {deliverables.map((item, i) => (
-                  <li key={i} className={`flex items-start gap-3 text-base text-slate-300 ${isArabic ? 'flex-row-reverse leading-8' : 'leading-7'}`}>
+                  <li
+                    key={i}
+                    className={`flex items-start gap-3 text-base text-slate-300 ${
+                      isArabic ? 'flex-row-reverse justify-end leading-8 text-right' : 'leading-7'
+                    }`}
+                  >
                     <span className="mt-1 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-[#8df6c8]/20 bg-[#8df6c8]/10 text-[#8df6c8]">
                       <Check className="h-3 w-3" aria-hidden="true" />
                     </span>
@@ -122,6 +179,34 @@ export default async function ServiceDetailPage(props: {
           )}
         </div>
 
+        {/* Service video */}
+        {videoPresentation ? (
+          <section>
+            <p className={`mb-8 text-xs font-semibold uppercase tracking-[0.22em] text-slate-500 ${isArabic ? 'text-right' : ''}`}>
+              {isArabic ? 'فيديو الخدمة' : 'Service Video'}
+            </p>
+            <div className="relative aspect-video w-full overflow-hidden rounded-3xl border border-white/10 bg-black shadow-2xl">
+              {videoPresentation.kind === 'embed' ? (
+                <iframe
+                  src={videoPresentation.src}
+                  className="h-full w-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  title={isArabic ? 'فيديو الخدمة' : 'Service video'}
+                />
+              ) : (
+                <video
+                  src={videoPresentation.src}
+                  controls
+                  controlsList="nodownload"
+                  className="h-full w-full object-cover"
+                  poster={images[0] || undefined}
+                />
+              )}
+            </div>
+          </section>
+        ) : null}
+
         {/* Request CTA */}
         <section className={`border-t border-white/10 pt-12 ${isArabic ? 'text-right' : ''}`}>
           <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-slate-500">
@@ -131,7 +216,7 @@ export default async function ServiceDetailPage(props: {
             {isArabic ? 'تواصل معي وابدأ مشروعك.' : "Let's talk and get started."}
           </h2>
 
-          <div className={`flex flex-wrap gap-3 ${isArabic ? 'flex-row-reverse' : ''}`}>
+          <div className={`flex flex-wrap gap-3 ${isArabic ? 'flex-row-reverse justify-end' : ''}`}>
             {whatsappNumber && (
               <a
                 href={`https://wa.me/${whatsappNumber.replace(/\D/g, '')}?text=${encodeURIComponent(
@@ -148,7 +233,7 @@ export default async function ServiceDetailPage(props: {
               </a>
             )}
 
-            {contactEmail && (
+            {contactEmail ? (
               <a
                 href={`mailto:${contactEmail}?subject=${encodeURIComponent(
                   isArabic ? `استفسار عن خدمة: ${title}` : `Inquiry about: ${title}`
@@ -156,17 +241,15 @@ export default async function ServiceDetailPage(props: {
                 className={`inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.03] px-6 py-3.5 text-sm font-semibold text-slate-300 transition hover:border-white/20 hover:text-white ${isArabic ? 'flex-row-reverse' : ''}`}
               >
                 <Mail className="h-4 w-4" aria-hidden="true" />
-                {isArabic ? 'راسلني بالإيميل' : 'Send an email'}
+                {isArabic ? 'تواصل عبر الإيميل' : 'Send an email'}
               </a>
-            )}
-
-            {/* Fallback if no settings yet */}
-            {!whatsappNumber && !contactEmail && (
+            ) : (
               <Link
                 href="/contact"
-                className={`inline-flex items-center gap-2 rounded-2xl border border-[#8df6c8]/20 bg-[#8df6c8]/10 px-6 py-3.5 text-sm font-semibold text-[#8df6c8] transition hover:bg-[#8df6c8]/20 ${isArabic ? 'flex-row-reverse' : ''}`}
+                className={`inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.03] px-6 py-3.5 text-sm font-semibold text-slate-300 transition hover:border-white/20 hover:text-white ${isArabic ? 'flex-row-reverse' : ''}`}
               >
-                {isArabic ? 'صفحة التواصل' : 'Contact page'}
+                <Mail className="h-4 w-4" aria-hidden="true" />
+                {isArabic ? 'تواصل عبر الإيميل' : 'Contact via email'}
               </Link>
             )}
           </div>

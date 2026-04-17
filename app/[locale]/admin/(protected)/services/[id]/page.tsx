@@ -2,13 +2,48 @@
 
 import Link from 'next/link'
 import { use, useEffect, useState } from 'react'
-import { ArrowLeft, Loader2, Save } from 'lucide-react'
+import { ArrowLeft, Loader2, Save, Trash2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
 import MediaUpload from '@/components/admin/MediaUpload'
 import { createClient } from '@/utils/supabase/client'
 
 type MessageState = { type: 'success' | 'error'; text: string } | null
+
+function getVideoPreview(url: string) {
+  const value = url.trim()
+  if (!value) return null
+
+  try {
+    const parsed = new URL(value)
+    const host = parsed.hostname.toLowerCase()
+
+    if (host.includes('youtube.com')) {
+      const videoId = parsed.searchParams.get('v')
+      if (videoId) {
+        return { kind: 'embed' as const, src: `https://www.youtube.com/embed/${videoId}` }
+      }
+    }
+
+    if (host.includes('youtu.be')) {
+      const videoId = parsed.pathname.replace('/', '')
+      if (videoId) {
+        return { kind: 'embed' as const, src: `https://www.youtube.com/embed/${videoId}` }
+      }
+    }
+
+    if (host.includes('vimeo.com')) {
+      const videoId = parsed.pathname.split('/').filter(Boolean)[0]
+      if (videoId) {
+        return { kind: 'embed' as const, src: `https://player.vimeo.com/video/${videoId}` }
+      }
+    }
+  } catch {
+    return { kind: 'direct' as const, src: value }
+  }
+
+  return { kind: 'direct' as const, src: value }
+}
 
 export default function ServiceEditorPage({ params }: { params: Promise<{ locale: string; id: string }> }) {
   const resolvedParams = use(params)
@@ -31,6 +66,8 @@ export default function ServiceEditorPage({ params }: { params: Promise<{ locale
     image_1_url: '',
     image_2_url: '',
     image_3_url: '',
+    service_link_url: '',
+    video_url: '',
     is_featured: false,
     view_order: 0,
   })
@@ -57,6 +94,8 @@ export default function ServiceEditorPage({ params }: { params: Promise<{ locale
         image_1_url: data.image_1_url || '',
         image_2_url: data.image_2_url || '',
         image_3_url: data.image_3_url || '',
+        service_link_url: data.service_link_url || '',
+        video_url: data.video_url || '',
         is_featured: data.is_featured || false,
         view_order: data.view_order || 0,
       })
@@ -78,6 +117,10 @@ export default function ServiceEditorPage({ params }: { params: Promise<{ locale
     setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
+  const handleVideoUrlChange = (value: string) => {
+    handleChange('video_url', value.trim())
+  }
+
   const handleSave = async () => {
     if (!formData.title_en) {
       setMessage({ type: 'error', text: 'Service title is required.' })
@@ -97,6 +140,8 @@ export default function ServiceEditorPage({ params }: { params: Promise<{ locale
       image_1_url: formData.image_1_url,
       image_2_url: formData.image_2_url,
       image_3_url: formData.image_3_url,
+      service_link_url: formData.service_link_url,
+      video_url: formData.video_url,
       is_featured: formData.is_featured,
       view_order: formData.view_order,
     }
@@ -195,6 +240,59 @@ export default function ServiceEditorPage({ params }: { params: Promise<{ locale
                 onChange={(e) => handleChange('detailed_content_ar', e.target.value)}
                 placeholder="اكتب كل نقطة في سطر مستقل."
               />
+            </div>
+            <div>
+              <label className="admin-label">Service link (like live demo)</label>
+              <input
+                type="url"
+                className="admin-input"
+                value={formData.service_link_url}
+                onChange={(e) => handleChange('service_link_url', e.target.value)}
+                placeholder="https://..."
+              />
+            </div>
+            <div>
+              <label className="admin-label">Service video URL</label>
+              <input
+                type="url"
+                className="admin-input"
+                value={formData.video_url}
+                onChange={(e) => handleVideoUrlChange(e.target.value)}
+                placeholder="https://... (MP4 / YouTube / Vimeo)"
+              />
+              <p className="admin-helper mt-2">
+                استخدم رابط YouTube/Vimeo أو رابط فيديو مباشر بدل الرفع من الجهاز.
+              </p>
+
+              {formData.video_url ? (
+                <div className="group relative mt-4 overflow-hidden rounded-[1.2rem] border border-white/10 bg-black/20">
+                  {(() => {
+                    const preview = getVideoPreview(formData.video_url)
+                    if (!preview) return null
+
+                    if (preview.kind === 'embed') {
+                      return (
+                        <iframe
+                          src={preview.src}
+                          className="h-56 w-full"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                          title="Service video preview"
+                        />
+                      )
+                    }
+
+                    return <video src={preview.src} className="h-56 w-full object-cover" controls />
+                  })()}
+                  <button
+                    type="button"
+                    onClick={() => handleChange('video_url', '')}
+                    className="absolute right-3 top-3 rounded-xl border border-rose-400/20 bg-rose-400/10 p-2 text-rose-200 opacity-0 transition group-hover:opacity-100"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+              ) : null}
             </div>
           </div>
         </section>
