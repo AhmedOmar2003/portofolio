@@ -4,6 +4,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowDownRight, ArrowUpRight, Mail, Sparkles } from 'lucide-react';
 import Image from 'next/image';
 import { useLocale, useTranslations } from 'next-intl';
+import { Link } from '@/i18n/routing';
 
 interface HeroProps {
   title?: string;
@@ -72,10 +73,10 @@ export default function Hero({ title, subtitle, projectCount, serviceCount }: He
               {t('ctaPrimary')}
               <ArrowDownRight className={`h-4 w-4 ${isArabic ? 'mr-2 ml-0 rtl-flip' : 'ml-2 mr-0'}`} aria-hidden="true" />
             </a>
-            <a href="#contact" className="btn btn-secondary w-full px-8 py-3.5 text-base transition-colors hover:bg-white/[0.05] sm:w-auto">
+            <Link href="/contact" className="btn btn-secondary w-full px-8 py-3.5 text-base transition-colors hover:bg-white/[0.05] sm:w-auto">
               <Mail className={`h-4 w-4 ${isArabic ? 'ml-2 mr-0' : 'mr-2 ml-0'}`} aria-hidden="true" />
               {t('ctaSecondary')}
-            </a>
+            </Link>
           </div>
         </motion.div>
 
