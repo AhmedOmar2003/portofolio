@@ -56,7 +56,7 @@ export default async function ServiceDetailPage(props: {
 
   const [{ data: service }, { data: siteSettings }] = await Promise.all([
     supabase.from('services').select('*').eq('id', id).single(),
-    supabase.from('site_settings').select('whatsapp_number, contact_email').single(),
+    supabase.from('site_settings').select('whatsapp_number').single(),
   ]);
 
   if (!service) notFound();
@@ -76,7 +76,7 @@ export default async function ServiceDetailPage(props: {
   const videoPresentation = serviceVideoUrl ? getVideoPresentation(serviceVideoUrl) : null;
 
   const whatsappNumber = (siteSettings as Record<string, unknown> | null)?.whatsapp_number as string | undefined;
-  const contactEmail   = (siteSettings as Record<string, unknown> | null)?.contact_email as string | undefined;
+  const directEmail = 'ahmedessam.uiux@gmail.com';
 
   return (
     <main className="px-6 pb-24 pt-32 md:px-10 lg:px-12 lg:pt-36">
@@ -231,25 +231,15 @@ export default async function ServiceDetailPage(props: {
               </a>
             )}
 
-            {contactEmail ? (
-              <a
-                href={`mailto:${contactEmail}?subject=${encodeURIComponent(
-                  isArabic ? `استفسار عن خدمة: ${title}` : `Inquiry about: ${title}`
-                )}`}
-                className={`inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.03] px-6 py-3.5 text-sm font-semibold text-slate-300 transition hover:border-white/20 hover:text-white ${isArabic ? 'flex-row-reverse' : ''}`}
-              >
-                <Mail className="h-4 w-4" aria-hidden="true" />
-                {isArabic ? 'تواصل عبر الإيميل' : 'Send an email'}
-              </a>
-            ) : (
-              <Link
-                href="/contact"
-                className={`inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.03] px-6 py-3.5 text-sm font-semibold text-slate-300 transition hover:border-white/20 hover:text-white ${isArabic ? 'flex-row-reverse' : ''}`}
-              >
-                <Mail className="h-4 w-4" aria-hidden="true" />
-                {isArabic ? 'تواصل عبر الإيميل' : 'Contact via email'}
-              </Link>
-            )}
+            <a
+              href={`mailto:${directEmail}?subject=${encodeURIComponent(
+                isArabic ? `استفسار عن خدمة: ${title}` : `Inquiry about: ${title}`
+              )}`}
+              className={`inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.03] px-6 py-3.5 text-sm font-semibold text-slate-300 transition hover:border-white/20 hover:text-white ${isArabic ? 'flex-row-reverse' : ''}`}
+            >
+              <Mail className="h-4 w-4" aria-hidden="true" />
+              {isArabic ? 'تواصل عبر الإيميل' : 'Send an email'}
+            </a>
           </div>
         </section>
 
