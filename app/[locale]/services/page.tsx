@@ -38,6 +38,12 @@ export default async function ServicesPage({ params }: { params: Promise<{ local
     <main className="px-6 pb-24 pt-32 md:px-10 lg:px-12 lg:pt-36">
       <div className="mx-auto max-w-[1380px] space-y-16">
 
+        <div className={`rounded-2xl border border-sky-300/20 bg-sky-500/10 px-5 py-3 text-sm text-sky-100/90 ${isArabic ? 'text-right leading-7' : 'leading-6'}`}>
+          {isArabic
+            ? 'ملاحظة: أي خدمة بتبدأ بفهم دقيق لاحتياجك، وبعدها بنحدد كل المتطلبات ونبني حل رقمي تنافسي. الخدمات المعروضة هنا أمثلة، والتنفيذ بيتفصل بالكامل حسب مشروعك.'
+            : 'Note: Every service starts with a deep understanding of your needs. Then we define all requirements and shape a competitive digital solution. Listed services are examples, and execution is fully tailored to your project.'}
+        </div>
+
         {/* Header */}
         <SectionHeading
           overline={t('eyebrow')}

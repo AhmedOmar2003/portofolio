@@ -207,12 +207,6 @@ export default async function ServiceDetailPage(props: {
 
         {/* Request CTA */}
         <section className={`border-t border-white/10 pt-12 ${isArabic ? 'text-right' : ''}`}>
-          <div className={`mb-6 rounded-2xl border border-sky-300/20 bg-sky-500/10 px-4 py-3 text-sm text-sky-100/90 ${isArabic ? 'leading-7 text-right' : 'leading-6'}`}>
-            {isArabic
-              ? 'ملاحظة: أي خدمة بتبدأ بفهم دقيق لاحتياجك، وبعدها بنحدد كل المتطلبات ونبني حل رقمي تنافسي. الخدمات المعروضة هنا أمثلة، والتنفيذ بيتفصل بالكامل حسب مشروعك.'
-              : 'Note: Every service starts with a deep understanding of your needs. Then we define all requirements and shape a competitive digital solution. Listed services are examples, and execution is fully tailored to your project.'}
-          </div>
-
           <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-slate-500">
             {isArabic ? 'مهتم بهذه الخدمة؟' : 'Interested in this service?'}
           </p>
