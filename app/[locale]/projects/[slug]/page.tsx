@@ -172,7 +172,7 @@ export default async function ProjectCaseStudyPage(props: { params: Promise<{ sl
                     href={String(liveDemoEntry[1])}
                     target="_blank"
                     rel="noreferrer"
-                    className={`group inline-flex items-center gap-2 rounded-full border border-[#8df6c8]/45 bg-gradient-to-r from-[#8df6c8] to-[#6ad7ff] px-5 py-2.5 text-sm font-semibold text-[#02131b] shadow-[0_10px_30px_rgba(106,215,255,0.3)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_34px_rgba(106,215,255,0.4)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8df6c8] focus-visible:ring-offset-2 focus-visible:ring-offset-[#050816] ${isArabic ? 'flex-row-reverse' : ''}`}
+                    className="group inline-flex items-center gap-2 rounded-full border border-[#8df6c8]/45 bg-gradient-to-r from-[#8df6c8] to-[#6ad7ff] px-5 py-2.5 text-sm font-semibold text-[#02131b] shadow-[0_10px_30px_rgba(106,215,255,0.3)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_34px_rgba(106,215,255,0.4)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8df6c8] focus-visible:ring-offset-2 focus-visible:ring-offset-[#050816]"
                   >
                     {formatExternalLink('live_demo', locale)}
                     <ArrowUpRight className={`h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 ${isArabic ? 'rtl-flip' : ''}`} aria-hidden="true" />
@@ -185,7 +185,7 @@ export default async function ProjectCaseStudyPage(props: { params: Promise<{ sl
                     href={String(value)}
                     target="_blank"
                     rel="noreferrer"
-                    className={`inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-sm text-slate-200 transition hover:border-[#8df6c8]/30 hover:text-white ${isArabic ? 'flex-row-reverse' : ''}`}
+                    className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-sm text-slate-200 transition hover:border-[#8df6c8]/30 hover:text-white"
                   >
                     {formatExternalLink(key, locale)}
                     <ArrowUpRight className={`h-3.5 w-3.5 ${isArabic ? 'rtl-flip' : ''}`} aria-hidden="true" />
