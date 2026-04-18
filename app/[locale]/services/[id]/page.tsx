@@ -113,11 +113,17 @@ export default async function ServiceDetailPage(props: {
                 rel="noreferrer"
                 className="group inline-flex items-center gap-2 rounded-full border border-[#8df6c8]/45 bg-gradient-to-r from-[#8df6c8] to-[#6ad7ff] px-5 py-2.5 text-sm font-semibold text-[#02131b] shadow-[0_10px_30px_rgba(106,215,255,0.3)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_34px_rgba(106,215,255,0.4)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8df6c8] focus-visible:ring-offset-2 focus-visible:ring-offset-[#050816]"
               >
-                {isArabic ? 'رابط الخدمة' : 'Service Link'}
+                {isArabic ? 'مثال للخدمة' : 'Service Example'}
                 <ArrowUpRight className={`h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 ${isArabic ? 'rtl-flip' : ''}`} aria-hidden="true" />
               </a>
             </div>
           ) : null}
+
+          <p className={`mt-4 max-w-3xl text-sm text-slate-500 ${isArabic ? 'text-right leading-7' : 'leading-6'}`}>
+            {isArabic
+              ? 'ملاحظة: أي خدمة بتبدأ بفهم دقيق لاحتياجك، وبعدها بنحدد كل المتطلبات ونبني حل رقمي تنافسي. الخدمات المعروضة هنا أمثلة، والتنفيذ بيتفصل بالكامل حسب مشروعك.'
+              : 'Note: Every service starts with a deep understanding of your needs. Then we define all requirements and shape a competitive digital solution. Listed services are examples, and execution is fully tailored to your project.'}
+          </p>
         </section>
 
         {/* Main image */}
