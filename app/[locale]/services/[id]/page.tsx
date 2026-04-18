@@ -219,7 +219,7 @@ export default async function ServiceDetailPage(props: {
             {isArabic ? 'تواصل معي وابدأ مشروعك.' : "Let's talk and get started."}
           </h2>
 
-          <div className={`flex flex-wrap gap-3 ${isArabic ? 'flex-row-reverse justify-end' : ''}`}>
+          <div className={`flex flex-wrap gap-3 ${isArabic ? 'justify-end' : ''}`}>
             {whatsappNumber && (
               <a
                 href={`https://wa.me/${whatsappNumber.replace(/\D/g, '')}?text=${encodeURIComponent(
