@@ -249,7 +249,7 @@ export default async function ProjectCaseStudyPage(props: { params: Promise<{ sl
                   <h2 className={`mb-6 text-2xl font-semibold text-white ${isArabic ? 'leading-tight' : 'tracking-[-0.04em]'}`}>
                     {isArabic ? 'التقنيات المستخدمة' : 'Technologies Used'}
                   </h2>
-                  <div className={`flex flex-wrap gap-3 ${isArabic ? 'flex-row-reverse' : ''}`}>
+                  <div dir={isArabic ? 'rtl' : 'ltr'} className="flex flex-wrap gap-3">
                     {technologies.map((tech: string, i: number) => (
                       <span key={i} className="inline-flex items-center rounded-full bg-white/5 border border-white/10 px-4 py-2 text-sm text-slate-300">
                         {tech}
