@@ -79,6 +79,7 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
     technologiesInput: '',
     start_date: '',
     end_date: '',
+    view_order: 0,
     is_featured: false,
     images: [] as string[],
     videos: [] as string[],
@@ -88,6 +89,8 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
   useEffect(() => {
     if (!isNew) {
       void fetchProject()
+    } else {
+      void fetchMaxOrder()
     }
   }, [isNew, id])
 
@@ -95,6 +98,25 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
     images
       .filter((img): img is string => typeof img === 'string' && img.trim().length > 0)
       .slice(0, 4)
+
+  const fetchMaxOrder = async () => {
+    const { data, error } = await supabase
+      .from('projects')
+      .select('view_order')
+      .order('view_order', { ascending: false })
+      .limit(1)
+
+    if (error) {
+      console.warn('Could not load project order field yet:', error.message)
+    }
+
+    const maxOrder = data?.[0]?.view_order
+    setFormData((prev) => ({
+      ...prev,
+      view_order: typeof maxOrder === 'number' ? maxOrder + 1 : 0,
+    }))
+    setLoading(false)
+  }
 
   const fetchProject = async () => {
     try {
@@ -124,6 +146,7 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
           technologiesInput: Array.isArray(data.technologies) ? data.technologies.join(', ') : '',
           start_date: data.start_date || '',
           end_date: data.end_date || '',
+          view_order: typeof data.view_order === 'number' ? data.view_order : 0,
           is_featured: data.is_featured || false,
           images: normalizeImages(Array.isArray(data.images) ? data.images : []),
           videos: data.videos || [],
@@ -227,6 +250,7 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
       technologies: formData.technologiesInput.split(',').map(s => s.trim()).filter(Boolean),
       start_date: formData.start_date || null,
       end_date: formData.end_date || null,
+      view_order: Number.isFinite(formData.view_order) ? formData.view_order : 0,
       is_featured: formData.is_featured,
       images: normalizeImages(formData.images),
       videos: formData.videos.slice(0, 1), // Enforce 1 video max
@@ -251,7 +275,15 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
       }
     } catch (error) {
       console.error('Error saving project:', error)
-      setMessage({ type: 'error', text: 'Failed to save the project.' })
+      const errorText = error instanceof Error ? error.message : String(error)
+      if (errorText.toLowerCase().includes('view_order')) {
+        setMessage({
+          type: 'error',
+          text: 'Project order column is missing. Run projects-view-order-migration.sql in Supabase, then try again.',
+        })
+      } else {
+        setMessage({ type: 'error', text: 'Failed to save the project.' })
+      }
     } finally {
       setSaving(false)
     }
@@ -438,6 +470,19 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
           <section className="admin-card px-6 py-6">
             <h2 className="text-xl font-semibold text-white">Publishing</h2>
             <div className="mt-6 space-y-5">
+              <div>
+                <label className="admin-label">Display order</label>
+                <input
+                  type="number"
+                  className="admin-input"
+                  value={formData.view_order}
+                  onChange={(e) => handleChange('view_order', Number(e.target.value))}
+                />
+                <p className="admin-helper mt-2">
+                  Smaller numbers appear first on the Projects page.
+                </p>
+              </div>
+
               <div className="flex items-center gap-3">
                 <input
                   id="featured-project"

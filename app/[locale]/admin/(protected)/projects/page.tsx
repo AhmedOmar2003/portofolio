@@ -14,6 +14,7 @@ type ProjectItem = {
   name_en: string
   name_ar?: string
   slug: string
+  view_order?: number | null
   is_featured: boolean
   images: string[]
 }
@@ -32,12 +33,24 @@ export default function ProjectsListPage() {
 
   const fetchProjects = async () => {
     try {
-      const { data, error } = await supabase
+      const orderedQuery = await supabase
         .from('projects')
-        .select('id, name_en, name_ar, slug, is_featured, images')
+        .select('id, name_en, name_ar, slug, view_order, is_featured, images')
+        .order('view_order', { ascending: true })
         .order('created_at', { ascending: false })
-      if (error) throw error
-      setProjects((data as ProjectItem[]) || [])
+
+      if (orderedQuery.error) {
+        const fallbackQuery = await supabase
+          .from('projects')
+          .select('id, name_en, name_ar, slug, is_featured, images')
+          .order('created_at', { ascending: false })
+
+        if (fallbackQuery.error) throw fallbackQuery.error
+        setProjects((fallbackQuery.data as ProjectItem[]) || [])
+        return
+      }
+
+      setProjects((orderedQuery.data as ProjectItem[]) || [])
     } catch (error) {
       console.error('Error fetching projects:', error)
     } finally {
@@ -116,6 +129,9 @@ export default function ProjectsListPage() {
                   {isArabicLocale(locale) ? project.name_ar || project.name_en : project.name_en || project.name_ar}
                 </h2>
                 <p className="mt-2 text-sm text-slate-500">{project.slug}</p>
+                <p className="mt-1 text-xs text-slate-500">
+                  {isArabicLocale(locale) ? 'الترتيب:' : 'Order:'} {typeof project.view_order === 'number' ? project.view_order : 0}
+                </p>
 
                 <div className="mt-5 flex items-center gap-3 border-t border-white/8 pt-4">
                   <Link href={`./projects/${project.id}`} className="inline-flex items-center gap-2 rounded-xl border border-white/8 bg-white/[0.03] px-3 py-2 text-sm text-slate-200 transition hover:border-white/14 hover:text-white">

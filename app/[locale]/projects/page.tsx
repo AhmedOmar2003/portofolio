@@ -19,10 +19,20 @@ export default async function ProjectsPage({ params }: { params: Promise<{ local
   const home = await getTranslations({ locale, namespace: 'HomePage' });
   const supabase = await createClient();
 
-  const { data: projectsData } = await supabase
+  const orderedProjectsQuery = await supabase
     .from('projects')
     .select('id, name_en, name_ar, slug, category, description_en, description_ar, solution_en, solution_ar, images, start_date, is_featured, external_links')
+    .order('view_order', { ascending: true })
     .order('created_at', { ascending: false });
+
+  const fallbackProjectsQuery = orderedProjectsQuery.error
+    ? await supabase
+        .from('projects')
+        .select('id, name_en, name_ar, slug, category, description_en, description_ar, solution_en, solution_ar, images, start_date, is_featured, external_links')
+        .order('created_at', { ascending: false })
+    : null;
+
+  const projectsData = orderedProjectsQuery.error ? (fallbackProjectsQuery?.data || []) : (orderedProjectsQuery.data || []);
 
   const allProjects = (projectsData || []).map((p, index) => {
     const externalLinks = (p.external_links || {}) as Record<string, unknown>;

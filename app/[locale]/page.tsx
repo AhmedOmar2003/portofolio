@@ -57,13 +57,13 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const supabase = await createClient();
 
   const [
-    { data: projectsData },
+    projectsQuery,
     { data: servicesData },
     { data: settingsData },
     { data: aboutData },
     { data: contactsData },
   ] = await Promise.all([
-    supabase.from('projects').select('*').order('created_at', { ascending: false }).limit(2),
+    supabase.from('projects').select('*').order('view_order', { ascending: true }).order('created_at', { ascending: false }).limit(2),
     supabase.from('services').select('*').eq('is_featured', true).order('view_order', { ascending: true }).limit(2),
     supabase
       .from('site_settings')
@@ -80,6 +80,10 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       .order('view_order', { ascending: true })
       .limit(2),
   ]);
+
+  const projectsData = projectsQuery.error
+    ? (await supabase.from('projects').select('*').order('created_at', { ascending: false }).limit(2)).data
+    : projectsQuery.data;
 
   const principleCards = splitLines(localizedValue(aboutData as Record<string, unknown>, 'philosophy', locale)).slice(0, 3);
   const principles = principleCards.length ? principleCards : [t('principle1'), t('principle2'), t('principle3')];
