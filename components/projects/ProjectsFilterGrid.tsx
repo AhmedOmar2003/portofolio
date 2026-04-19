@@ -45,8 +45,8 @@ export default function ProjectsFilterGrid({ projects, isArabic, labels }: Proje
 
   const filterButtons: Array<{ key: FilterType; label: string }> = [
     { key: 'all', label: labels.all },
-    { key: 'design', label: labels.design },
     { key: 'programming', label: labels.programming },
+    { key: 'design', label: labels.design },
   ];
 
   return (
