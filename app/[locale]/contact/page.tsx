@@ -28,8 +28,12 @@ function formatHref(type: string, value: string) {
 function formatPhoneDisplay(value: string) {
   const digits = value.replace(/\D/g, '');
 
-  if (digits === '201036529582') {
-    return '+20 1036529582';
+  if (digits === '01036925982' || digits === '201036925982') {
+    return '+20 1036925982';
+  }
+
+  if (digits.startsWith('0') && digits.length === 11) {
+    return `+20 ${digits.slice(1)}`;
   }
 
   if (digits.startsWith('20') && digits.length > 2) {
@@ -48,7 +52,7 @@ export default async function ContactPage(props: { params: Promise<{ locale: str
   const isArabic = locale === 'ar';
   const t = await getTranslations({ locale, namespace: 'ContactPage' });
   const supabase = await createClient();
-  const fallbackPhoneValue = '+(20) 1036529582';
+  const fallbackPhoneValue = '+(20) 1036925982';
 
   const { data: contactsData } = await supabase
     .from('contact_methods')
