@@ -5,7 +5,7 @@ import AppInstallLinks from '@/components/projects/AppInstallLinks';
 import { Link } from '@/i18n/routing';
 import ProjectGalleryCarousel from '@/components/projects/ProjectGalleryCarousel';
 import { getLocaleDateFormat, isArabicLocale, localizedValue } from '@/utils/locale-content';
-import { getProjectTypeLabel, normalizeProjectType } from '@/utils/project-type';
+import { getProjectRoleLabel, getProjectTypeLabel, normalizeProjectType } from '@/utils/project-type';
 import { createClient } from '@/utils/supabase/server';
 
 function splitParagraphs(content?: string | null) {
@@ -81,6 +81,7 @@ export default async function ProjectCaseStudyPage(props: { params: Promise<{ sl
   const description = localizedValue(project as Record<string, unknown>, 'description', locale);
   const idea        = localizedValue(project as Record<string, unknown>, 'idea', locale);
   const problem     = localizedValue(project as Record<string, unknown>, 'problem', locale);
+  const solution    = localizedValue(project as Record<string, unknown>, 'solution', locale);
   const ui_ux       = localizedValue(project as Record<string, unknown>, 'ui_ux', locale);
 
   const rawProjectImages: unknown[] = Array.isArray(project.images) ? project.images : [];
@@ -97,6 +98,7 @@ export default async function ProjectCaseStudyPage(props: { params: Promise<{ sl
   const iosUrl = typeof externalLinks.ios === 'string' ? externalLinks.ios.trim() : '';
   const hasAppInstallLinks = androidUrl.length > 0 || iosUrl.length > 0;
   const technologies = Array.isArray(project.technologies) ? project.technologies : [];
+  const showDesignTechnologies = projectType === 'design' && technologies.length > 0;
   const availableLinks = Object.entries(externalLinks).filter(
     ([key, value]) =>
       key !== 'project_type' &&
@@ -109,13 +111,15 @@ export default async function ProjectCaseStudyPage(props: { params: Promise<{ sl
   const secondaryLinkEntries = availableLinks.filter(([key]) => key !== 'live_demo');
   const shouldShowClassicLinks = !isApplicationProject || !hasAppInstallLinks;
   const projectTypeLabel = getProjectTypeLabel(projectType, locale);
+  const projectRoleLabel = getProjectRoleLabel(projectType, locale);
   const categoryLabel = typeof project.category === 'string' && project.category.trim().length > 0
     ? project.category
     : (isArabic ? 'تصميم رقمي' : 'Digital Design');
 
   const sections = [
     { id: 'idea',        label: isArabic ? 'الفكرة'              : 'The Idea',      content: splitParagraphs(idea) },
-    { id: 'challenges',  label: isArabic ? 'التحديات'            : 'Challenges',    content: splitParagraphs(problem) },
+    { id: 'problems',    label: isArabic ? 'المشاكل'             : 'Problems',      content: splitParagraphs(problem) },
+    { id: 'solutions',   label: isArabic ? 'الحلول'              : 'Solutions',     content: splitParagraphs(solution) },
     { id: 'ui_ux',       label: isArabic ? 'تصميم واجهة المستخدم' : 'UI/UX Design',  content: splitParagraphs(ui_ux) },
   ].filter((s) => s.content.length > 0);
 
@@ -126,14 +130,14 @@ export default async function ProjectCaseStudyPage(props: { params: Promise<{ sl
         // In the current RTL visual order, this keeps "بداية المشروع" before "نهاية المشروع".
         { label: 'نهاية المشروع', value: formatDateLabel(project.end_date, locale) },
         { label: 'بداية المشروع', value: formatDateLabel(project.start_date, locale) },
-        { label: 'الدور', value: 'مصمم ومطور' },
+        { label: 'الدور', value: projectRoleLabel },
       ]
     : [
         { label: 'Category', value: categoryLabel },
         { label: 'Project Type', value: projectTypeLabel },
         { label: 'Started', value: formatDateLabel(project.start_date, locale) },
         { label: 'Completed', value: formatDateLabel(project.end_date, locale) },
-        { label: 'Role', value: 'Designer & Developer' },
+        { label: 'Role', value: projectRoleLabel },
       ];
 
   return (
@@ -255,7 +259,7 @@ export default async function ProjectCaseStudyPage(props: { params: Promise<{ sl
                     {s.label}
                   </a>
                 ))}
-                {technologies.length > 0 && (
+                {showDesignTechnologies && (
                   <a
                     href="#technologies"
                     className="flex items-center gap-3 text-sm text-slate-500 transition-colors hover:text-white"
@@ -280,7 +284,7 @@ export default async function ProjectCaseStudyPage(props: { params: Promise<{ sl
                 </article>
               ))}
 
-              {technologies.length > 0 && (
+              {showDesignTechnologies && (
                 <article id="technologies" className={`scroll-mt-28 ${isArabic ? 'text-right' : ''}`}>
                   <h2 className={`mb-6 text-2xl font-semibold text-white ${isArabic ? 'leading-tight' : 'tracking-[-0.04em]'}`}>
                     {isArabic ? 'التقنيات المستخدمة' : 'Technologies Used'}

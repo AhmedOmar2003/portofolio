@@ -3,7 +3,7 @@ import { getTranslations } from 'next-intl/server';
 import ProjectsFilterGrid from '@/components/projects/ProjectsFilterGrid';
 import SectionHeading from '@/components/ui/SectionHeading';
 import { getLocaleDateFormat, localizedValue } from '@/utils/locale-content';
-import { getProjectFilterType, getProjectTypeLabel, normalizeProjectType, type ProjectType } from '@/utils/project-type';
+import { getProjectFilterType, getProjectRoleLabel, getProjectTypeLabel, normalizeProjectType, type ProjectType } from '@/utils/project-type';
 import { createClient } from '@/utils/supabase/server';
 
 export const revalidate = 3600;
@@ -77,7 +77,7 @@ export default async function ProjectsPage({ params }: { params: Promise<{ local
                   ),
       href:        `/projects/${p.slug}`,
       imageUrl:    firstImage,
-      role:        home('projectRoleValue'),
+      role:        getProjectRoleLabel(projectType, locale),
       impact:      formatPreview(
                     typeof localizedImpact === 'string' ? localizedImpact : null,
                     home('projectImpactFallback')
@@ -91,13 +91,13 @@ export default async function ProjectsPage({ params }: { params: Promise<{ local
       title: home('sampleProjectTitle1'), type: 'design', filterType: 'design', typeLabel: getProjectTypeLabel('design', locale), category: home('sampleProjectCategory1'),
       year: '2025', description: home('sampleProjectDescription1'),
       href: '/projects', imageUrl: undefined,
-      role: home('projectRoleValue'), impact: home('sampleProjectImpact1'), index: 0,
+      role: getProjectRoleLabel('design', locale), impact: home('sampleProjectImpact1'), index: 0,
     },
     {
       title: home('sampleProjectTitle2'), type: 'programming', filterType: 'programming', typeLabel: getProjectTypeLabel('programming', locale), category: home('sampleProjectCategory2'),
       year: '2024', description: home('sampleProjectDescription2'),
       href: '/projects', imageUrl: undefined,
-      role: home('projectRoleValue'), impact: home('sampleProjectImpact2'), index: 1,
+      role: getProjectRoleLabel('programming', locale), impact: home('sampleProjectImpact2'), index: 1,
     },
   ];
 

@@ -6,6 +6,7 @@ import SectionHeading from '@/components/ui/SectionHeading';
 import ProjectCard from '@/components/ui/ProjectCard';
 import { Link } from '@/i18n/routing';
 import { getLocaleDateFormat, localizedValue } from '@/utils/locale-content';
+import { getProjectRoleLabel, normalizeProjectType } from '@/utils/project-type';
 import { createClient } from '@/utils/supabase/server';
 
 export const revalidate = 3600;
@@ -105,7 +106,10 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     ),
     href: `/projects/${project.slug}`,
     imageUrl: project.images && project.images.length > 0 ? project.images[0] : undefined,
-    role: t('projectRoleValue'),
+    role: getProjectRoleLabel(
+      normalizeProjectType((project.external_links as Record<string, unknown> | null)?.project_type),
+      locale
+    ),
     impact: formatPreview(localizedValue(project as Record<string, unknown>, 'solution', locale), t('projectImpactFallback')),
   }));
 
@@ -120,7 +124,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             description: t('sampleProjectDescription1'),
             href: '/projects',
             imageUrl: undefined,
-            role: t('projectRoleValue'),
+            role: getProjectRoleLabel('design', locale),
             impact: t('sampleProjectImpact1'),
           },
           {
@@ -130,7 +134,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             description: t('sampleProjectDescription2'),
             href: '/projects',
             imageUrl: undefined,
-            role: t('projectRoleValue'),
+            role: getProjectRoleLabel('programming', locale),
             impact: t('sampleProjectImpact2'),
           },
         ];

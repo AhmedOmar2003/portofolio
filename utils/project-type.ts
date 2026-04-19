@@ -46,6 +46,14 @@ export function getProjectTypeLabel(type: ProjectType, locale: string): string {
   return isArabic ? 'تصميم' : 'Design';
 }
 
+export function getProjectRoleLabel(type: ProjectType, locale: string): string {
+  const isArabic = locale === 'ar';
+  if (type === 'design') {
+    return isArabic ? 'مصمم' : 'Designer';
+  }
+  return isArabic ? 'مصمم ومطور' : 'Designer & Developer';
+}
+
 export function getProjectFilterType(type: ProjectType): ProjectFilterType {
   if (type === 'applications') {
     return 'programming';

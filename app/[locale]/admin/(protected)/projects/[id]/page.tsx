@@ -431,11 +431,11 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
                 />
               </div>
               <div>
-                <label className="admin-label">Challenges (English)</label>
+                <label className="admin-label">Problems (English)</label>
                 <textarea className="admin-textarea min-h-[150px]" value={formData.problem_en} onChange={(e) => handleChange('problem_en', e.target.value)} />
               </div>
               <div>
-                <label className="admin-label">التحديات (العربية)</label>
+                <label className="admin-label">المشاكل (العربية)</label>
                 <textarea
                   dir="rtl"
                   className="admin-textarea min-h-[150px] text-right"
@@ -458,18 +458,18 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
                       onChange={(e) => handleChange('ui_ux_ar', e.target.value)}
                     />
                   </div>
-                  <div className="md:col-span-2">
-                    <label className="admin-label">Technologies Used (Comma separated: React, Next.js, Figma)</label>
-                    <input className="admin-input" value={formData.technologiesInput} onChange={(e) => handleChange('technologiesInput', e.target.value)} placeholder="React, Figma, Supabase" />
-                  </div>
                 </>
               ) : null}
+              <div className="md:col-span-2">
+                <label className="admin-label">Technologies Used (Comma separated: React, Next.js, Figma)</label>
+                <input className="admin-input" value={formData.technologiesInput} onChange={(e) => handleChange('technologiesInput', e.target.value)} placeholder="React, Figma, Supabase" />
+              </div>
               <div>
-                <label className="admin-label">Results and impact (English)</label>
+                <label className="admin-label">Solutions (English)</label>
                 <textarea className="admin-textarea min-h-[150px]" value={formData.solution_en} onChange={(e) => handleChange('solution_en', e.target.value)} />
               </div>
               <div>
-                <label className="admin-label">النتائج والأثر (العربية)</label>
+                <label className="admin-label">الحلول (العربية)</label>
                 <textarea
                   dir="rtl"
                   className="admin-textarea min-h-[150px] text-right"
@@ -513,49 +513,47 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
         </div>
 
         <div className="space-y-6">
-          {!isDesignProject ? (
-            <section className="admin-card px-6 py-6">
-              <h2 className="text-xl font-semibold text-white">Publishing</h2>
-              <div className="mt-6 space-y-5">
+          <section className="admin-card px-6 py-6">
+            <h2 className="text-xl font-semibold text-white">Publishing</h2>
+            <div className="mt-6 space-y-5">
+              <div>
+                <label className="admin-label">Display order</label>
+                <input
+                  type="number"
+                  className="admin-input"
+                  value={formData.view_order}
+                  onChange={(e) => handleChange('view_order', Number(e.target.value))}
+                />
+                <p className="admin-helper mt-2">
+                  Smaller numbers appear first on the Projects page.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <input
+                  id="featured-project"
+                  type="checkbox"
+                  checked={formData.is_featured}
+                  onChange={(e) => handleChange('is_featured', e.target.checked)}
+                  className="h-4 w-4 rounded border-white/20 bg-black/20 accent-[var(--color-green-accent)]"
+                />
+                <label htmlFor="featured-project" className="text-sm text-slate-300">
+                  Feature this project on the homepage
+                </label>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-1">
                 <div>
-                  <label className="admin-label">Display order</label>
-                  <input
-                    type="number"
-                    className="admin-input"
-                    value={formData.view_order}
-                    onChange={(e) => handleChange('view_order', Number(e.target.value))}
-                  />
-                  <p className="admin-helper mt-2">
-                    Smaller numbers appear first on the Projects page.
-                  </p>
+                  <label className="admin-label">Start date</label>
+                  <input type="date" className="admin-input [color-scheme:dark]" value={formData.start_date} onChange={(e) => handleChange('start_date', e.target.value)} />
                 </div>
-
-                <div className="flex items-center gap-3">
-                  <input
-                    id="featured-project"
-                    type="checkbox"
-                    checked={formData.is_featured}
-                    onChange={(e) => handleChange('is_featured', e.target.checked)}
-                    className="h-4 w-4 rounded border-white/20 bg-black/20 accent-[var(--color-green-accent)]"
-                  />
-                  <label htmlFor="featured-project" className="text-sm text-slate-300">
-                    Feature this project on the homepage
-                  </label>
-                </div>
-
-                <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-1">
-                  <div>
-                    <label className="admin-label">Start date</label>
-                    <input type="date" className="admin-input [color-scheme:dark]" value={formData.start_date} onChange={(e) => handleChange('start_date', e.target.value)} />
-                  </div>
-                  <div>
-                    <label className="admin-label">End date</label>
-                    <input type="date" className="admin-input [color-scheme:dark]" value={formData.end_date} onChange={(e) => handleChange('end_date', e.target.value)} />
-                  </div>
+                <div>
+                  <label className="admin-label">End date</label>
+                  <input type="date" className="admin-input [color-scheme:dark]" value={formData.end_date} onChange={(e) => handleChange('end_date', e.target.value)} />
                 </div>
               </div>
-            </section>
-          ) : null}
+            </div>
+          </section>
 
           <section className="admin-card px-6 py-6">
             <h2 className="text-xl font-semibold text-white">Media Gallery</h2>
