@@ -47,7 +47,10 @@ export default async function ArticleDetailPage(props: { params: Promise<{ slug:
         <article>
           {/* Header */}
           <header className={`mb-12 space-y-6 ${isArabic ? 'text-right' : ''}`}>
-            <div className={`flex flex-wrap items-center gap-3 ${isArabic ? 'justify-end' : ''}`}>
+            <div
+              dir={isArabic ? 'rtl' : 'ltr'}
+              className={`w-full flex flex-wrap items-center gap-3 ${isArabic ? 'justify-end text-right' : ''}`}
+            >
               {isArabic ? (
                 <>
                   {article.read_time_minutes ? (
