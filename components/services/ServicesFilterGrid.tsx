@@ -67,7 +67,7 @@ export default function ServicesFilterGrid({ services, isArabic, labels }: Servi
 
       {filteredServices.length > 0 ? (
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {filteredServices.map((service) => (
+          {filteredServices.map((service, index) => (
             <article
               key={service.id}
               className="group flex flex-col rounded-3xl border border-white/10 bg-white/[0.02] p-8 transition-all duration-300 hover:border-white/20 hover:bg-white/[0.04]"
@@ -77,7 +77,7 @@ export default function ServicesFilterGrid({ services, isArabic, labels }: Servi
                 className={`mb-6 flex items-center justify-between gap-3 ${isArabic ? 'flex-row-reverse' : 'flex-row'}`}
               >
                 <span className="text-sm font-semibold uppercase tracking-widest text-[#8df6c8]">
-                  [{String(service.index + 1).padStart(2, '0')}]
+                  [{String(index + 1).padStart(2, '0')}]
                 </span>
                 <span className="inline-flex items-center rounded-full border border-sky-300/60 bg-[rgba(2,10,20,0.86)] px-3 py-1.5 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-white shadow-[0_10px_28px_rgba(0,0,0,0.5)]">
                   {service.typeLabel}

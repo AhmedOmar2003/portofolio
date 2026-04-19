@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation'
 
 import MediaUpload from '@/components/admin/MediaUpload'
 import { createClient } from '@/utils/supabase/client'
-import { getProjectTypeLabel, normalizeProjectType, type ProjectType } from '@/utils/project-type'
+import { getProjectFilterType, getProjectTypeLabel, normalizeProjectType, type ProjectType } from '@/utils/project-type'
 
 type MessageState = { type: 'success' | 'error'; text: string } | null
 
@@ -60,6 +60,7 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
   const [saving, setSaving] = useState(false)
   const [mediaSyncing, setMediaSyncing] = useState(false)
   const [message, setMessage] = useState<MessageState>(null)
+  const [projectOrderRows, setProjectOrderRows] = useState<Array<{ id: string; viewOrder: number; filterType: 'design' | 'programming' }>>([])
   const [formData, setFormData] = useState({
     name_en: '',
     name_ar: '',
@@ -94,6 +95,10 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
     }
   }, [isNew, id])
 
+  useEffect(() => {
+    void fetchOrderRows()
+  }, [])
+
   const normalizeImages = (images: string[]) =>
     images
       .filter((img): img is string => typeof img === 'string' && img.trim().length > 0)
@@ -116,6 +121,29 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
       view_order: typeof maxOrder === 'number' ? maxOrder + 1 : 0,
     }))
     setLoading(false)
+  }
+
+  const fetchOrderRows = async () => {
+    const { data, error } = await supabase
+      .from('projects')
+      .select('id, view_order, external_links')
+
+    if (error) {
+      console.warn('Could not load project order rows:', error.message)
+      return
+    }
+
+    const rows = ((data || []) as Array<Record<string, unknown>>).map((row) => {
+      const links = row.external_links as Record<string, unknown> | null
+      const type = normalizeProjectType(links?.project_type)
+      return {
+        id: typeof row.id === 'string' ? row.id : '',
+        viewOrder: typeof row.view_order === 'number' ? row.view_order : 0,
+        filterType: getProjectFilterType(type),
+      }
+    })
+
+    setProjectOrderRows(rows)
   }
 
   const fetchProject = async () => {
@@ -316,6 +344,16 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
   }
 
   const isDesignProject = formData.project_type === 'design'
+  const selectedFilterType = getProjectFilterType(formData.project_type)
+  const normalizedViewOrder = Number.isFinite(formData.view_order) ? formData.view_order : 0
+  const candidateRows = projectOrderRows.filter((row) => row.id !== id)
+  const allOrderPreview = candidateRows.filter((row) => row.viewOrder < normalizedViewOrder).length + 1
+  const designOrderPreview = selectedFilterType === 'design'
+    ? candidateRows.filter((row) => row.filterType === 'design' && row.viewOrder < normalizedViewOrder).length + 1
+    : null
+  const programmingOrderPreview = selectedFilterType === 'programming'
+    ? candidateRows.filter((row) => row.filterType === 'programming' && row.viewOrder < normalizedViewOrder).length + 1
+    : null
 
   return (
     <div className="mx-auto max-w-6xl space-y-6 pb-20">
@@ -489,6 +527,12 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
                 <p className="admin-helper mt-2">
                   Smaller numbers appear first on the Projects page.
                 </p>
+                <div className="mt-3 rounded-xl border border-white/10 bg-white/[0.02] px-3 py-3 text-xs text-slate-300">
+                  <p className="font-semibold text-slate-200">{isArabic ? 'معاينة ترتيب الفلاتر' : 'Filter order preview'}</p>
+                  <p className="mt-2">{isArabic ? 'الكل' : 'All'}: #{String(allOrderPreview).padStart(2, '0')}</p>
+                  <p>{isArabic ? 'تصميم' : 'Design'}: {designOrderPreview ? `#${String(designOrderPreview).padStart(2, '0')}` : '—'}</p>
+                  <p>{isArabic ? 'برمجة' : 'Programming'}: {programmingOrderPreview ? `#${String(programmingOrderPreview).padStart(2, '0')}` : '—'}</p>
+                </div>
               </div>
 
               <div className="flex items-center gap-3">

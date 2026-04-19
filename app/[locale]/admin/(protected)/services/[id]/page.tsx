@@ -89,6 +89,7 @@ export default function ServiceEditorPage({ params }: { params: Promise<{ locale
   const [saving, setSaving] = useState(false)
   const [mediaSyncing, setMediaSyncing] = useState(false)
   const [message, setMessage] = useState<MessageState>(null)
+  const [serviceOrderRows, setServiceOrderRows] = useState<Array<{ id: string; viewOrder: number; type: ServiceType }>>([])
   const [formData, setFormData] = useState({
     title_en: '',
     title_ar: '',
@@ -113,6 +114,10 @@ export default function ServiceEditorPage({ params }: { params: Promise<{ locale
       void fetchMaxOrder()
     }
   }, [id, isNew])
+
+  useEffect(() => {
+    void fetchServiceOrderRows()
+  }, [])
 
   const fetchService = async () => {
     try {
@@ -149,6 +154,25 @@ export default function ServiceEditorPage({ params }: { params: Promise<{ locale
     const { data } = await supabase.from('services').select('view_order').order('view_order', { ascending: false }).limit(1)
     setFormData((prev) => ({ ...prev, view_order: data?.[0]?.view_order ? data[0].view_order + 1 : 0 }))
     setLoading(false)
+  }
+
+  const fetchServiceOrderRows = async () => {
+    const { data, error } = await supabase
+      .from('services')
+      .select('id, view_order, service_type')
+
+    if (error) {
+      console.warn('Could not load service order rows:', error.message)
+      return
+    }
+
+    const rows = ((data || []) as Array<Record<string, unknown>>).map((row) => ({
+      id: typeof row.id === 'string' ? row.id : '',
+      viewOrder: typeof row.view_order === 'number' ? row.view_order : 0,
+      type: normalizeServiceType((row as { service_type?: unknown }).service_type),
+    }))
+
+    setServiceOrderRows(rows)
   }
 
   const handleChange = <K extends keyof typeof formData>(field: K, value: (typeof formData)[K]) => {
@@ -260,6 +284,16 @@ export default function ServiceEditorPage({ params }: { params: Promise<{ locale
       </div>
     )
   }
+
+  const normalizedViewOrder = Number.isFinite(formData.view_order) ? formData.view_order : 0
+  const candidateRows = serviceOrderRows.filter((row) => row.id !== id)
+  const allOrderPreview = candidateRows.filter((row) => row.viewOrder < normalizedViewOrder).length + 1
+  const programmingOrderPreview = formData.service_type === 'full_design_development'
+    ? candidateRows.filter((row) => row.type === 'full_design_development' && row.viewOrder < normalizedViewOrder).length + 1
+    : null
+  const uxUiOrderPreview = formData.service_type === 'ux_ui_design'
+    ? candidateRows.filter((row) => row.type === 'ux_ui_design' && row.viewOrder < normalizedViewOrder).length + 1
+    : null
 
   return (
     <div className="mx-auto max-w-5xl space-y-6 pb-20">
@@ -433,6 +467,12 @@ export default function ServiceEditorPage({ params }: { params: Promise<{ locale
               <div>
                 <label className="admin-label">Display order</label>
                 <input type="number" className="admin-input" value={formData.view_order} onChange={(e) => handleChange('view_order', Number(e.target.value))} />
+                <div className="mt-3 rounded-xl border border-white/10 bg-white/[0.02] px-3 py-3 text-xs text-slate-300">
+                  <p className="font-semibold text-slate-200">{isArabic ? 'معاينة ترتيب الفلاتر' : 'Filter order preview'}</p>
+                  <p className="mt-2">{isArabic ? 'الكل' : 'All'}: #{String(allOrderPreview).padStart(2, '0')}</p>
+                  <p>{isArabic ? 'برمجة' : 'Programming'}: {programmingOrderPreview ? `#${String(programmingOrderPreview).padStart(2, '0')}` : '—'}</p>
+                  <p>{isArabic ? 'تصميم UX / UI' : 'UX / UI Design'}: {uxUiOrderPreview ? `#${String(uxUiOrderPreview).padStart(2, '0')}` : '—'}</p>
+                </div>
               </div>
               <div className="flex items-center gap-3">
                 <input id="featured-service" type="checkbox" checked={formData.is_featured} onChange={(e) => handleChange('is_featured', e.target.checked)} className="h-4 w-4 rounded border-white/20 bg-black/20 accent-[var(--color-green-accent)]" />
