@@ -1,7 +1,7 @@
 'use client';
 
 import { motion, useReducedMotion } from 'framer-motion';
-import { Dribbble, Github, Link as LinkIcon, Linkedin, Mail, Twitter } from 'lucide-react';
+import { Dribbble, Github, Link as LinkIcon, Mail, MessageCircle, Twitter } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 
 interface FooterProps {
@@ -17,8 +17,6 @@ export default function Footer({ socialLinks = [] }: FooterProps) {
 
   const getIcon = (type: string) => {
     switch (type.toLowerCase()) {
-      case 'linkedin':
-        return <Linkedin size={18} />;
       case 'dribbble':
         return <Dribbble size={18} />;
       case 'twitter':
@@ -27,18 +25,45 @@ export default function Footer({ socialLinks = [] }: FooterProps) {
         return <Github size={18} />;
       case 'email':
         return <Mail size={18} />;
+      case 'whatsapp':
+        return <MessageCircle size={18} />;
       default:
         return <LinkIcon size={18} />;
     }
   };
 
+  const normalizeWhatsAppUrl = (value: string) => {
+    if (!value) return '#';
+    if (value.startsWith('http://') || value.startsWith('https://')) return value;
+    const digits = value.replace(/\D/g, '');
+    return digits ? `https://wa.me/${digits}` : '#';
+  };
+
+  const resolveHref = (type: string, value: string) => {
+    const lowerType = type.toLowerCase();
+    if (lowerType === 'email') {
+      return value.startsWith('mailto:') ? value : `mailto:${value}`;
+    }
+    if (lowerType === 'whatsapp') {
+      return normalizeWhatsAppUrl(value);
+    }
+    return value;
+  };
+
   const fallbacks = [
-    { type: 'linkedin', value: '#', label: 'LinkedIn' },
+    { type: 'whatsapp', value: 'https://wa.me/201036529582', label: 'WhatsApp' },
     { type: 'dribbble', value: '#', label: 'Dribbble' },
     { type: 'email', value: 'mailto:contact@ahmed.design', label: 'Email' },
   ];
 
-  const displayLinks = socialLinks.length > 0 ? socialLinks : fallbacks;
+  const filteredLinks = socialLinks.filter((link) => link.type.toLowerCase() !== 'linkedin');
+  const hasWhatsApp = filteredLinks.some((link) => link.type.toLowerCase() === 'whatsapp');
+  const displayLinks =
+    filteredLinks.length > 0
+      ? hasWhatsApp
+        ? filteredLinks
+        : [{ type: 'whatsapp', value: 'https://wa.me/201036529582', label: 'WhatsApp' }, ...filteredLinks]
+      : fallbacks;
 
   return (
     <footer className="site-footer px-6 pb-8 pt-12 md:px-10 lg:px-12">
@@ -64,16 +89,14 @@ export default function Footer({ socialLinks = [] }: FooterProps) {
             </span>
             <div className={`flex flex-wrap justify-center gap-3 ${isArabic ? 'rtl-flip-children' : ''}`}>
               {displayLinks.map((link) => {
-                const href =
-                  link.type.toLowerCase() === 'email' && !link.value.startsWith('mailto:')
-                    ? `mailto:${link.value}`
-                    : link.value;
+                const href = resolveHref(link.type, link.value);
+                const isEmail = link.type.toLowerCase() === 'email';
 
                 return (
                   <a
                     key={`${link.type}-${link.label}`}
                     href={href}
-                    target={link.type.toLowerCase() === 'email' ? '_self' : '_blank'}
+                    target={isEmail ? '_self' : '_blank'}
                     rel="noreferrer"
                     aria-label={link.label}
                     className={`inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-5 py-3.5 text-sm font-medium text-slate-200 transition-all hover:-translate-y-1 hover:border-[#8df6c8]/40 hover:bg-white/[0.08] hover:text-white hover:shadow-[0_10px_20px_rgba(141,246,200,0.05)] ${isArabic ? 'flex-row-reverse' : ''}`}
