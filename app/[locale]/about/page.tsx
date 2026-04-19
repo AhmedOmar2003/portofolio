@@ -130,7 +130,7 @@ const content = {
       {
         number: '01',
         title: 'Technology should be useful before it is impressive',
-        body: 'A product's real value shows when it solves a clear problem and saves user time.',
+        body: "A product's real value shows when it solves a clear problem and saves user time.",
       },
       {
         number: '02',
