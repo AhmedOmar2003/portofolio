@@ -114,7 +114,7 @@ export default async function ProjectCaseStudyPage(props: { params: Promise<{ sl
   const projectRoleLabel = getProjectRoleLabel(projectType, locale);
   const categoryLabel = typeof project.category === 'string' && project.category.trim().length > 0
     ? project.category
-    : (isArabic ? 'تصميم رقمي' : 'Digital Design');
+    : projectTypeLabel;
 
   const sections = [
     { id: 'idea',        label: isArabic ? 'الفكرة'              : 'The Idea',      content: splitParagraphs(idea) },

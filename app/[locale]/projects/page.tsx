@@ -57,7 +57,7 @@ export default async function ProjectsPage({ params }: { params: Promise<{ local
     const localizedImpact = localizedValue(p as Record<string, unknown>, 'solution', locale);
     const category = typeof p.category === 'string' && p.category.trim().length > 0
       ? p.category
-      : home('projectCategoryFallback');
+      : getProjectTypeLabel(projectType, locale);
     const firstImage = Array.isArray(p.images) && typeof p.images[0] === 'string'
       ? p.images[0]
       : undefined;

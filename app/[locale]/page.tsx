@@ -6,7 +6,7 @@ import SectionHeading from '@/components/ui/SectionHeading';
 import ProjectCard from '@/components/ui/ProjectCard';
 import { Link } from '@/i18n/routing';
 import { getLocaleDateFormat, localizedValue } from '@/utils/locale-content';
-import { getProjectRoleLabel, normalizeProjectType } from '@/utils/project-type';
+import { getProjectRoleLabel, getProjectTypeLabel, normalizeProjectType } from '@/utils/project-type';
 import { createClient } from '@/utils/supabase/server';
 
 export const revalidate = 3600;
@@ -94,8 +94,15 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     : t('projectDescriptionFallbackEn');
 
   const featuredProjects = (projectsData || []).map((project) => ({
+    projectType: normalizeProjectType((project.external_links as Record<string, unknown> | null)?.project_type),
     title: localizedValue(project as Record<string, unknown>, 'name', locale),
-    category: project.category || t('projectCategoryFallback'),
+    category:
+      typeof project.category === 'string' && project.category.trim().length > 0
+        ? project.category
+        : getProjectTypeLabel(
+            normalizeProjectType((project.external_links as Record<string, unknown> | null)?.project_type),
+            locale
+          ),
     year: project.start_date
       ? new Date(project.start_date).toLocaleDateString(getLocaleDateFormat(locale), { year: 'numeric' })
       : t('projectYearFallback'),
