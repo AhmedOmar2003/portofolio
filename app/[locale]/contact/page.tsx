@@ -25,6 +25,24 @@ function formatHref(type: string, value: string) {
   return value;
 }
 
+function formatPhoneDisplay(value: string) {
+  const digits = value.replace(/\D/g, '');
+
+  if (digits === '201036529582') {
+    return '+20 1036529582';
+  }
+
+  if (digits.startsWith('20') && digits.length > 2) {
+    return `+${digits.slice(0, 2)} ${digits.slice(2)}`;
+  }
+
+  if (digits) {
+    return `+${digits}`;
+  }
+
+  return value;
+}
+
 export default async function ContactPage(props: { params: Promise<{ locale: string }> }) {
   const { locale } = await props.params;
   const isArabic = locale === 'ar';
@@ -48,6 +66,7 @@ export default async function ContactPage(props: { params: Promise<{ locale: str
   const emailMethod = contactMethods.find((item) => item.type.toLowerCase() === 'email');
   const phoneMethod = contactMethods.find((item) => item.type.toLowerCase() === 'phone');
   const resolvedPhoneValue = phoneMethod?.value?.trim() || fallbackPhoneValue;
+  const resolvedPhoneDisplay = formatPhoneDisplay(resolvedPhoneValue);
 
   return (
     <main className="px-6 pb-24 pt-32 md:px-10 lg:px-12 lg:pt-36">
@@ -80,7 +99,9 @@ export default async function ContactPage(props: { params: Promise<{ locale: str
                       <Phone className="h-5 w-5" aria-hidden="true" />
                     </span>
                     <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">{t('phone')}</p>
-                    <p className="mt-2 text-lg font-medium text-white">{resolvedPhoneValue.replace(/^tel:/, '')}</p>
+                    <p className="mt-2 text-lg font-medium text-white" dir="ltr">
+                      {resolvedPhoneDisplay.replace(/^tel:/, '')}
+                    </p>
                   </a>
                 ) : null}
               </div>

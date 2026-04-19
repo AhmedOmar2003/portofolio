@@ -51,7 +51,7 @@ export default function Footer({ socialLinks = [] }: FooterProps) {
   };
 
   const fallbacks = [
-    { type: 'whatsapp', value: 'https://wa.me/201036529582', label: 'WhatsApp' },
+    { type: 'whatsapp', value: 'https://wa.me/201050242285', label: 'WhatsApp' },
     { type: 'dribbble', value: '#', label: 'Dribbble' },
     { type: 'email', value: 'mailto:contact@ahmed.design', label: 'Email' },
   ];
@@ -62,7 +62,7 @@ export default function Footer({ socialLinks = [] }: FooterProps) {
     filteredLinks.length > 0
       ? hasWhatsApp
         ? filteredLinks
-        : [{ type: 'whatsapp', value: 'https://wa.me/201036529582', label: 'WhatsApp' }, ...filteredLinks]
+        : [{ type: 'whatsapp', value: 'https://wa.me/201050242285', label: 'WhatsApp' }, ...filteredLinks]
       : fallbacks;
 
   return (
