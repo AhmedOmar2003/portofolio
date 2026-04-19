@@ -12,6 +12,39 @@ function splitLines(content?: string | null) {
   return (content || '').split('\n').map((s) => s.trim()).filter(Boolean);
 }
 
+function parseServiceLinks(value: unknown): string[] {
+  if (typeof value !== 'string') return [];
+  const trimmed = value.trim();
+  if (!trimmed) return [];
+
+  if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+    try {
+      const parsed = JSON.parse(trimmed);
+      if (Array.isArray(parsed)) {
+        return parsed
+          .filter((item): item is string => typeof item === 'string')
+          .map((item) => item.trim())
+          .filter(Boolean);
+      }
+    } catch {
+      // Fallback to newline split below.
+    }
+  }
+
+  return trimmed
+    .split('\n')
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function serviceExampleButtonLabel(index: number, isArabic: boolean) {
+  if (!isArabic) return `Service Example Link ${index + 1}`;
+  if (index === 0) return 'رابط أول كمثال للخدمة';
+  if (index === 1) return 'رابط ثاني كمثال للخدمة';
+  if (index === 2) return 'رابط ثالث كمثال للخدمة';
+  return `رابط ${index + 1} كمثال للخدمة`;
+}
+
 function getVideoPresentation(url: string) {
   const value = url.trim()
   if (!value) return null
@@ -71,7 +104,7 @@ export default async function ServiceDetailPage(props: {
   if (service.image_1_url) images.push(service.image_1_url as string);
   if (service.image_2_url) images.push(service.image_2_url as string);
   if (service.image_3_url) images.push(service.image_3_url as string);
-  const serviceLinkUrl = typeof service.service_link_url === 'string' ? service.service_link_url.trim() : '';
+  const serviceLinks = parseServiceLinks(service.service_link_url);
   const serviceVideoUrl = typeof service.video_url === 'string' ? service.video_url.trim() : '';
   const videoPresentation = serviceVideoUrl ? getVideoPresentation(serviceVideoUrl) : null;
 
@@ -105,17 +138,20 @@ export default async function ServiceDetailPage(props: {
             </p>
           )}
 
-          {serviceLinkUrl ? (
-            <div className={`mt-7 ${isArabic ? 'text-right' : ''}`}>
-              <a
-                href={serviceLinkUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="group inline-flex items-center gap-2 rounded-full border border-[#8df6c8]/45 bg-gradient-to-r from-[#8df6c8] to-[#6ad7ff] px-5 py-2.5 text-sm font-semibold text-[#02131b] shadow-[0_10px_30px_rgba(106,215,255,0.3)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_34px_rgba(106,215,255,0.4)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8df6c8] focus-visible:ring-offset-2 focus-visible:ring-offset-[#050816]"
-              >
-                {isArabic ? 'مثال للخدمة' : 'Service Example'}
-                <ArrowUpRight className={`h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 ${isArabic ? 'rtl-flip' : ''}`} aria-hidden="true" />
-              </a>
+          {serviceLinks.length > 0 ? (
+            <div className={`mt-7 flex flex-wrap gap-3 ${isArabic ? 'justify-end' : ''}`}>
+              {serviceLinks.map((serviceLinkUrl, index) => (
+                <a
+                  key={`${serviceLinkUrl}-${index}`}
+                  href={serviceLinkUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="group inline-flex items-center gap-2 rounded-full border border-[#8df6c8]/45 bg-gradient-to-r from-[#8df6c8] to-[#6ad7ff] px-5 py-2.5 text-sm font-semibold text-[#02131b] shadow-[0_10px_30px_rgba(106,215,255,0.3)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_34px_rgba(106,215,255,0.4)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8df6c8] focus-visible:ring-offset-2 focus-visible:ring-offset-[#050816]"
+                >
+                  {serviceExampleButtonLabel(index, isArabic)}
+                  <ArrowUpRight className={`h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 ${isArabic ? 'rtl-flip' : ''}`} aria-hidden="true" />
+                </a>
+              ))}
             </div>
           ) : null}
 

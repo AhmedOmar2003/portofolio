@@ -12,6 +12,36 @@ import { getServiceTypeLabel, normalizeServiceType, type ServiceType } from '@/u
 type MessageState = { type: 'success' | 'error'; text: string } | null
 type ServiceImageField = 'image_1_url' | 'image_2_url' | 'image_3_url'
 
+function parseServiceLinks(value: unknown): string[] {
+  if (typeof value !== 'string') return []
+  const trimmed = value.trim()
+  if (!trimmed) return []
+
+  // Backward compatible: if someone stored JSON array manually.
+  if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+    try {
+      const parsed = JSON.parse(trimmed)
+      if (Array.isArray(parsed)) {
+        return parsed
+          .filter((item): item is string => typeof item === 'string')
+          .map((item) => item.trim())
+          .filter(Boolean)
+      }
+    } catch {
+      // fall through to newline split
+    }
+  }
+
+  return trimmed
+    .split('\n')
+    .map((item) => item.trim())
+    .filter(Boolean)
+}
+
+function serializeServiceLinks(links: string[]): string {
+  return links.map((item) => item.trim()).filter(Boolean).join('\n')
+}
+
 function getVideoPreview(url: string) {
   const value = url.trim()
   if (!value) return null
@@ -69,7 +99,7 @@ export default function ServiceEditorPage({ params }: { params: Promise<{ locale
     image_1_url: '',
     image_2_url: '',
     image_3_url: '',
-    service_link_url: '',
+    service_links: [''],
     video_url: '',
     service_type: 'full_design_development' as ServiceType,
     is_featured: false,
@@ -98,7 +128,10 @@ export default function ServiceEditorPage({ params }: { params: Promise<{ locale
         image_1_url: data.image_1_url || '',
         image_2_url: data.image_2_url || '',
         image_3_url: data.image_3_url || '',
-        service_link_url: data.service_link_url || '',
+        service_links: (() => {
+          const parsed = parseServiceLinks(data.service_link_url)
+          return parsed.length > 0 ? parsed : ['']
+        })(),
         video_url: data.video_url || '',
         service_type: normalizeServiceType(data.service_type),
         is_featured: data.is_featured || false,
@@ -124,6 +157,27 @@ export default function ServiceEditorPage({ params }: { params: Promise<{ locale
 
   const handleVideoUrlChange = (value: string) => {
     handleChange('video_url', value.trim())
+  }
+
+  const handleServiceLinkChange = (index: number, value: string) => {
+    setFormData((prev) => {
+      const nextLinks = [...prev.service_links]
+      nextLinks[index] = value
+      return { ...prev, service_links: nextLinks }
+    })
+  }
+
+  const addServiceLinkField = () => {
+    setFormData((prev) => ({ ...prev, service_links: [...prev.service_links, ''] }))
+  }
+
+  const removeServiceLinkField = (index: number) => {
+    setFormData((prev) => {
+      if (prev.service_links.length <= 1) {
+        return { ...prev, service_links: [''] }
+      }
+      return { ...prev, service_links: prev.service_links.filter((_, i) => i !== index) }
+    })
   }
 
   const handleRemoveServiceImage = async (field: ServiceImageField) => {
@@ -166,7 +220,7 @@ export default function ServiceEditorPage({ params }: { params: Promise<{ locale
       image_1_url: formData.image_1_url.trim() || null,
       image_2_url: formData.image_2_url.trim() || null,
       image_3_url: formData.image_3_url.trim() || null,
-      service_link_url: formData.service_link_url,
+      service_link_url: serializeServiceLinks(formData.service_links) || null,
       video_url: formData.video_url,
       service_type: formData.service_type,
       is_featured: formData.is_featured,
@@ -290,14 +344,41 @@ export default function ServiceEditorPage({ params }: { params: Promise<{ locale
               />
             </div>
             <div>
-              <label className="admin-label">Service link (like live demo)</label>
-              <input
-                type="url"
-                className="admin-input"
-                value={formData.service_link_url}
-                onChange={(e) => handleChange('service_link_url', e.target.value)}
-                placeholder="https://..."
-              />
+              <label className="admin-label">Service example links (optional)</label>
+              <div className="space-y-3">
+                {formData.service_links.map((link, index) => (
+                  <div key={`service-link-${index}`} className="flex gap-2">
+                    <input
+                      type="url"
+                      className="admin-input"
+                      value={link}
+                      onChange={(e) => handleServiceLinkChange(index, e.target.value)}
+                      placeholder={`https://... (${isArabic ? `رابط ${index + 1}` : `Link ${index + 1}`})`}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeServiceLinkField(index)}
+                      className="inline-flex shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03] px-3 text-xs text-slate-300 transition hover:border-white/20 hover:text-white"
+                    >
+                      {isArabic ? 'حذف' : 'Remove'}
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-3">
+                <button
+                  type="button"
+                  onClick={addServiceLinkField}
+                  className="inline-flex items-center rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-xs font-semibold text-slate-200 transition hover:border-white/20 hover:text-white"
+                >
+                  {isArabic ? 'إضافة رابط آخر' : 'Add another link'}
+                </button>
+              </div>
+              <p className="admin-helper mt-2">
+                {isArabic
+                  ? 'اختياري بالكامل. لو فيه أكتر من مثال للخدمة ضيفهم هنا.'
+                  : 'Completely optional. Add multiple links if you have more than one service example.'}
+              </p>
             </div>
             <div>
               <label className="admin-label">Service video URL</label>
