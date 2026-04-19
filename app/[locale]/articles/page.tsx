@@ -67,7 +67,7 @@ export default async function ArticlesPage({ params }: { params: Promise<{ local
                   </div>
 
                   <div className="flex items-start justify-between gap-6">
-                    <div className={`min-w-0 flex-1 ${isArabic ? 'order-2 text-right' : 'order-1'}`}>
+                    <div className={`min-w-0 flex-1 ${isArabic ? 'order-1 text-right' : 'order-1'}`}>
                       <h2 className={`text-2xl font-semibold text-white transition-colors group-hover:text-[#8df6c8] sm:text-3xl ${isArabic ? 'leading-tight text-right' : 'tracking-[-0.04em]'}`}>
                         {article.title}
                       </h2>
@@ -79,7 +79,7 @@ export default async function ArticlesPage({ params }: { params: Promise<{ local
                     </div>
 
                     <ArrowUpRight
-                      className={`mt-2 h-6 w-6 shrink-0 text-slate-600 transition-all duration-300 group-hover:text-[#8df6c8] ${isArabic ? 'order-1 rtl-flip group-hover:-translate-x-1' : 'order-2 group-hover:translate-x-1 group-hover:-translate-y-1'}`}
+                      className={`mt-2 h-6 w-6 shrink-0 text-slate-600 transition-all duration-300 group-hover:text-[#8df6c8] ${isArabic ? 'order-2 rtl-flip group-hover:-translate-x-1' : 'order-2 group-hover:translate-x-1 group-hover:-translate-y-1'}`}
                       aria-hidden="true"
                     />
                   </div>
