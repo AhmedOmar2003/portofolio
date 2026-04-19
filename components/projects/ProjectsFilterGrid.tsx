@@ -51,7 +51,7 @@ export default function ProjectsFilterGrid({ projects, isArabic, labels }: Proje
 
   return (
     <section className="space-y-7">
-      <div className={`flex flex-wrap gap-3 ${isArabic ? 'justify-end' : 'justify-start'}`}>
+      <div className={`flex w-full flex-wrap gap-3 ${isArabic ? 'ml-auto max-w-3xl justify-end' : 'justify-start'}`}>
         {filterButtons.map((filter) => {
           const isActive = activeFilter === filter.key;
           return (
