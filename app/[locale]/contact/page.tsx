@@ -1,4 +1,4 @@
-import { ArrowUpRight, Mail, Phone } from 'lucide-react';
+import { Mail, Phone } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 
 import ContactForm from '@/components/contact/ContactForm';
@@ -30,6 +30,7 @@ export default async function ContactPage(props: { params: Promise<{ locale: str
   const isArabic = locale === 'ar';
   const t = await getTranslations({ locale, namespace: 'ContactPage' });
   const supabase = await createClient();
+  const fallbackPhoneValue = '+(20) 1036529582';
 
   const { data: contactsData } = await supabase
     .from('contact_methods')
@@ -46,7 +47,7 @@ export default async function ContactPage(props: { params: Promise<{ locale: str
 
   const emailMethod = contactMethods.find((item) => item.type.toLowerCase() === 'email');
   const phoneMethod = contactMethods.find((item) => item.type.toLowerCase() === 'phone');
-  const socialMethods = contactMethods.filter((item) => !['email', 'phone'].includes(item.type.toLowerCase()));
+  const resolvedPhoneValue = phoneMethod?.value?.trim() || fallbackPhoneValue;
 
   return (
     <main className="px-6 pb-24 pt-32 md:px-10 lg:px-12 lg:pt-36">
@@ -70,39 +71,19 @@ export default async function ContactPage(props: { params: Promise<{ locale: str
                   </a>
                 ) : null}
 
-                {phoneMethod ? (
+                {resolvedPhoneValue ? (
                   <a
-                    href={formatHref(phoneMethod.type, phoneMethod.value)}
+                    href={formatHref('phone', resolvedPhoneValue)}
                     className="rounded-[1.6rem] border border-white/8 bg-white/[0.03] p-5 transition hover:border-[#8df6c8]/30 hover:bg-white/[0.05]"
                   >
                     <span className="mb-3 inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-black/15 text-[#8df6c8]">
                       <Phone className="h-5 w-5" aria-hidden="true" />
                     </span>
                     <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">{t('phone')}</p>
-                    <p className="mt-2 text-lg font-medium text-white">{phoneMethod.value.replace(/^tel:/, '')}</p>
+                    <p className="mt-2 text-lg font-medium text-white">{resolvedPhoneValue.replace(/^tel:/, '')}</p>
                   </a>
                 ) : null}
               </div>
-
-              {socialMethods.length > 0 ? (
-                <div className="rounded-[1.6rem] border border-white/8 bg-white/[0.03] p-5">
-                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">{t('social')}</p>
-                  <div className="mt-4 flex flex-wrap gap-3">
-                    {socialMethods.map((method) => (
-                      <a
-                        key={method.id}
-                        href={formatHref(method.type, method.value)}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-slate-200 transition hover:border-[#8df6c8]/30 hover:text-white"
-                      >
-                        <span>{method.label}</span>
-                        <ArrowUpRight className={`h-4 w-4 ${isArabic ? 'rtl-flip' : ''}`} aria-hidden="true" />
-                      </a>
-                    ))}
-                  </div>
-                </div>
-              ) : null}
             </div>
 
             <ContactForm />
