@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'
 
 import MediaUpload from '@/components/admin/MediaUpload'
 import { createClient } from '@/utils/supabase/client'
+import { getServiceTypeLabel, normalizeServiceType, type ServiceType } from '@/utils/service-type'
 
 type MessageState = { type: 'success' | 'error'; text: string } | null
 type ServiceImageField = 'image_1_url' | 'image_2_url' | 'image_3_url'
@@ -70,6 +71,7 @@ export default function ServiceEditorPage({ params }: { params: Promise<{ locale
     image_3_url: '',
     service_link_url: '',
     video_url: '',
+    service_type: 'full_design_development' as ServiceType,
     is_featured: false,
     view_order: 0,
   })
@@ -98,6 +100,7 @@ export default function ServiceEditorPage({ params }: { params: Promise<{ locale
         image_3_url: data.image_3_url || '',
         service_link_url: data.service_link_url || '',
         video_url: data.video_url || '',
+        service_type: normalizeServiceType(data.service_type),
         is_featured: data.is_featured || false,
         view_order: data.view_order || 0,
       })
@@ -165,6 +168,7 @@ export default function ServiceEditorPage({ params }: { params: Promise<{ locale
       image_3_url: formData.image_3_url.trim() || null,
       service_link_url: formData.service_link_url,
       video_url: formData.video_url,
+      service_type: formData.service_type,
       is_featured: formData.is_featured,
       view_order: formData.view_order,
     }
@@ -182,7 +186,14 @@ export default function ServiceEditorPage({ params }: { params: Promise<{ locale
       }
     } catch (error) {
       console.error('Error saving service:', error)
-      setMessage({ type: 'error', text: 'Failed to save the service.' })
+      if (error instanceof Error && error.message.toLowerCase().includes('service_type')) {
+        setMessage({
+          type: 'error',
+          text: 'Service type column is missing. Run services-type-migration.sql in Supabase then save again.',
+        })
+      } else {
+        setMessage({ type: 'error', text: 'Failed to save the service.' })
+      }
     } finally {
       setSaving(false)
     }
@@ -236,6 +247,20 @@ export default function ServiceEditorPage({ params }: { params: Promise<{ locale
                 value={formData.title_ar}
                 onChange={(e) => handleChange('title_ar', e.target.value)}
               />
+            </div>
+            <div>
+              <label className="admin-label">Service type</label>
+              <select
+                className="admin-input"
+                value={formData.service_type}
+                onChange={(e) => handleChange('service_type', e.target.value as ServiceType)}
+              >
+                <option value="full_design_development">{getServiceTypeLabel('full_design_development', locale)}</option>
+                <option value="ux_ui_design">{getServiceTypeLabel('ux_ui_design', locale)}</option>
+              </select>
+              <p className="admin-helper mt-2">
+                {isArabic ? 'اختار نوع الخدمة لتظهر في فلتر صفحة الخدمات.' : 'Choose the service type to appear in the Services page filter.'}
+              </p>
             </div>
             <div>
               <label className="admin-label">Short description (English)</label>

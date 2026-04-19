@@ -1,12 +1,21 @@
-import { ArrowUpRight } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 
-import { Link } from '@/i18n/routing';
+import ServicesFilterGrid from '@/components/services/ServicesFilterGrid';
 import SectionHeading from '@/components/ui/SectionHeading';
 import { localizedValue } from '@/utils/locale-content';
+import { getServiceTypeLabel, normalizeServiceType, type ServiceType } from '@/utils/service-type';
 import { createClient } from '@/utils/supabase/server';
 
 export const revalidate = 3600;
+
+type ServiceCardItem = {
+  id: string;
+  title: string;
+  description: string;
+  index: number;
+  type: ServiceType;
+  typeLabel: string;
+};
 
 export default async function ServicesPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -14,22 +23,36 @@ export default async function ServicesPage({ params }: { params: Promise<{ local
   const t = await getTranslations({ locale, namespace: 'ServicesPage' });
   const supabase = await createClient();
 
-  const { data: servicesData } = await supabase
+  const servicesWithTypeQuery = await supabase
     .from('services')
-    .select('id, title_en, title_ar, description_en, description_ar, view_order')
+    .select('id, title_en, title_ar, description_en, description_ar, view_order, service_type')
     .order('view_order', { ascending: true });
 
-  const services = (servicesData || []).map((s, i) => ({
-    id: s.id,
-    title: localizedValue(s as Record<string, unknown>, 'title', locale) || s.title_en || '',
-    description: localizedValue(s as Record<string, unknown>, 'description', locale) || s.description_en || '',
-    index: i,
-  }));
+  const servicesFallbackQuery = servicesWithTypeQuery.error
+    ? await supabase
+        .from('services')
+        .select('id, title_en, title_ar, description_en, description_ar, view_order')
+        .order('view_order', { ascending: true })
+    : null;
 
-  const fallback = [
-    { id: 'ui-ux', title: t('serviceTitle1'), description: t('serviceDesc1'), index: 0 },
-    { id: 'dev',   title: t('serviceTitle2'), description: t('serviceDesc2'), index: 1 },
-    { id: 'sys',   title: t('serviceTitle3'), description: t('serviceDesc3'), index: 2 },
+  const servicesData = servicesWithTypeQuery.error ? servicesFallbackQuery?.data || [] : servicesWithTypeQuery.data || [];
+
+  const services: ServiceCardItem[] = (servicesData || []).map((s, i) => {
+    const normalizedType = normalizeServiceType((s as { service_type?: unknown }).service_type);
+    return {
+      id: s.id,
+      title: localizedValue(s as Record<string, unknown>, 'title', locale) || s.title_en || '',
+      description: localizedValue(s as Record<string, unknown>, 'description', locale) || s.description_en || '',
+      index: i,
+      type: normalizedType,
+      typeLabel: getServiceTypeLabel(normalizedType, locale),
+    };
+  });
+
+  const fallback: ServiceCardItem[] = [
+    { id: 'ui-ux', title: t('serviceTitle1'), description: t('serviceDesc1'), index: 0, type: 'ux_ui_design', typeLabel: getServiceTypeLabel('ux_ui_design', locale) },
+    { id: 'dev',   title: t('serviceTitle2'), description: t('serviceDesc2'), index: 1, type: 'full_design_development', typeLabel: getServiceTypeLabel('full_design_development', locale) },
+    { id: 'sys',   title: t('serviceTitle3'), description: t('serviceDesc3'), index: 2, type: 'full_design_development', typeLabel: getServiceTypeLabel('full_design_development', locale) },
   ];
 
   const finalServices = services.length > 0 ? services : fallback;
@@ -51,44 +74,17 @@ export default async function ServicesPage({ params }: { params: Promise<{ local
           subtitle={t('subtitle')}
         />
 
-        {/* Service cards */}
-        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {finalServices.map((service) => (
-            <article
-              key={service.id}
-              className="group flex flex-col rounded-3xl border border-white/10 bg-white/[0.02] p-8 transition-all duration-300 hover:border-white/20 hover:bg-white/[0.04]"
-            >
-              {/* Index badge */}
-              <span className="mb-6 block text-sm font-semibold uppercase tracking-widest text-[#8df6c8]">
-                [{String(service.index + 1).padStart(2, '0')}]
-              </span>
-
-              {/* Title */}
-              <h2 className={`text-2xl font-semibold text-white ${isArabic ? 'leading-tight' : 'tracking-[-0.04em]'}`}>
-                {service.title}
-              </h2>
-
-              {/* Description */}
-              <p className={`mt-4 flex-1 text-base text-slate-400 ${isArabic ? 'leading-8 text-right' : 'leading-7'}`}>
-                {service.description}
-              </p>
-
-              {/* CTA Button */}
-              <div className="mt-8 pt-4">
-                <Link
-                  href={`/services/${service.id}`}
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#8df6c8]/10 px-6 py-3.5 text-sm font-semibold text-[#8df6c8] transition-all hover:bg-[#8df6c8]/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8df6c8] focus-visible:ring-offset-2 focus-visible:ring-offset-[#050816]"
-                >
-                  {isArabic ? 'اعرف أكثر' : 'Learn more'}
-                  <ArrowUpRight
-                    className={`h-4 w-4 transition-transform duration-300 ${isArabic ? 'rtl-flip group-hover:-translate-x-1' : 'group-hover:translate-x-1 group-hover:-translate-y-1'}`}
-                    aria-hidden="true"
-                  />
-                </Link>
-              </div>
-            </article>
-          ))}
-        </div>
+        <ServicesFilterGrid
+          services={finalServices}
+          isArabic={isArabic}
+          labels={{
+            all: isArabic ? 'الكل' : 'All',
+            fullDesignDevelopment: getServiceTypeLabel('full_design_development', locale),
+            uxUiDesign: getServiceTypeLabel('ux_ui_design', locale),
+            cta: isArabic ? 'اعرف أكثر' : 'Learn more',
+            empty: isArabic ? 'لا توجد خدمات في هذا التصنيف الآن.' : 'No services found in this type yet.',
+          }}
+        />
 
       </div>
     </main>
