@@ -139,7 +139,7 @@ export default async function ServiceDetailPage(props: {
           )}
 
           {serviceLinks.length > 0 ? (
-            <div className={`mt-7 flex flex-wrap gap-3 ${isArabic ? 'justify-end' : ''}`}>
+            <div className={`mt-7 flex flex-wrap gap-3 ${isArabic ? 'justify-start' : ''}`}>
               {serviceLinks.map((serviceLinkUrl, index) => (
                 <a
                   key={`${serviceLinkUrl}-${index}`}
