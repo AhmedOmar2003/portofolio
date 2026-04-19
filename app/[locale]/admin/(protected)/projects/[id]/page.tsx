@@ -222,19 +222,27 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
     }
   }
 
-  const generateSlug = () => {
-    if (!formData.name_en) return
-    const slug = formData.name_en
+  const createSlugFromName = (name: string) =>
+    name
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)+/g, '')
+
+  const generateSlug = () => {
+    if (!formData.name_en) return
+    const slug = createSlugFromName(formData.name_en)
     handleChange('slug', slug)
   }
 
   const handleSave = async () => {
-    if (!formData.name_en || !formData.slug) {
+    const normalizedSlug = (formData.slug || createSlugFromName(formData.name_en)).trim()
+    if (!formData.name_en || !normalizedSlug) {
       setMessage({ type: 'error', text: 'Project name and slug are required.' })
       return
+    }
+
+    if (normalizedSlug !== formData.slug) {
+      handleChange('slug', normalizedSlug)
     }
 
     setSaving(true)
@@ -243,7 +251,7 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
     const payload = {
       name_en: formData.name_en,
       name_ar: formData.name_ar,
-      slug: formData.slug,
+      slug: normalizedSlug,
       category: formData.category,
       description_en: formData.description_en,
       description_ar: formData.description_ar,
@@ -307,6 +315,8 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
     )
   }
 
+  const isDesignProject = formData.project_type === 'design'
+
   return (
     <div className="mx-auto max-w-6xl space-y-6 pb-20">
       <Link href={`/${locale}/admin/projects`} className="inline-flex items-center gap-2 text-sm font-medium text-slate-400 transition hover:text-white">
@@ -353,22 +363,26 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
                   onChange={(e) => handleChange('name_ar', e.target.value)}
                 />
               </div>
-              <div>
-                <label className="admin-label">Slug</label>
-                <input className="admin-input" value={formData.slug} onChange={(e) => handleChange('slug', e.target.value)} placeholder="smart-banking-app" />
-              </div>
-              <div>
-                <label className="admin-label">Category</label>
-                <input
-                  className="admin-input"
-                  value={formData.category}
-                  onChange={(e) => handleChange('category', e.target.value)}
-                  placeholder={isArabic ? 'ويب، موبايل، داشبورد...' : 'Web App, Mobile App, Dashboard...'}
-                />
-                <p className="admin-helper mt-2">
-                  {isArabic ? 'التصنيف يوضح شكل/منصة المشروع.' : 'Category describes the platform or format of the project.'}
-                </p>
-              </div>
+              {!isDesignProject ? (
+                <>
+                  <div>
+                    <label className="admin-label">Slug</label>
+                    <input className="admin-input" value={formData.slug} onChange={(e) => handleChange('slug', e.target.value)} placeholder="smart-banking-app" />
+                  </div>
+                  <div>
+                    <label className="admin-label">Category</label>
+                    <input
+                      className="admin-input"
+                      value={formData.category}
+                      onChange={(e) => handleChange('category', e.target.value)}
+                      placeholder={isArabic ? 'ويب، موبايل، داشبورد...' : 'Web App, Mobile App, Dashboard...'}
+                    />
+                    <p className="admin-helper mt-2">
+                      {isArabic ? 'التصنيف يوضح شكل/منصة المشروع.' : 'Category describes the platform or format of the project.'}
+                    </p>
+                  </div>
+                </>
+              ) : null}
               <div>
                 <label className="admin-label">Project type</label>
                 <select
@@ -429,23 +443,27 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
                   onChange={(e) => handleChange('problem_ar', e.target.value)}
                 />
               </div>
-              <div>
-                <label className="admin-label">UI/UX Design (English - Optional)</label>
-                <textarea className="admin-textarea min-h-[120px]" value={formData.ui_ux_en} onChange={(e) => handleChange('ui_ux_en', e.target.value)} />
-              </div>
-              <div>
-                <label className="admin-label">تصميم UI/UX (العربية - اختياري)</label>
-                <textarea
-                  dir="rtl"
-                  className="admin-textarea min-h-[120px] text-right"
-                  value={formData.ui_ux_ar}
-                  onChange={(e) => handleChange('ui_ux_ar', e.target.value)}
-                />
-              </div>
-              <div className="md:col-span-2">
-                <label className="admin-label">Technologies Used (Comma separated: React, Next.js, Figma)</label>
-                <input className="admin-input" value={formData.technologiesInput} onChange={(e) => handleChange('technologiesInput', e.target.value)} placeholder="React, Figma, Supabase" />
-              </div>
+              {!isDesignProject ? (
+                <>
+                  <div>
+                    <label className="admin-label">UI/UX Design (English - Optional)</label>
+                    <textarea className="admin-textarea min-h-[120px]" value={formData.ui_ux_en} onChange={(e) => handleChange('ui_ux_en', e.target.value)} />
+                  </div>
+                  <div>
+                    <label className="admin-label">تصميم UI/UX (العربية - اختياري)</label>
+                    <textarea
+                      dir="rtl"
+                      className="admin-textarea min-h-[120px] text-right"
+                      value={formData.ui_ux_ar}
+                      onChange={(e) => handleChange('ui_ux_ar', e.target.value)}
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="admin-label">Technologies Used (Comma separated: React, Next.js, Figma)</label>
+                    <input className="admin-input" value={formData.technologiesInput} onChange={(e) => handleChange('technologiesInput', e.target.value)} placeholder="React, Figma, Supabase" />
+                  </div>
+                </>
+              ) : null}
               <div>
                 <label className="admin-label">Results and impact (English)</label>
                 <textarea className="admin-textarea min-h-[150px]" value={formData.solution_en} onChange={(e) => handleChange('solution_en', e.target.value)} />
@@ -464,69 +482,80 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
 
           <section className="admin-card px-6 py-6">
             <h2 className="text-xl font-semibold text-white">External links</h2>
-            <div className="mt-6 grid gap-5 md:grid-cols-2">
-              <div>
-                <label className="admin-label">Live demo</label>
-                <input className="admin-input" value={formData.external_links.live_demo || ''} onChange={(e) => handleLinkChange('live_demo', e.target.value)} placeholder="https://..." />
+            {isDesignProject ? (
+              <div className="mt-6 grid gap-5">
+                <div>
+                  <label className="admin-label">{isArabic ? 'رابط المشروع (مثال)' : 'Project link (example)'}</label>
+                  <input className="admin-input" value={formData.external_links.live_demo || ''} onChange={(e) => handleLinkChange('live_demo', e.target.value)} placeholder="https://..." />
+                </div>
               </div>
-              <div>
-                <label className="admin-label">Repository / source</label>
-                <input className="admin-input" value={formData.external_links.github || ''} onChange={(e) => handleLinkChange('github', e.target.value)} placeholder="https://github.com/..." />
+            ) : (
+              <div className="mt-6 grid gap-5 md:grid-cols-2">
+                <div>
+                  <label className="admin-label">Live demo</label>
+                  <input className="admin-input" value={formData.external_links.live_demo || ''} onChange={(e) => handleLinkChange('live_demo', e.target.value)} placeholder="https://..." />
+                </div>
+                <div>
+                  <label className="admin-label">Repository / source</label>
+                  <input className="admin-input" value={formData.external_links.github || ''} onChange={(e) => handleLinkChange('github', e.target.value)} placeholder="https://github.com/..." />
+                </div>
+                <div>
+                  <label className="admin-label">Android app link (optional)</label>
+                  <input className="admin-input" value={formData.external_links.android || ''} onChange={(e) => handleLinkChange('android', e.target.value)} placeholder="https://..." />
+                </div>
+                <div>
+                  <label className="admin-label">iOS app link (optional)</label>
+                  <input className="admin-input" value={formData.external_links.ios || ''} onChange={(e) => handleLinkChange('ios', e.target.value)} placeholder="https://..." />
+                </div>
               </div>
-              <div>
-                <label className="admin-label">Android app link (optional)</label>
-                <input className="admin-input" value={formData.external_links.android || ''} onChange={(e) => handleLinkChange('android', e.target.value)} placeholder="https://..." />
-              </div>
-              <div>
-                <label className="admin-label">iOS app link (optional)</label>
-                <input className="admin-input" value={formData.external_links.ios || ''} onChange={(e) => handleLinkChange('ios', e.target.value)} placeholder="https://..." />
-              </div>
-            </div>
+            )}
           </section>
         </div>
 
         <div className="space-y-6">
-          <section className="admin-card px-6 py-6">
-            <h2 className="text-xl font-semibold text-white">Publishing</h2>
-            <div className="mt-6 space-y-5">
-              <div>
-                <label className="admin-label">Display order</label>
-                <input
-                  type="number"
-                  className="admin-input"
-                  value={formData.view_order}
-                  onChange={(e) => handleChange('view_order', Number(e.target.value))}
-                />
-                <p className="admin-helper mt-2">
-                  Smaller numbers appear first on the Projects page.
-                </p>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <input
-                  id="featured-project"
-                  type="checkbox"
-                  checked={formData.is_featured}
-                  onChange={(e) => handleChange('is_featured', e.target.checked)}
-                  className="h-4 w-4 rounded border-white/20 bg-black/20 accent-[var(--color-green-accent)]"
-                />
-                <label htmlFor="featured-project" className="text-sm text-slate-300">
-                  Feature this project on the homepage
-                </label>
-              </div>
-
-              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-1">
+          {!isDesignProject ? (
+            <section className="admin-card px-6 py-6">
+              <h2 className="text-xl font-semibold text-white">Publishing</h2>
+              <div className="mt-6 space-y-5">
                 <div>
-                  <label className="admin-label">Start date</label>
-                  <input type="date" className="admin-input [color-scheme:dark]" value={formData.start_date} onChange={(e) => handleChange('start_date', e.target.value)} />
+                  <label className="admin-label">Display order</label>
+                  <input
+                    type="number"
+                    className="admin-input"
+                    value={formData.view_order}
+                    onChange={(e) => handleChange('view_order', Number(e.target.value))}
+                  />
+                  <p className="admin-helper mt-2">
+                    Smaller numbers appear first on the Projects page.
+                  </p>
                 </div>
-                <div>
-                  <label className="admin-label">End date</label>
-                  <input type="date" className="admin-input [color-scheme:dark]" value={formData.end_date} onChange={(e) => handleChange('end_date', e.target.value)} />
+
+                <div className="flex items-center gap-3">
+                  <input
+                    id="featured-project"
+                    type="checkbox"
+                    checked={formData.is_featured}
+                    onChange={(e) => handleChange('is_featured', e.target.checked)}
+                    className="h-4 w-4 rounded border-white/20 bg-black/20 accent-[var(--color-green-accent)]"
+                  />
+                  <label htmlFor="featured-project" className="text-sm text-slate-300">
+                    Feature this project on the homepage
+                  </label>
+                </div>
+
+                <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-1">
+                  <div>
+                    <label className="admin-label">Start date</label>
+                    <input type="date" className="admin-input [color-scheme:dark]" value={formData.start_date} onChange={(e) => handleChange('start_date', e.target.value)} />
+                  </div>
+                  <div>
+                    <label className="admin-label">End date</label>
+                    <input type="date" className="admin-input [color-scheme:dark]" value={formData.end_date} onChange={(e) => handleChange('end_date', e.target.value)} />
+                  </div>
                 </div>
               </div>
-            </div>
-          </section>
+            </section>
+          ) : null}
 
           <section className="admin-card px-6 py-6">
             <h2 className="text-xl font-semibold text-white">Media Gallery</h2>
