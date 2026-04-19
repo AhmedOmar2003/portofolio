@@ -47,17 +47,35 @@ export default async function ArticleDetailPage(props: { params: Promise<{ slug:
         <article>
           {/* Header */}
           <header className={`mb-12 space-y-6 ${isArabic ? 'text-right' : ''}`}>
-            <div className={`flex flex-wrap items-center gap-3 ${isArabic ? 'flex-row-reverse' : ''}`}>
-              {article.category && (
-                <span className="rounded-full border border-[#8df6c8]/20 bg-[#8df6c8]/10 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-[#8df6c8]">
-                  {article.category}
-                </span>
-              )}
-              {publishedDate && <span className="text-sm text-slate-500">{publishedDate}</span>}
-              {article.read_time_minutes && (
-                <span className="text-sm text-slate-600">
-                  {article.read_time_minutes} {isArabic ? 'دقائق قراءة' : 'min read'}
-                </span>
+            <div className={`flex flex-wrap items-center gap-3 ${isArabic ? 'justify-end' : ''}`}>
+              {isArabic ? (
+                <>
+                  {article.read_time_minutes ? (
+                    <span className="text-sm text-slate-600">
+                      {article.read_time_minutes} دقائق قراءة
+                    </span>
+                  ) : null}
+                  {publishedDate ? <span className="text-sm text-slate-500">{publishedDate}</span> : null}
+                  {article.category ? (
+                    <span className="rounded-full border border-[#8df6c8]/20 bg-[#8df6c8]/10 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-[#8df6c8]">
+                      {article.category}
+                    </span>
+                  ) : null}
+                </>
+              ) : (
+                <>
+                  {article.category ? (
+                    <span className="rounded-full border border-[#8df6c8]/20 bg-[#8df6c8]/10 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-[#8df6c8]">
+                      {article.category}
+                    </span>
+                  ) : null}
+                  {publishedDate ? <span className="text-sm text-slate-500">{publishedDate}</span> : null}
+                  {article.read_time_minutes ? (
+                    <span className="text-sm text-slate-600">
+                      {article.read_time_minutes} min read
+                    </span>
+                  ) : null}
+                </>
               )}
             </div>
 
