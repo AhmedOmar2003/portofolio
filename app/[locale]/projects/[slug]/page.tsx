@@ -82,7 +82,6 @@ export default async function ProjectCaseStudyPage(props: { params: Promise<{ sl
   const idea        = localizedValue(project as Record<string, unknown>, 'idea', locale);
   const problem     = localizedValue(project as Record<string, unknown>, 'problem', locale);
   const solution    = localizedValue(project as Record<string, unknown>, 'solution', locale);
-  const ui_ux       = localizedValue(project as Record<string, unknown>, 'ui_ux', locale);
 
   const rawProjectImages: unknown[] = Array.isArray(project.images) ? project.images : [];
   const projectImages: string[] = rawProjectImages.filter(
@@ -98,7 +97,7 @@ export default async function ProjectCaseStudyPage(props: { params: Promise<{ sl
   const iosUrl = typeof externalLinks.ios === 'string' ? externalLinks.ios.trim() : '';
   const hasAppInstallLinks = androidUrl.length > 0 || iosUrl.length > 0;
   const technologies = Array.isArray(project.technologies) ? project.technologies : [];
-  const showDesignTechnologies = projectType === 'design' && technologies.length > 0;
+  const showTechnologies = technologies.length > 0;
   const availableLinks = Object.entries(externalLinks).filter(
     ([key, value]) =>
       key !== 'project_type' &&
@@ -116,11 +115,19 @@ export default async function ProjectCaseStudyPage(props: { params: Promise<{ sl
     ? project.category
     : projectTypeLabel;
 
+  const isDesignProject = projectType === 'design';
   const sections = [
     { id: 'idea',        label: isArabic ? 'الفكرة'              : 'The Idea',      content: splitParagraphs(idea) },
-    { id: 'problems',    label: isArabic ? 'المشاكل'             : 'Problems',      content: splitParagraphs(problem) },
-    { id: 'solutions',   label: isArabic ? 'الحلول'              : 'Solutions',     content: splitParagraphs(solution) },
-    { id: 'ui_ux',       label: isArabic ? 'تصميم واجهة المستخدم' : 'UI/UX Design',  content: splitParagraphs(ui_ux) },
+    {
+      id: 'problems',
+      label: isDesignProject ? (isArabic ? 'المشاكل' : 'Problems') : (isArabic ? 'التحديات' : 'Challenges'),
+      content: splitParagraphs(problem),
+    },
+    {
+      id: 'solutions',
+      label: isDesignProject ? (isArabic ? 'الحلول' : 'Solutions') : (isArabic ? 'النتائج والأثر' : 'Results & Impact'),
+      content: splitParagraphs(solution),
+    },
   ].filter((s) => s.content.length > 0);
 
   const metaItems = isArabic
@@ -259,7 +266,7 @@ export default async function ProjectCaseStudyPage(props: { params: Promise<{ sl
                     {s.label}
                   </a>
                 ))}
-                {showDesignTechnologies && (
+                {showTechnologies && (
                   <a
                     href="#technologies"
                     className="flex items-center gap-3 text-sm text-slate-500 transition-colors hover:text-white"
@@ -284,7 +291,7 @@ export default async function ProjectCaseStudyPage(props: { params: Promise<{ sl
                 </article>
               ))}
 
-              {showDesignTechnologies && (
+              {showTechnologies && (
                 <article id="technologies" className={`scroll-mt-28 ${isArabic ? 'text-right' : ''}`}>
                   <h2 className={`mb-6 text-2xl font-semibold text-white ${isArabic ? 'leading-tight' : 'tracking-[-0.04em]'}`}>
                     {isArabic ? 'التقنيات المستخدمة' : 'Technologies Used'}

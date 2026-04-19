@@ -431,11 +431,11 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
                 />
               </div>
               <div>
-                <label className="admin-label">Problems (English)</label>
+                <label className="admin-label">{isDesignProject ? 'Problems (English)' : 'Challenges (English)'}</label>
                 <textarea className="admin-textarea min-h-[150px]" value={formData.problem_en} onChange={(e) => handleChange('problem_en', e.target.value)} />
               </div>
               <div>
-                <label className="admin-label">المشاكل (العربية)</label>
+                <label className="admin-label">{isDesignProject ? 'المشاكل (العربية)' : 'التحديات (العربية)'}</label>
                 <textarea
                   dir="rtl"
                   className="admin-textarea min-h-[150px] text-right"
@@ -443,33 +443,16 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
                   onChange={(e) => handleChange('problem_ar', e.target.value)}
                 />
               </div>
-              {!isDesignProject ? (
-                <>
-                  <div>
-                    <label className="admin-label">UI/UX Design (English - Optional)</label>
-                    <textarea className="admin-textarea min-h-[120px]" value={formData.ui_ux_en} onChange={(e) => handleChange('ui_ux_en', e.target.value)} />
-                  </div>
-                  <div>
-                    <label className="admin-label">تصميم UI/UX (العربية - اختياري)</label>
-                    <textarea
-                      dir="rtl"
-                      className="admin-textarea min-h-[120px] text-right"
-                      value={formData.ui_ux_ar}
-                      onChange={(e) => handleChange('ui_ux_ar', e.target.value)}
-                    />
-                  </div>
-                </>
-              ) : null}
               <div className="md:col-span-2">
                 <label className="admin-label">Technologies Used (Comma separated: React, Next.js, Figma)</label>
                 <input className="admin-input" value={formData.technologiesInput} onChange={(e) => handleChange('technologiesInput', e.target.value)} placeholder="React, Figma, Supabase" />
               </div>
               <div>
-                <label className="admin-label">Solutions (English)</label>
+                <label className="admin-label">{isDesignProject ? 'Solutions (English)' : 'Results and impact (English)'}</label>
                 <textarea className="admin-textarea min-h-[150px]" value={formData.solution_en} onChange={(e) => handleChange('solution_en', e.target.value)} />
               </div>
               <div>
-                <label className="admin-label">الحلول (العربية)</label>
+                <label className="admin-label">{isDesignProject ? 'الحلول (العربية)' : 'النتائج والأثر (العربية)'}</label>
                 <textarea
                   dir="rtl"
                   className="admin-textarea min-h-[150px] text-right"
@@ -482,33 +465,12 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
 
           <section className="admin-card px-6 py-6">
             <h2 className="text-xl font-semibold text-white">External links</h2>
-            {isDesignProject ? (
-              <div className="mt-6 grid gap-5">
-                <div>
-                  <label className="admin-label">{isArabic ? 'رابط المشروع (مثال)' : 'Project link (example)'}</label>
-                  <input className="admin-input" value={formData.external_links.live_demo || ''} onChange={(e) => handleLinkChange('live_demo', e.target.value)} placeholder="https://..." />
-                </div>
+            <div className="mt-6 grid gap-5">
+              <div>
+                <label className="admin-label">{isArabic ? 'رابط المشروع (مثال)' : 'Project link (example)'}</label>
+                <input className="admin-input" value={formData.external_links.live_demo || ''} onChange={(e) => handleLinkChange('live_demo', e.target.value)} placeholder="https://..." />
               </div>
-            ) : (
-              <div className="mt-6 grid gap-5 md:grid-cols-2">
-                <div>
-                  <label className="admin-label">Live demo</label>
-                  <input className="admin-input" value={formData.external_links.live_demo || ''} onChange={(e) => handleLinkChange('live_demo', e.target.value)} placeholder="https://..." />
-                </div>
-                <div>
-                  <label className="admin-label">Repository / source</label>
-                  <input className="admin-input" value={formData.external_links.github || ''} onChange={(e) => handleLinkChange('github', e.target.value)} placeholder="https://github.com/..." />
-                </div>
-                <div>
-                  <label className="admin-label">Android app link (optional)</label>
-                  <input className="admin-input" value={formData.external_links.android || ''} onChange={(e) => handleLinkChange('android', e.target.value)} placeholder="https://..." />
-                </div>
-                <div>
-                  <label className="admin-label">iOS app link (optional)</label>
-                  <input className="admin-input" value={formData.external_links.ios || ''} onChange={(e) => handleLinkChange('ios', e.target.value)} placeholder="https://..." />
-                </div>
-              </div>
-            )}
+            </div>
           </section>
         </div>
 
