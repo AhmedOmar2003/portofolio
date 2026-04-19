@@ -83,7 +83,7 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
     is_featured: false,
     images: [] as string[],
     videos: [] as string[],
-    external_links: { live_demo: '', github: '', project_type: 'design' as ProjectType },
+    external_links: { live_demo: '', github: '', android: '', ios: '', project_type: 'design' as ProjectType },
   })
 
   useEffect(() => {
@@ -124,7 +124,13 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
       if (error) throw error
 
       if (data) {
-        const externalLinks = (data.external_links || {}) as { live_demo?: string; github?: string; project_type?: string }
+        const externalLinks = (data.external_links || {}) as {
+          live_demo?: string;
+          github?: string;
+          android?: string;
+          ios?: string;
+          project_type?: string;
+        }
         const normalizedProjectType = normalizeProjectType(externalLinks.project_type)
 
         setFormData({
@@ -153,6 +159,8 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
           external_links: {
             live_demo: externalLinks.live_demo || '',
             github: externalLinks.github || '',
+            android: externalLinks.android || '',
+            ios: externalLinks.ios || '',
             project_type: normalizedProjectType,
           },
         })
@@ -257,6 +265,8 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
       external_links: {
         live_demo: formData.external_links.live_demo || '',
         github: formData.external_links.github || '',
+        android: formData.external_links.android || '',
+        ios: formData.external_links.ios || '',
         project_type: formData.project_type,
       },
     }
@@ -368,9 +378,10 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
                 >
                   <option value="design">{getProjectTypeLabel('design', locale)}</option>
                   <option value="programming">{getProjectTypeLabel('programming', locale)}</option>
+                  <option value="applications">{getProjectTypeLabel('applications', locale)}</option>
                 </select>
                 <p className="admin-helper mt-2">
-                  {isArabic ? 'اختار نوع المشروع: تصميم أو برمجة.' : 'Choose one project type: Design or Programming.'}
+                  {isArabic ? 'اختار نوع المشروع: تصميم أو برمجة أو تطبيقات.' : 'Choose one project type: Design, Programming, or Applications.'}
                 </p>
               </div>
               <div className="md:col-span-2">
@@ -461,6 +472,14 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
               <div>
                 <label className="admin-label">Repository / source</label>
                 <input className="admin-input" value={formData.external_links.github || ''} onChange={(e) => handleLinkChange('github', e.target.value)} placeholder="https://github.com/..." />
+              </div>
+              <div>
+                <label className="admin-label">Android app link (optional)</label>
+                <input className="admin-input" value={formData.external_links.android || ''} onChange={(e) => handleLinkChange('android', e.target.value)} placeholder="https://..." />
+              </div>
+              <div>
+                <label className="admin-label">iOS app link (optional)</label>
+                <input className="admin-input" value={formData.external_links.ios || ''} onChange={(e) => handleLinkChange('ios', e.target.value)} placeholder="https://..." />
               </div>
             </div>
           </section>

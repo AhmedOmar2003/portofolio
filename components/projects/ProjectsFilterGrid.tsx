@@ -7,7 +7,8 @@ type FilterType = 'all' | 'design' | 'programming';
 
 type ProjectItem = {
   title: string;
-  type: 'design' | 'programming';
+  type: 'design' | 'programming' | 'applications';
+  filterType: 'design' | 'programming';
   typeLabel: string;
   category: string;
   year: string;
@@ -39,7 +40,7 @@ export default function ProjectsFilterGrid({ projects, isArabic, labels }: Proje
 
   const filteredProjects = useMemo(() => {
     if (activeFilter === 'all') return projects;
-    return projects.filter((project) => project.type === activeFilter);
+    return projects.filter((project) => project.filterType === activeFilter);
   }, [activeFilter, projects]);
 
   const filterButtons: Array<{ key: FilterType; label: string }> = [
@@ -50,7 +51,7 @@ export default function ProjectsFilterGrid({ projects, isArabic, labels }: Proje
 
   return (
     <section className="space-y-7">
-      <div className="flex flex-wrap justify-start gap-3">
+      <div className={`flex flex-wrap gap-3 ${isArabic ? 'justify-end' : 'justify-start'}`}>
         {filterButtons.map((filter) => {
           const isActive = activeFilter === filter.key;
           return (

@@ -3,7 +3,7 @@ import { getTranslations } from 'next-intl/server';
 import ProjectsFilterGrid from '@/components/projects/ProjectsFilterGrid';
 import SectionHeading from '@/components/ui/SectionHeading';
 import { getLocaleDateFormat, localizedValue } from '@/utils/locale-content';
-import { getProjectTypeLabel, normalizeProjectType, type ProjectType } from '@/utils/project-type';
+import { getProjectFilterType, getProjectTypeLabel, normalizeProjectType, type ProjectType } from '@/utils/project-type';
 import { createClient } from '@/utils/supabase/server';
 
 export const revalidate = 3600;
@@ -40,6 +40,7 @@ export default async function ProjectsPage({ params }: { params: Promise<{ local
     return {
       title:       localizedValue(p as Record<string, unknown>, 'name', locale) || p.name_en,
       type:        projectType,
+      filterType:  getProjectFilterType(projectType),
       typeLabel:   getProjectTypeLabel(projectType, locale),
       category:    p.category || home('projectCategoryFallback'),
       year:        p.start_date
@@ -62,13 +63,13 @@ export default async function ProjectsPage({ params }: { params: Promise<{ local
 
   const finalProjects = allProjects.length > 0 ? allProjects : [
     {
-      title: home('sampleProjectTitle1'), type: 'design' as ProjectType, typeLabel: getProjectTypeLabel('design', locale), category: home('sampleProjectCategory1'),
+      title: home('sampleProjectTitle1'), type: 'design' as ProjectType, filterType: 'design', typeLabel: getProjectTypeLabel('design', locale), category: home('sampleProjectCategory1'),
       year: '2025', description: home('sampleProjectDescription1'),
       href: '/projects', imageUrl: undefined,
       role: home('projectRoleValue'), impact: home('sampleProjectImpact1'), index: 0,
     },
     {
-      title: home('sampleProjectTitle2'), type: 'programming' as ProjectType, typeLabel: getProjectTypeLabel('programming', locale), category: home('sampleProjectCategory2'),
+      title: home('sampleProjectTitle2'), type: 'programming' as ProjectType, filterType: 'programming', typeLabel: getProjectTypeLabel('programming', locale), category: home('sampleProjectCategory2'),
       year: '2024', description: home('sampleProjectDescription2'),
       href: '/projects', imageUrl: undefined,
       role: home('projectRoleValue'), impact: home('sampleProjectImpact2'), index: 1,

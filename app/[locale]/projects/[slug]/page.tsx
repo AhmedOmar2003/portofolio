@@ -1,6 +1,7 @@
 import { ArrowLeft, ArrowUpRight } from 'lucide-react';
 import { notFound } from 'next/navigation';
 
+import AppInstallLinks from '@/components/projects/AppInstallLinks';
 import { Link } from '@/i18n/routing';
 import ProjectGalleryCarousel from '@/components/projects/ProjectGalleryCarousel';
 import { getLocaleDateFormat, isArabicLocale, localizedValue } from '@/utils/locale-content';
@@ -90,13 +91,23 @@ export default async function ProjectCaseStudyPage(props: { params: Promise<{ sl
   const videoUrl     = Array.isArray(project.videos) && project.videos.length > 0 ? project.videos[0] : null;
   const videoPresentation = videoUrl ? getVideoPresentation(videoUrl) : null
   const externalLinks: Record<string, string> = project.external_links ?? {};
+  const projectType = normalizeProjectType(externalLinks.project_type);
+  const isApplicationProject = projectType === 'applications';
+  const androidUrl = typeof externalLinks.android === 'string' ? externalLinks.android.trim() : '';
+  const iosUrl = typeof externalLinks.ios === 'string' ? externalLinks.ios.trim() : '';
+  const hasAppInstallLinks = androidUrl.length > 0 || iosUrl.length > 0;
   const technologies = Array.isArray(project.technologies) ? project.technologies : [];
   const availableLinks = Object.entries(externalLinks).filter(
-    ([key, value]) => key !== 'project_type' && typeof value === 'string' && value.trim().length > 0
+    ([key, value]) =>
+      key !== 'project_type' &&
+      key !== 'android' &&
+      key !== 'ios' &&
+      typeof value === 'string' &&
+      value.trim().length > 0
   );
   const liveDemoEntry = availableLinks.find(([key]) => key === 'live_demo');
   const secondaryLinkEntries = availableLinks.filter(([key]) => key !== 'live_demo');
-  const projectType = normalizeProjectType(externalLinks.project_type);
+  const shouldShowClassicLinks = !isApplicationProject || !hasAppInstallLinks;
   const projectTypeLabel = getProjectTypeLabel(projectType, locale);
   const categoryLabel = typeof project.category === 'string' && project.category.trim().length > 0
     ? project.category
@@ -165,7 +176,15 @@ export default async function ProjectCaseStudyPage(props: { params: Promise<{ sl
               }, [])}
             </div>
 
-            {availableLinks.length > 0 ? (
+            {isApplicationProject && hasAppInstallLinks ? (
+              <AppInstallLinks
+                isArabic={isArabic}
+                androidUrl={androidUrl || undefined}
+                iosUrl={iosUrl || undefined}
+              />
+            ) : null}
+
+            {shouldShowClassicLinks && availableLinks.length > 0 ? (
               <div className={`mt-6 flex w-full flex-wrap items-center gap-3 ${isArabic ? 'flex-row-reverse justify-end' : ''}`}>
                 {liveDemoEntry ? (
                   <a
@@ -174,11 +193,28 @@ export default async function ProjectCaseStudyPage(props: { params: Promise<{ sl
                     rel="noreferrer"
                     className="group inline-flex items-center gap-2 rounded-full border border-[#8df6c8]/45 bg-gradient-to-r from-[#8df6c8] to-[#6ad7ff] px-5 py-2.5 text-sm font-semibold text-[#02131b] shadow-[0_10px_30px_rgba(106,215,255,0.3)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_34px_rgba(106,215,255,0.4)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8df6c8] focus-visible:ring-offset-2 focus-visible:ring-offset-[#050816]"
                   >
-                    {formatExternalLink('live_demo', locale)}
+                    {isApplicationProject ? (isArabic ? 'النسخة التجريبية للتطبيق' : 'App Demo') : formatExternalLink('live_demo', locale)}
                     <ArrowUpRight className={`h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 ${isArabic ? 'rtl-flip' : ''}`} aria-hidden="true" />
                   </a>
                 ) : null}
 
+                {secondaryLinkEntries.map(([key, value]) => (
+                  <a
+                    key={key}
+                    href={String(value)}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-sm text-slate-200 transition hover:border-[#8df6c8]/30 hover:text-white"
+                  >
+                    {formatExternalLink(key, locale)}
+                    <ArrowUpRight className={`h-3.5 w-3.5 ${isArabic ? 'rtl-flip' : ''}`} aria-hidden="true" />
+                  </a>
+                ))}
+              </div>
+            ) : null}
+
+            {isApplicationProject && hasAppInstallLinks && secondaryLinkEntries.length > 0 ? (
+              <div className={`mt-4 flex w-full flex-wrap items-center gap-3 ${isArabic ? 'flex-row-reverse justify-end' : ''}`}>
                 {secondaryLinkEntries.map(([key, value]) => (
                   <a
                     key={key}
