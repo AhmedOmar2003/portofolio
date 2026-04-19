@@ -95,9 +95,7 @@ export default function ServicesFilterGrid({ services, isArabic, labels }: Servi
               <div className="mt-8 pt-4">
                 <Link
                   href={`/services/${service.id}`}
-                  className={`inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#8df6c8]/10 px-6 py-3.5 text-sm font-semibold text-[#8df6c8] transition-all hover:bg-[#8df6c8]/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8df6c8] focus-visible:ring-offset-2 focus-visible:ring-offset-[#050816] ${
-                    isArabic ? 'flex-row-reverse' : ''
-                  }`}
+                  className="inline-flex w-full flex-row items-center justify-center gap-2 rounded-2xl bg-[#8df6c8]/10 px-6 py-3.5 text-sm font-semibold text-[#8df6c8] transition-all hover:bg-[#8df6c8]/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8df6c8] focus-visible:ring-offset-2 focus-visible:ring-offset-[#050816]"
                 >
                   {labels.cta}
                   <ArrowUpRight
