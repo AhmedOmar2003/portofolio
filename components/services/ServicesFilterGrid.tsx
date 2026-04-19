@@ -72,7 +72,10 @@ export default function ServicesFilterGrid({ services, isArabic, labels }: Servi
               key={service.id}
               className="group flex flex-col rounded-3xl border border-white/10 bg-white/[0.02] p-8 transition-all duration-300 hover:border-white/20 hover:bg-white/[0.04]"
             >
-              <div className={`mb-6 flex items-center justify-between gap-3 ${isArabic ? 'flex-row-reverse' : ''}`}>
+              <div
+                dir="ltr"
+                className={`mb-6 flex items-center justify-between gap-3 ${isArabic ? 'flex-row-reverse' : 'flex-row'}`}
+              >
                 <span className="text-sm font-semibold uppercase tracking-widest text-[#8df6c8]">
                   [{String(service.index + 1).padStart(2, '0')}]
                 </span>
