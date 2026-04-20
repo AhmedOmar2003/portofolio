@@ -50,7 +50,7 @@ export async function generateMetadata({
   const { data: settings } = await supabase
     .from('site_settings')
     .select('hero_title_en, hero_title_ar, hero_subtitle_en, hero_subtitle_ar')
-      .single();
+    .single();
 
   const title =
     localizedValue(settings as Record<string, unknown>, 'hero_title', locale) ||
@@ -93,6 +93,19 @@ export default async function LocaleLayout({
 }) {
   const { locale } = await params;
   const messages = await getMessages();
+  const { createClient } = await import('@/utils/supabase/server');
+  const supabase = await createClient();
+  const { data: contactsData } = await supabase
+    .from('contact_methods')
+    .select('type, value, label_en, label_ar')
+    .eq('is_visible', true)
+    .order('view_order', { ascending: true });
+
+  const socialLinks = (contactsData || []).map((method) => ({
+    type: method.type,
+    value: method.value,
+    label: localizedValue(method as Record<string, unknown>, 'label', locale) as string,
+  }));
 
   return (
     <html lang={locale} dir={isArabicLocale(locale) ? 'rtl' : 'ltr'}>
@@ -101,7 +114,7 @@ export default async function LocaleLayout({
           <AnalyticsTracker />
           <Navbar />
           <div className="flex-grow">{children}</div>
-          <Footer />
+          <Footer socialLinks={socialLinks} />
           <WhatsAppButton />
         </NextIntlClientProvider>
       </body>

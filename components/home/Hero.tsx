@@ -32,9 +32,9 @@ export default function Hero({ title, subtitle, projectCount, serviceCount }: He
       aria-labelledby="hero-heading"
     >
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute left-[8%] top-20 h-32 w-32 rounded-full bg-emerald-300/10 blur-[90px] sm:h-48 sm:w-48 sm:blur-[120px] transform-gpu will-change-transform" style={{ transform: 'translateZ(0)', willChange: 'filter, transform' }} />
-        <div className="absolute right-[8%] top-16 h-48 w-48 rounded-full bg-sky-400/10 blur-[100px] sm:top-20 sm:h-72 sm:w-72 sm:blur-[140px] transform-gpu will-change-transform" style={{ transform: 'translateZ(0)', willChange: 'filter, transform' }} />
-        <div className="absolute bottom-0 left-1/2 h-44 w-[20rem] -translate-x-1/2 rounded-full bg-cyan-300/10 blur-[110px] sm:h-64 sm:w-[40rem] sm:blur-[160px] transform-gpu will-change-transform" style={{ transform: 'translate3d(-50%, 0, 0)', willChange: 'filter, transform' }} />
+        <div className="absolute left-[8%] top-20 h-32 w-32 rounded-full bg-emerald-300/10 blur-[90px] sm:h-48 sm:w-48 sm:blur-[120px] transform-gpu" style={{ willChange: 'filter, transform' }} />
+        <div className="absolute right-[8%] top-16 h-48 w-48 rounded-full bg-sky-400/10 blur-[100px] sm:top-20 sm:h-72 sm:w-72 sm:blur-[140px] transform-gpu" style={{ willChange: 'filter, transform' }} />
+        <div className="absolute bottom-0 left-1/2 h-44 w-[20rem] -translate-x-1/2 rounded-full bg-cyan-300/10 blur-[110px] sm:h-64 sm:w-[40rem] sm:blur-[160px] transform-gpu" style={{ willChange: 'filter, transform' }} />
       </div>
 
       <div className="mx-auto grid max-w-[1380px] gap-12 lg:grid-cols-[minmax(0,1.1fr)_minmax(420px,0.9fr)] lg:items-center">

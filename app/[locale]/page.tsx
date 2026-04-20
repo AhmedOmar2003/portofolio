@@ -319,7 +319,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
         <section id="contact" aria-labelledby="contact-heading" className="mx-auto max-w-[1000px] py-16 md:py-24">
           <div className="section-shell relative overflow-hidden px-6 py-12 text-center md:px-12 md:py-16 flex flex-col items-center rounded-3xl">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-64 w-64 rounded-full bg-[#8df6c8]/10 blur-[120px] transform-gpu will-change-transform" style={{ transform: 'translate3d(-50%, -50%, 0)', willChange: 'filter, transform' }} />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-64 w-64 rounded-full bg-[#8df6c8]/10 blur-[120px] transform-gpu" style={{ willChange: 'filter, transform' }} />
             <div className="relative z-10 flex flex-col items-center w-full">
               <SectionHeading id="contact-heading" alignment="center" overline={t('contactEyebrow')} title={t('contactTitle')} subtitle={t('contactSubtitle')} />
 
