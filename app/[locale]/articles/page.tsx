@@ -8,6 +8,11 @@ import { createClient } from '@/utils/supabase/server';
 
 export const revalidate = 3600;
 
+export function generateStaticParams() {
+  return [{ locale: 'en' }, { locale: 'ar' }];
+}
+
+
 function formatDate(dateValue: string | null | undefined, locale: string) {
   if (!dateValue) return '';
   return new Date(dateValue).toLocaleDateString(getLocaleDateFormat(locale), {

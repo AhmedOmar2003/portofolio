@@ -5,6 +5,22 @@ import { notFound } from 'next/navigation';
 import { Link } from '@/i18n/routing';
 import { getLocaleDateFormat, isArabicLocale, localizedValue } from '@/utils/locale-content';
 import { createClient } from '@/utils/supabase/server';
+import { createStaticClient } from '@/utils/supabase/static';
+
+export const revalidate = 3600;
+export const dynamicParams = true;
+
+export async function generateStaticParams() {
+  const supabase = createStaticClient();
+  const { data: articles } = await supabase
+    .from('articles')
+    .select('slug')
+    .not('published_at', 'is', null);
+  const locales = ['en', 'ar'];
+  return (articles ?? []).flatMap(({ slug }) =>
+    locales.map((locale) => ({ locale, slug }))
+  );
+}
 
 function splitParagraphs(content?: string | null) {
   return (content || '').split('\n').map((s) => s.trim()).filter(Boolean);

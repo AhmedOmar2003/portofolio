@@ -5,8 +5,20 @@ import { notFound } from 'next/navigation';
 import { Link } from '@/i18n/routing';
 import { isArabicLocale, localizedValue } from '@/utils/locale-content';
 import { createClient } from '@/utils/supabase/server';
+import { createStaticClient } from '@/utils/supabase/static';
 
 export const revalidate = 3600;
+export const dynamicParams = true;
+
+export async function generateStaticParams() {
+  const supabase = createStaticClient();
+  const { data: services } = await supabase.from('services').select('id');
+  const locales = ['en', 'ar'];
+  return (services ?? []).flatMap(({ id }) =>
+    locales.map((locale) => ({ locale, id }))
+  );
+}
+
 
 function splitLines(content?: string | null) {
   return (content || '').split('\n').map((s) => s.trim()).filter(Boolean);

@@ -8,6 +8,11 @@ import { createClient } from '@/utils/supabase/server';
 
 export const revalidate = 3600;
 
+export function generateStaticParams() {
+  return [{ locale: 'en' }, { locale: 'ar' }];
+}
+
+
 type ProjectsFilterItem = {
   title: string;
   type: ProjectType;

@@ -64,8 +64,8 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     { data: aboutData },
     { data: contactsData },
   ] = await Promise.all([
-    supabase.from('projects').select('*').order('view_order', { ascending: true }).order('created_at', { ascending: false }).limit(2),
-    supabase.from('services').select('*').eq('is_featured', true).order('view_order', { ascending: true }).limit(2),
+    supabase.from('projects').select('id, name_en, name_ar, slug, category, description_en, description_ar, solution_en, solution_ar, images, start_date, external_links').order('view_order', { ascending: true }).order('created_at', { ascending: false }).limit(2),
+    supabase.from('services').select('id, title_en, title_ar, description_en, description_ar, detailed_content_en, detailed_content_ar').eq('is_featured', true).order('view_order', { ascending: true }).limit(2),
     supabase
       .from('site_settings')
       .select('hero_title_en, hero_title_ar, hero_subtitle_en, hero_subtitle_ar')
@@ -83,7 +83,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   ]);
 
   const projectsData = projectsQuery.error
-    ? (await supabase.from('projects').select('*').order('created_at', { ascending: false }).limit(2)).data
+    ? (await supabase.from('projects').select('id, name_en, name_ar, slug, category, description_en, description_ar, solution_en, solution_ar, images, start_date, external_links').order('created_at', { ascending: false }).limit(2)).data
     : projectsQuery.data;
 
   const principleCards = splitLines(localizedValue(aboutData as Record<string, unknown>, 'philosophy', locale)).slice(0, 3);
@@ -282,6 +282,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
                 imageUrl={project.imageUrl}
                 role={project.role}
                 impact={project.impact}
+                priority={index === 0}
                 labels={{ role: t('projectRoleLabel'), outcome: t('projectOutcomeLabel'), year: t('projectYearLabel'), cta: t('viewCaseStudy') }}
               />
             ))}

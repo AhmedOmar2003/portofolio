@@ -12,6 +12,11 @@ import { Link } from '@/i18n/routing';
 
 export const revalidate = 3600;
 
+export function generateStaticParams() {
+  return [{ locale: 'en' }, { locale: 'ar' }];
+}
+
+
 const skills = [
   'Flutter',
   'Dart',

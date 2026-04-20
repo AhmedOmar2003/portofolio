@@ -24,6 +24,7 @@ interface ProjectCardProps {
   index: number;
   projectType?: 'design' | 'programming' | 'applications';
   projectTypeBadge?: string;
+  priority?: boolean;
 }
 
 export default function ProjectCard({
@@ -37,6 +38,7 @@ export default function ProjectCard({
   index,
   projectType,
   projectTypeBadge,
+  priority = false,
 }: ProjectCardProps) {
   const shouldReduceMotion = useReducedMotion();
   const locale = useLocale();
@@ -63,6 +65,8 @@ export default function ProjectCard({
               fill
               sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 40vw"
               className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+              priority={priority}
+              loading={priority ? undefined : 'lazy'}
             />
           ) : (
             <div className="absolute inset-0 flex items-center justify-center bg-zinc-900">

@@ -7,6 +7,19 @@ import ProjectGalleryCarousel from '@/components/projects/ProjectGalleryCarousel
 import { getLocaleDateFormat, isArabicLocale, localizedValue } from '@/utils/locale-content';
 import { getProjectRoleLabel, getProjectTypeLabel, normalizeProjectType } from '@/utils/project-type';
 import { createClient } from '@/utils/supabase/server';
+import { createStaticClient } from '@/utils/supabase/static';
+
+export const revalidate = 3600;
+export const dynamicParams = true;
+
+export async function generateStaticParams() {
+  const supabase = createStaticClient();
+  const { data: projects } = await supabase.from('projects').select('slug');
+  const locales = ['en', 'ar'];
+  return (projects ?? []).flatMap(({ slug }) =>
+    locales.map((locale) => ({ locale, slug }))
+  );
+}
 
 function splitParagraphs(content?: string | null) {
   return (content || '').split('\n').map((s) => s.trim()).filter(Boolean);
