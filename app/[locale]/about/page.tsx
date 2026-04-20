@@ -161,7 +161,6 @@ async function AboutPageContent({ params }: { params: Promise<{ locale: string }
   const isArabic = locale === 'ar';
   const page = isArabic ? content.ar : content.en;
   const dir = isArabic ? 'rtl' : 'ltr';
-  const alignClass = isArabic ? 'text-right items-end' : 'text-left';
 
   return (
     <main dir={dir} className="relative overflow-hidden px-6 pb-32 pt-32 md:px-10 lg:px-12 lg:pt-40">
@@ -171,20 +170,20 @@ async function AboutPageContent({ params }: { params: Promise<{ locale: string }
       <div className="mx-auto max-w-[900px] space-y-24">
 
         {/* ─── Hero ─── */}
-        <section className={`w-full space-y-6 ${alignClass}`}>
+        <section className="w-full space-y-6 text-start">
           <p className="eyebrow">{page.eyebrow}</p>
           <h1 className={`text-4xl font-semibold text-white sm:text-5xl lg:text-6xl ${isArabic ? 'leading-tight' : 'tracking-[-0.05em] leading-tight'}`}>
             {page.title}
           </h1>
-          <p className={`max-w-2xl text-lg leading-8 text-slate-400 ${isArabic ? 'ml-auto' : ''}`}>{page.subtitle}</p>
+          <p className="max-w-2xl text-lg leading-8 text-slate-400">{page.subtitle}</p>
 
           {/* Quick stats */}
-          <div className={`flex flex-wrap gap-4 pt-2 ${isArabic ? 'justify-end' : ''}`}>
-            <div className={`rounded-2xl border border-white/10 bg-white/[0.03] px-5 py-3 ${isArabic ? 'text-right' : ''}`}>
+          <div className="flex flex-wrap gap-4 pt-2">
+            <div className="rounded-2xl border border-white/10 bg-white/[0.03] px-5 py-3">
               <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">{page.roleLabel}</p>
               <p className="mt-1 text-sm font-medium text-white">{page.roleValue}</p>
             </div>
-            <div className={`rounded-2xl border border-white/10 bg-white/[0.03] px-5 py-3 ${isArabic ? 'text-right' : ''}`}>
+            <div className="rounded-2xl border border-white/10 bg-white/[0.03] px-5 py-3">
               <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">{page.educationLabel}</p>
               <p className="mt-1 text-sm font-medium text-white">{page.educationValue}</p>
             </div>
@@ -192,7 +191,7 @@ async function AboutPageContent({ params }: { params: Promise<{ locale: string }
         </section>
 
         {/* ─── Introduction ─── */}
-        <section className={`w-full space-y-5 ${alignClass}`}>
+        <section className="w-full space-y-5 text-start">
           <p className="eyebrow">{page.introductionTitle}</p>
           <div className="space-y-4">
             {page.introductionBody.map((paragraph, i) => (
@@ -204,7 +203,7 @@ async function AboutPageContent({ params }: { params: Promise<{ locale: string }
         </section>
 
         {/* ─── What I Do ─── */}
-        <section className={`w-full space-y-6 ${alignClass}`}>
+        <section className="w-full space-y-6 text-start">
           <p className="eyebrow">{page.workTitle}</p>
           <div className="grid gap-4 sm:grid-cols-2">
             {page.workAreas.map((item) => {
@@ -212,9 +211,9 @@ async function AboutPageContent({ params }: { params: Promise<{ locale: string }
               return (
                 <div
                   key={item.title}
-                  className={`group rounded-2xl border border-white/10 bg-white/[0.03] p-5 transition hover:border-[#8df6c8]/30 hover:bg-white/[0.05] ${isArabic ? 'text-right' : ''}`}
+                  className="group rounded-2xl border border-white/10 bg-white/[0.03] p-5 transition hover:border-[#8df6c8]/30 hover:bg-white/[0.05]"
                 >
-                  <div className={`flex items-start gap-4 ${isArabic ? 'flex-row-reverse' : ''}`}>
+                  <div className="flex items-start gap-4">
                     <div className="shrink-0 rounded-xl border border-white/10 bg-white/[0.05] p-3 text-[#8df6c8] transition group-hover:bg-[#8df6c8]/10">
                       <Icon className="h-5 w-5" aria-hidden="true" />
                     </div>
@@ -230,11 +229,11 @@ async function AboutPageContent({ params }: { params: Promise<{ locale: string }
         </section>
 
         {/* ─── Philosophy ─── */}
-        <section className={`w-full space-y-6 ${alignClass}`}>
+        <section className="w-full space-y-6 text-start">
           <p className="eyebrow">{page.philosophyTitle}</p>
-          <div className={`space-y-4 ${isArabic ? 'text-right' : ''}`}>
+          <div className="space-y-4">
             {page.philosophyPoints.map((point) => (
-              <div key={point.number} className={`flex gap-5 ${isArabic ? 'flex-row-reverse' : ''}`}>
+              <div key={point.number} className="flex gap-5">
                 <span className="mt-1 shrink-0 text-2xl font-bold tabular-nums text-white/10 select-none">
                   {point.number}
                 </span>
@@ -248,9 +247,9 @@ async function AboutPageContent({ params }: { params: Promise<{ locale: string }
         </section>
 
         {/* ─── Skills ─── */}
-        <section className={`w-full space-y-5 ${alignClass}`}>
+        <section className="w-full space-y-5 text-start">
           <p className="eyebrow">{page.skillsTitle}</p>
-          <div className={`flex flex-wrap gap-2.5 ${isArabic ? 'justify-end' : ''}`}>
+          <div className="flex flex-wrap gap-2.5">
             {skills.map((skill) => (
               <span
                 key={skill}
@@ -263,15 +262,15 @@ async function AboutPageContent({ params }: { params: Promise<{ locale: string }
         </section>
 
         {/* ─── Connect ─── */}
-        <section className={`w-full space-y-5 ${alignClass}`}>
+        <section className="w-full space-y-5 text-start">
           <p className="eyebrow">{page.connectTitle}</p>
-          <p className={`text-base leading-8 text-slate-400 ${isArabic ? 'ml-auto max-w-2xl' : ''}`}>{page.connectSubtitle}</p>
-          <div className={`flex flex-wrap gap-3 ${isArabic ? 'justify-end' : ''}`}>
+          <p className="max-w-2xl text-base leading-8 text-slate-400">{page.connectSubtitle}</p>
+          <div className="flex flex-wrap gap-3">
             <a
               href="https://www.linkedin.com/in/ahmed-essam-a72274254/"
               target="_blank"
               rel="noreferrer"
-              className={`inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-5 py-3 text-sm font-medium text-slate-100 transition hover:-translate-y-0.5 hover:border-[#8df6c8]/35 hover:bg-white/[0.08] ${isArabic ? 'flex-row-reverse' : ''}`}
+              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-5 py-3 text-sm font-medium text-slate-100 transition hover:-translate-y-0.5 hover:border-[#8df6c8]/35 hover:bg-white/[0.08]"
             >
               <Linkedin className="h-4 w-4" aria-hidden="true" />
               {page.linkedinLabel}
@@ -281,7 +280,7 @@ async function AboutPageContent({ params }: { params: Promise<{ locale: string }
               href="https://drive.google.com/file/d/15m3y3vuWupnndu69JFW6MhayG-AojV0Q/view?usp=sharing"
               target="_blank"
               rel="noreferrer"
-              className={`inline-flex items-center gap-2 rounded-full border border-[#8df6c6]/25 bg-[#8df6c8]/10 px-5 py-3 text-sm font-medium text-white transition hover:-translate-y-0.5 hover:bg-[#8df6c8]/15 ${isArabic ? 'flex-row-reverse' : ''}`}
+              className="inline-flex items-center gap-2 rounded-full border border-[#8df6c6]/25 bg-[#8df6c8]/10 px-5 py-3 text-sm font-medium text-white transition hover:-translate-y-0.5 hover:bg-[#8df6c8]/15"
             >
               <FileText className="h-4 w-4" aria-hidden="true" />
               {page.cvLabel}
@@ -289,7 +288,7 @@ async function AboutPageContent({ params }: { params: Promise<{ locale: string }
             </a>
             <Link
               href="/contact"
-              className={`inline-flex items-center gap-2 rounded-full border border-transparent px-5 py-3 text-sm font-medium text-[#8df6c8] transition hover:text-white ${isArabic ? 'flex-row-reverse' : ''}`}
+              className="inline-flex items-center gap-2 rounded-full border border-transparent px-5 py-3 text-sm font-medium text-[#8df6c8] transition hover:text-white"
             >
               {page.contactLabel}
               <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
