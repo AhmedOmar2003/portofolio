@@ -7,17 +7,21 @@ export default async function AdminAnalyticsPage({ params }: { params: Promise<{
   const supabase = createAdminClient()
 
   const [
-    { data: pageViewsRaw },
+    { data: pageViewsRaw, error: pageViewsError, count: pageViewsCount },
     { data: projects },
     { data: services },
   ] = await Promise.all([
-    supabase.from('page_views').select('path, slug, visitor_id, created_at'),
+    supabase
+      .from('page_views')
+      .select('path, slug, visitor_id, created_at', { count: 'exact' })
+      .order('created_at', { ascending: false })
+      .range(0, 4999),
     supabase.from('projects').select('id, name_en, name_ar, slug'),
     supabase.from('services').select('id, title_en, title_ar, view_order'),
   ])
 
   // ── Total / Unique visitors ──────────────────────────────────────────────
-  const totalViews = pageViewsRaw?.length ?? 0
+  const totalViews = pageViewsCount ?? pageViewsRaw?.length ?? 0
   const uniqueVisitors = new Set(pageViewsRaw?.map((v) => v.visitor_id) ?? []).size
 
   // ── Views by page path ───────────────────────────────────────────────────
@@ -80,6 +84,13 @@ export default async function AdminAnalyticsPage({ params }: { params: Promise<{
             ? 'بيانات حقيقية من زوار موقعك — الصفحات الأكثر زيارة، والمشاريع المشاهدة.'
             : 'Real traffic data — top pages, most-viewed projects and visitor trends.'}
         </p>
+        {pageViewsError ? (
+          <p className="mt-3 rounded-2xl border border-rose-400/20 bg-rose-400/10 px-4 py-3 text-sm text-rose-200">
+            {isArabic
+              ? `تعذر جلب بيانات التحليلات: ${pageViewsError.message}`
+              : `Unable to load analytics data: ${pageViewsError.message}`}
+          </p>
+        ) : null}
       </div>
 
       {/* Summary stats */}
