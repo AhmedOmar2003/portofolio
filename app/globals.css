@@ -215,10 +215,6 @@ textarea:focus-visible {
   flex-shrink: 0;
 }
 
-[dir='rtl'] .eyebrow {
-  flex-direction: row-reverse;
-}
-
 .text-balance {
   text-wrap: balance;
 }
