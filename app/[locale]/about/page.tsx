@@ -168,10 +168,10 @@ async function AboutPageContent({ params }: { params: Promise<{ locale: string }
       {/* Background gradient */}
       <div className="pointer-events-none absolute inset-x-0 top-0 h-[40rem] bg-[radial-gradient(ellipse_at_top,_rgba(141,246,200,0.10),_transparent_60%)]" />
 
-      <div className="mx-auto max-w-[900px] space-y-24">
+      <div className={`mx-auto max-w-[900px] ${isArabic ? 'flex flex-col gap-24 items-end' : 'space-y-24'}`}>
 
         {/* ─── Hero ─── */}
-        <section className={`space-y-6 ${alignClass}`}>
+        <section className={`w-full space-y-6 ${alignClass} ${isArabic ? 'flex flex-col items-end' : ''}`}>
           <p className="eyebrow">{page.eyebrow}</p>
           <h1 className={`text-4xl font-semibold text-white sm:text-5xl lg:text-6xl ${isArabic ? 'leading-tight' : 'tracking-[-0.05em] leading-tight'}`}>
             {page.title}
@@ -179,7 +179,7 @@ async function AboutPageContent({ params }: { params: Promise<{ locale: string }
           <p className={`max-w-2xl text-lg leading-8 text-slate-400 ${isArabic ? 'ml-auto' : ''}`}>{page.subtitle}</p>
 
           {/* Quick stats */}
-          <div className={`flex flex-wrap gap-4 pt-2 ${isArabic ? 'justify-end' : ''}`}>
+          <div className={`flex flex-wrap gap-4 pt-2 ${isArabic ? 'justify-end self-end' : ''}`}>
             <div className={`rounded-2xl border border-white/10 bg-white/[0.03] px-5 py-3 ${isArabic ? 'text-right' : ''}`}>
               <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">{page.roleLabel}</p>
               <p className="mt-1 text-sm font-medium text-white">{page.roleValue}</p>
@@ -192,7 +192,7 @@ async function AboutPageContent({ params }: { params: Promise<{ locale: string }
         </section>
 
         {/* ─── Introduction ─── */}
-        <section className={`space-y-5 ${alignClass}`}>
+        <section className={`w-full space-y-5 ${alignClass} ${isArabic ? 'flex flex-col items-end' : ''}`}>
           <p className="eyebrow">{page.introductionTitle}</p>
           <div className="space-y-4">
             {page.introductionBody.map((paragraph, i) => (
@@ -204,7 +204,7 @@ async function AboutPageContent({ params }: { params: Promise<{ locale: string }
         </section>
 
         {/* ─── What I Do ─── */}
-        <section className={`space-y-6 ${alignClass}`}>
+        <section className={`w-full space-y-6 ${alignClass} ${isArabic ? 'flex flex-col items-end' : ''}`}>
           <p className="eyebrow">{page.workTitle}</p>
           <div className={`grid gap-4 sm:grid-cols-2 ${isArabic ? 'justify-items-end' : ''}`}>
             {page.workAreas.map((item) => {
@@ -230,7 +230,7 @@ async function AboutPageContent({ params }: { params: Promise<{ locale: string }
         </section>
 
         {/* ─── Philosophy ─── */}
-        <section className={`space-y-6 ${alignClass}`}>
+        <section className={`w-full space-y-6 ${alignClass} ${isArabic ? 'flex flex-col items-end' : ''}`}>
           <p className="eyebrow">{page.philosophyTitle}</p>
           <div className={`space-y-4 ${isArabic ? 'text-right' : ''}`}>
             {page.philosophyPoints.map((point) => (
@@ -248,7 +248,7 @@ async function AboutPageContent({ params }: { params: Promise<{ locale: string }
         </section>
 
         {/* ─── Skills ─── */}
-        <section className={`space-y-5 ${alignClass}`}>
+        <section className={`w-full space-y-5 ${alignClass} ${isArabic ? 'flex flex-col items-end' : ''}`}>
           <p className="eyebrow">{page.skillsTitle}</p>
           <div className={`flex flex-wrap gap-2.5 ${isArabic ? 'justify-end' : ''}`}>
             {skills.map((skill) => (
@@ -263,7 +263,7 @@ async function AboutPageContent({ params }: { params: Promise<{ locale: string }
         </section>
 
         {/* ─── Connect ─── */}
-        <section className={`space-y-5 ${alignClass}`}>
+        <section className={`w-full space-y-5 ${alignClass} ${isArabic ? 'flex flex-col items-end' : ''}`}>
           <p className="eyebrow">{page.connectTitle}</p>
           <p className={`text-base leading-8 text-slate-400 ${isArabic ? 'ml-auto max-w-2xl' : ''}`}>{page.connectSubtitle}</p>
           <div className={`flex flex-wrap gap-3 ${isArabic ? 'justify-end' : ''}`}>
