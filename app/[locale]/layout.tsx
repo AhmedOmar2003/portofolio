@@ -45,29 +45,25 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  const { createClient } = await import('@/utils/supabase/server');
-  const supabase = await createClient();
-  const { data: settings } = await supabase
-    .from('site_settings')
-    .select('hero_title_en, hero_title_ar, hero_subtitle_en, hero_subtitle_ar')
-    .single();
-
   const title =
-    localizedValue(settings as Record<string, unknown>, 'hero_title', locale) ||
-    'Ahmed Essam Maher | UI/UX & Digital Product Designer';
+    locale === 'ar'
+      ? 'أحمد عصام ماهر منصور | مطور برمجيات ومصمم منتجات رقمية'
+      : 'Ahmed Essam Maher | Software Developer & Product Designer';
   const description =
-    localizedValue(settings as Record<string, unknown>, 'hero_subtitle', locale) ||
-    'I design digital products that solve real problems through product thinking, elegant interfaces, and accessible systems.';
+    locale === 'ar'
+      ? 'أصمم وأبني منتجات رقمية وتطبيقات حديثة تجمع بين تجربة المستخدم القوية، والواجهة الأنيقة، والأداء السريع لحل مشاكل حقيقية.'
+      : 'I design and build modern digital products, web applications, and mobile experiences that combine strong UX, elegant interfaces, and fast performance to solve real problems.';
 
   return {
     title,
     description,
-    metadataBase: new URL('https://ahmed-essam.com'),
+    metadataBase: new URL('https://ahmedessamuiux.vercel.app'),
     openGraph: {
       title,
       description,
       type: 'website',
       locale: locale === 'ar' ? 'ar_EG' : 'en_US',
+      siteName: locale === 'ar' ? 'أحمد عصام ماهر منصور' : 'Ahmed Essam Maher',
     },
     twitter: {
       card: 'summary_large_image',
