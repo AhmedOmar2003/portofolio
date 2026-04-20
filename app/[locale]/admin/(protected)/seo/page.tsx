@@ -1,10 +1,10 @@
-import { createClient } from '@/utils/supabase/server'
+import { createAdminClient } from '@/utils/supabase/admin'
 import { BarChart3, Eye, FileText, Globe, Layers, TrendingUp } from 'lucide-react'
 
 export default async function AdminAnalyticsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
   const isArabic = locale === 'ar'
-  const supabase = await createClient()
+  const supabase = createAdminClient()
 
   const [
     { data: pageViewsRaw },
