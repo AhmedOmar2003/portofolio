@@ -282,7 +282,7 @@ async function AboutPageContent({ params }: { params: Promise<{ locale: string }
               <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
             </a>
             <a
-              href="https://drive.google.com/file/d/15m3y3vuWupnndu69JFW6MhayG-AojV0Q/view?usp=sharing"
+              href="https://drive.google.com/file/d/17GfdV3oxWQk-pMG3jNYYsFWe3K43L8e8/view?usp=sharing"
               target="_blank"
               rel="noreferrer"
               className="inline-flex items-center gap-2 rounded-full border border-[#8df6c6]/25 bg-[#8df6c8]/10 px-5 py-3 text-sm font-medium text-white transition hover:-translate-y-0.5 hover:bg-[#8df6c8]/15"
