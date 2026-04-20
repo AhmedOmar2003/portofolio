@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { UploadCloud, X, Loader2 } from 'lucide-react'
-import { createClient } from '@/utils/supabase/client'
 import Image from 'next/image'
 
 interface MediaUploadProps {
@@ -24,8 +23,6 @@ export default function MediaUpload({
 }: MediaUploadProps) {
   const [isUploading, setIsUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  
-  const supabase = createClient()
 
   const convertImageToWebp = async (file: File) => {
     const alreadyWebp = file.type === 'image/webp' || file.name.toLowerCase().endsWith('.webp')
@@ -82,27 +79,27 @@ export default function MediaUpload({
 
     try {
       const uploadFile = isImageUpload ? await convertImageToWebp(file) : file
-      const fileExt = isImageUpload ? 'webp' : (file.name.split('.').pop() || 'bin')
-      const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`
-      const filePath = `${folder}/${fileName}`
+      const formData = new FormData()
+      formData.append('bucket', bucket)
+      formData.append('folder', folder)
+      formData.append('file', uploadFile)
 
-      const { error: uploadError } = await supabase.storage
-        .from(bucket)
-        .upload(filePath, uploadFile, {
-          contentType: uploadFile.type || undefined,
-          upsert: false
-        })
+      const response = await fetch('/api/admin/upload-media', {
+        method: 'POST',
+        body: formData,
+      })
 
-      if (uploadError) {
-        throw uploadError
+      const result = await response.json().catch(() => null)
+
+      if (!response.ok) {
+        throw new Error(result?.error || 'Error uploading file')
       }
 
-      const { data: publicUrlData } = supabase.storage
-        .from(bucket)
-        .getPublicUrl(filePath)
+      if (!result?.url) {
+        throw new Error('Upload finished but no public URL was returned.')
+      }
 
-      onUploadSuccess(publicUrlData.publicUrl)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      onUploadSuccess(result.url)
     } catch (err: any) {
       setError(err.message || 'Error uploading file')
     } finally {
