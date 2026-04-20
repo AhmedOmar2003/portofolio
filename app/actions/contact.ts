@@ -1,6 +1,6 @@
 'use server';
 
-import { createClient } from '@/utils/supabase/server';
+import { createAdminClient } from '@/utils/supabase/admin';
 
 export async function sendContactEmail(formData: FormData) {
   const name = formData.get('name') as string;
@@ -58,8 +58,8 @@ export async function sendContactEmail(formData: FormData) {
       return { success: false, error: 'Failed to send email. Please try again.' };
     }
 
-    // After successful email, save to Supabase
-    const supabase = await createClient();
+    // After successful email, save to Supabase using the admin/service role client
+    const supabase = createAdminClient();
     const { error: dbError } = await supabase
       .from('contact_messages')
       .insert([

@@ -1,12 +1,12 @@
 import Link from 'next/link'
 import { ArrowRight, Briefcase, Eye, FileText, Mail, MessageSquare, Layers, Settings, User, Users } from 'lucide-react'
-import { createClient } from '@/utils/supabase/server'
+import { createAdminClient } from '@/utils/supabase/admin'
 
 export default async function AdminOverviewPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
   const isArabic = locale === 'ar'
   const dateLocale = isArabic ? 'ar-EG' : 'en-US'
-  const supabase = await createClient()
+  const supabase = createAdminClient()
 
   const [
     { count: projectsCount },

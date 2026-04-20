@@ -1,9 +1,9 @@
-import { createClient } from '@/utils/supabase/server';
+import { createAdminClient } from '@/utils/supabase/admin';
 import { Mail, CheckCircle, Clock } from 'lucide-react';
 import { revalidatePath } from 'next/cache';
 
 export default async function AdminMessagesPage() {
-  const supabase = await createClient();
+  const supabase = createAdminClient();
 
   // Fetch all messages, newest first
   const { data: messages } = await supabase
@@ -15,7 +15,7 @@ export default async function AdminMessagesPage() {
   async function markAsRead(formData: FormData) {
     'use server';
     const id = formData.get('id') as string;
-    const supabase = await createClient();
+    const supabase = createAdminClient();
     await supabase.from('contact_messages').update({ status: 'read' }).eq('id', id);
     revalidatePath('/admin/messages');
     revalidatePath('/admin');
