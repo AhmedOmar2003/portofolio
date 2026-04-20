@@ -215,18 +215,8 @@ textarea:focus-visible {
   flex-shrink: 0;
 }
 
-[dir='rtl'] .eyebrow::before {
-  display: none;
-}
-
-[dir='rtl'] .eyebrow::after {
-  content: "";
-  width: 0.55rem;
-  height: 0.55rem;
-  border-radius: 9999px;
-  background: linear-gradient(135deg, #8df6c8, #6ad7ff);
-  box-shadow: 0 0 24px rgba(141, 246, 200, 0.6);
-  flex-shrink: 0;
+[dir='rtl'] .eyebrow {
+  flex-direction: row-reverse;
 }
 
 .text-balance {
