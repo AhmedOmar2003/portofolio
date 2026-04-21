@@ -6,8 +6,6 @@ import { ArrowLeft, Loader2, Save } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
 import MediaUpload from '@/components/admin/MediaUpload'
-import { createClient } from '@/utils/supabase/client'
-
 type MessageState = { type: 'success' | 'error'; text: string } | null
 
 export default function ArticleEditorPage({ params }: { params: Promise<{ locale: string; id: string }> }) {
@@ -16,7 +14,6 @@ export default function ArticleEditorPage({ params }: { params: Promise<{ locale
   const isArabic = locale === 'ar'
   const isNew = id === 'new'
   const router = useRouter()
-  const supabase = createClient()
 
   const [loading, setLoading] = useState(!isNew)
   const [saving, setSaving] = useState(false)
@@ -41,8 +38,10 @@ export default function ArticleEditorPage({ params }: { params: Promise<{ locale
 
   const fetchArticle = async () => {
     try {
-      const { data, error } = await supabase.from('articles').select('*').eq('id', id).single()
-      if (error) throw error
+      const response = await fetch(`/api/admin/articles/${id}`, { cache: 'no-store' })
+      const result = await response.json().catch(() => null)
+      if (!response.ok) throw new Error(result?.error || 'Failed to load the article.')
+      const data = result?.data
 
       setFormData({
         title_en: data.title_en || '',
@@ -109,13 +108,23 @@ export default function ArticleEditorPage({ params }: { params: Promise<{ locale
 
     try {
       if (isNew) {
-        const { error } = await supabase.from('articles').insert([payload])
-        if (error) throw error
+        const response = await fetch('/api/admin/articles', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        })
+        const result = await response.json().catch(() => null)
+        if (!response.ok) throw new Error(result?.error || 'Failed to create the article.')
         setMessage({ type: 'success', text: 'Article created successfully.' })
         setTimeout(() => router.push(`/${locale}/admin/articles`), 1200)
       } else {
-        const { error } = await supabase.from('articles').update(payload).eq('id', id)
-        if (error) throw error
+        const response = await fetch(`/api/admin/articles/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        })
+        const result = await response.json().catch(() => null)
+        if (!response.ok) throw new Error(result?.error || 'Failed to save the article.')
         setMessage({ type: 'success', text: 'Article updated successfully.' })
       }
 
