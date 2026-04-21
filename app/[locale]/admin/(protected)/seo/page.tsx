@@ -185,26 +185,35 @@ export default async function AdminAnalyticsPage({ params }: { params: Promise<{
   const isArabic = locale === 'ar'
   const supabase = createAdminClient()
 
-  const [
-    { data: pageViewsRaw, error: pageViewsError, count: pageViewsCount },
-    { data: projects },
-    { data: services },
-  ] = await Promise.all([
-    supabase
-      .from('page_views')
-      .select(
-        'path, slug, visitor_id, created_at, device_type, browser_name, browser_version, os_name, os_version, country, country_code, region, city, timezone, latitude, longitude, distance_km',
-        { count: 'exact' }
-      )
-      .order('created_at', { ascending: false })
-      .range(0, 4999),
+  const fullPageViewsQuery = supabase
+    .from('page_views')
+    .select(
+      'path, slug, visitor_id, created_at, device_type, browser_name, browser_version, os_name, os_version, country, country_code, region, city, timezone, latitude, longitude, distance_km',
+      { count: 'exact' }
+    )
+    .order('created_at', { ascending: false })
+    .range(0, 4999)
+
+  const [pageViewsWithDetails, projectsResult, servicesResult] = await Promise.all([
+    fullPageViewsQuery,
     supabase.from('projects').select('id, name_en, name_ar, slug'),
     supabase.from('services').select('id, title_en, title_ar, view_order'),
   ])
 
-  const pageViews = (pageViewsRaw ?? []) as PageViewRow[]
+  const analyticsSchemaReady = !pageViewsWithDetails.error
+  const pageViewsResult = analyticsSchemaReady
+    ? pageViewsWithDetails
+    : await supabase
+        .from('page_views')
+        .select('path, slug, visitor_id, created_at', { count: 'exact' })
+        .order('created_at', { ascending: false })
+        .range(0, 4999)
 
-  const totalViews = pageViewsCount ?? pageViews.length
+  const pageViews = (pageViewsResult.data ?? []) as PageViewRow[]
+  const projects = projectsResult.data ?? []
+  const services = servicesResult.data ?? []
+
+  const totalViews = pageViewsResult.count ?? pageViews.length
   const uniqueVisitors = new Set(pageViews.map((view) => view.visitor_id)).size
 
   const distanceValues = pageViews
@@ -333,11 +342,18 @@ export default async function AdminAnalyticsPage({ params }: { params: Promise<{
             ? 'بيانات حقيقية من زوار موقعك — الجغرافيا، الأجهزة، المتصفحات، والصفحات الأكثر زيارة.'
             : 'Real visitor data — geolocation, devices, browsers, and the most-visited pages.'}
         </p>
-        {pageViewsError ? (
+        {!analyticsSchemaReady ? (
+          <p className="mt-3 rounded-2xl border border-amber-400/20 bg-amber-400/10 px-4 py-3 text-sm text-amber-100">
+            {isArabic
+              ? 'بعض بيانات التحليلات المتقدمة غير متاحة بعد. شغّل ترحيل page_views في Supabase لتفعيل الجهاز والمتصفح والدولة والمدينة.'
+              : 'Advanced analytics fields are not available yet. Run the page_views migration in Supabase to enable device, browser, country, and city tracking.'}
+          </p>
+        ) : null}
+        {pageViewsWithDetails.error ? (
           <p className="mt-3 rounded-2xl border border-rose-400/20 bg-rose-400/10 px-4 py-3 text-sm text-rose-200">
             {isArabic
-              ? `تعذر جلب بيانات التحليلات: ${pageViewsError.message}`
-              : `Unable to load analytics data: ${pageViewsError.message}`}
+              ? `تعذر جلب بيانات التحليلات: ${pageViewsWithDetails.error.message}`
+              : `Unable to load analytics data: ${pageViewsWithDetails.error.message}`}
           </p>
         ) : null}
       </div>

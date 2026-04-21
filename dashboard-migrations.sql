@@ -80,5 +80,18 @@ CREATE POLICY "Admins can read views"
     ON public.page_views FOR SELECT 
     USING (auth.role() = 'authenticated');
 
--- Set up basic Supabase Realtime for the contact messages so the admin dashboard updates instantly
-ALTER PUBLICATION supabase_realtime ADD TABLE public.contact_messages;
+-- Set up basic Supabase Realtime for the contact messages so the admin dashboard updates instantly.
+-- Guard it so rerunning the migration does not fail if the table is already in the publication.
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_publication_tables
+    WHERE pubname = 'supabase_realtime'
+      AND schemaname = 'public'
+      AND tablename = 'contact_messages'
+  ) THEN
+    ALTER PUBLICATION supabase_realtime ADD TABLE public.contact_messages;
+  END IF;
+END
+$$;

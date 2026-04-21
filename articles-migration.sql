@@ -4,7 +4,8 @@
 ALTER TABLE articles
   ADD COLUMN IF NOT EXISTS category TEXT,
   ADD COLUMN IF NOT EXISTS read_time_minutes INTEGER DEFAULT 5,
-  ADD COLUMN IF NOT EXISTS is_published BOOLEAN DEFAULT false;
+  ADD COLUMN IF NOT EXISTS is_published BOOLEAN DEFAULT false,
+  ADD COLUMN IF NOT EXISTS cover_image_url TEXT;
 
 -- Allow authenticated users (admin) to read all articles
 DROP POLICY IF EXISTS "Authenticated users can read all articles" ON articles;

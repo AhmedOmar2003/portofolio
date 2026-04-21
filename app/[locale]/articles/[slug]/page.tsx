@@ -7,7 +7,7 @@ import { getLocaleDateFormat, isArabicLocale, localizedValue } from '@/utils/loc
 import { createClient } from '@/utils/supabase/server';
 import { createStaticClient } from '@/utils/supabase/static';
 
-export const revalidate = 3600;
+export const dynamic = 'force-dynamic';
 export const dynamicParams = true;
 
 export async function generateStaticParams() {
@@ -38,6 +38,7 @@ export default async function ArticleDetailPage(props: { params: Promise<{ slug:
   const content     = localizedValue(article as Record<string, unknown>, 'content', locale);
   const excerpt     = localizedValue(article as Record<string, unknown>, 'excerpt', locale);
   const paragraphs  = splitParagraphs(content);
+  const coverImageUrl = article.cover_image_url || article.image_url || article.image || '';
 
   const publishedDate = article.published_at
     ? new Date(article.published_at).toLocaleDateString(getLocaleDateFormat(locale), {
@@ -110,11 +111,11 @@ export default async function ArticleDetailPage(props: { params: Promise<{ slug:
           </header>
 
           {/* Cover image */}
-          {article.cover_image_url && (
+          {coverImageUrl && (
             <div className="mb-14 overflow-hidden rounded-3xl border border-white/10">
               <div className="relative aspect-[16/9]">
                 <Image
-                  src={article.cover_image_url}
+                  src={coverImageUrl}
                   alt={title}
                   fill
                   priority
