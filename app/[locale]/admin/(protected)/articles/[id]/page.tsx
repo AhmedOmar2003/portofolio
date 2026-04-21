@@ -83,7 +83,10 @@ export default function ArticleEditorPage({ params }: { params: Promise<{ locale
     await handleSave(publishDate)
   }
 
-  const handleSave = async (publishDate = formData.published_at) => {
+  const handleSave = async (
+    publishDate = formData.published_at,
+    overrides: Partial<typeof formData> = {}
+  ) => {
     if (!formData.title_en || !formData.slug) {
       setMessage({ type: 'error', text: 'Title and slug are required.' })
       return
@@ -100,7 +103,7 @@ export default function ArticleEditorPage({ params }: { params: Promise<{ locale
       excerpt_ar: formData.excerpt_ar,
       content_en: formData.content_en,
       content_ar: formData.content_ar,
-      cover_image_url: formData.cover_image_url,
+      cover_image_url: overrides.cover_image_url ?? formData.cover_image_url,
       published_at: publishDate || null,
     }
 
@@ -266,7 +269,12 @@ export default function ArticleEditorPage({ params }: { params: Promise<{ locale
                 folder="articles"
                 accept="image/*"
                 currentUrl={formData.cover_image_url}
-                onUploadSuccess={(url) => handleChange('cover_image_url', url)}
+                onUploadSuccess={(url) => {
+                  handleChange('cover_image_url', url)
+                  if (!isNew) {
+                    void handleSave(formData.published_at, { cover_image_url: url })
+                  }
+                }}
                 onRemove={() => handleChange('cover_image_url', '')}
               />
             </div>
