@@ -39,6 +39,12 @@ export const viewport: Viewport = {
   maximumScale: 5,
 };
 
+function getSiteDescription(locale: string) {
+  return locale === 'ar'
+    ? 'أصمم وأبني منتجات رقمية وتطبيقات حديثة تجمع بين تجربة المستخدم القوية، والواجهة الأنيقة، والأداء السريع لحل مشاكل حقيقية.'
+    : 'I design and build modern digital products, web applications, and mobile experiences that combine strong UX, elegant interfaces, and fast performance to solve real problems.';
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -49,10 +55,7 @@ export async function generateMetadata({
     locale === 'ar'
       ? 'أحمد عصام ماهر منصور | مطور برمجيات ومصمم منتجات رقمية'
       : 'Ahmed Essam Maher | Software Developer & Product Designer';
-  const description =
-    locale === 'ar'
-      ? 'أصمم وأبني منتجات رقمية وتطبيقات حديثة تجمع بين تجربة المستخدم القوية، والواجهة الأنيقة، والأداء السريع لحل مشاكل حقيقية.'
-      : 'I design and build modern digital products, web applications, and mobile experiences that combine strong UX, elegant interfaces, and fast performance to solve real problems.';
+  const description = getSiteDescription(locale);
 
   return {
     title: {
@@ -100,6 +103,7 @@ export default async function LocaleLayout({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
+  const description = getSiteDescription(locale);
   const messages = await getMessages();
   const { createClient } = await import('@/utils/supabase/server');
   const supabase = await createClient();
