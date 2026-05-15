@@ -67,8 +67,6 @@ export default function ProjectsFilterGrid({ projects, isArabic, labels }: Proje
 
   const designSubFilterButtons: Array<{ key: DesignSubFilterType; label: string }> = [
     { key: 'all_design', label: labels.designAll || 'All Design' },
-    { key: 'ui_design', label: labels.designUI || 'UI Design' },
-    { key: 'branding', label: labels.designBranding || 'Branding' },
     { key: 'ux_research', label: labels.designUX || 'UX Research' },
   ];
 

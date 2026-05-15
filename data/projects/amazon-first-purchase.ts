@@ -10,6 +10,7 @@ export const amazonFirstPurchase: LocalProject = {
   impactEn: 'Identified key usability issues and provided actionable, accessible design recommendations.',
   impactAr: 'تحديد المشكلات الرئيسية في قابلية الاستخدام وتقديم توصيات تصميمية عملية.',
   year: '2024',
+  thumbnailUrl: '/image-amazon.png',
   blocks: [
     {
       id: 'hero',
@@ -25,6 +26,10 @@ export const amazonFirstPurchase: LocalProject = {
           { label: 'Platform', value: 'Amazon Web / Mobile' },
           { label: 'Focus', value: 'First-time checkout' }
         ],
+        link: {
+          url: 'https://drive.google.com/file/d/1wflwwjmUNH0JOrvohOgZEAF-Ek0RChVY/view?usp=sharing',
+          label: 'View Full Report (Drive)'
+        },
         disclaimer: 'This is an independent UX research case study created for learning and portfolio purposes. It is not affiliated with, sponsored by, or officially connected to Amazon.'
       },
       contentAr: {
@@ -38,7 +43,23 @@ export const amazonFirstPurchase: LocalProject = {
           { label: 'المنصة', value: 'أمازون (ويب وموبايل)' },
           { label: 'التركيز', value: 'أول عملية شراء' }
         ],
+        link: {
+          url: 'https://drive.google.com/file/d/1wflwwjmUNH0JOrvohOgZEAF-Ek0RChVY/view?usp=sharing',
+          label: 'عرض التقرير الكامل (Drive)'
+        },
         disclaimer: 'هذه دراسة مستقلة في أبحاث تجربة المستخدم لأغراض تعليمية وعرض الأعمال، وليست تابعة أو مدعومة رسميًا من أمازون.'
+      }
+    },
+    {
+      id: 'cover-image',
+      type: 'image',
+      contentEn: {
+        src: '/image-amazon.png',
+        alt: 'Amazon UX Research Case Study Cover'
+      },
+      contentAr: {
+        src: '/image-amazon.png',
+        alt: 'غلاف دراسة تجربة المستخدم لأمازون'
       }
     },
     {

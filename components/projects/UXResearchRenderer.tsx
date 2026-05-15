@@ -58,13 +58,29 @@ export default function UXResearchRenderer({ project, locale }: UXResearchRender
                       </p>
                     </div>
 
-                    <div className={`flex flex-wrap gap-x-12 gap-y-6 border-t border-white/10 pt-8 ${isArabic ? 'text-right' : ''}`}>
+                    <div className={`flex flex-wrap items-center gap-x-12 gap-y-6 border-t border-white/10 pt-8 ${isArabic ? 'text-right' : ''}`}>
                       {content.metadata?.map((meta: any, i: number) => (
                         <div key={i}>
                           <p className="text-xs font-semibold uppercase tracking-widest text-slate-600">{meta.label}</p>
                           <p className="mt-1.5 text-sm font-medium text-white">{meta.value}</p>
                         </div>
                       ))}
+                      
+                      {content.link && (
+                        <div className={`mt-2 w-full md:w-auto md:mt-0 ${isArabic ? 'md:me-auto' : 'md:ml-auto'}`}>
+                          <a
+                            href={content.link.url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className={`group inline-flex items-center gap-2 rounded-full border border-[#8df6c8]/45 bg-gradient-to-r from-[#8df6c8] to-[#6ad7ff] px-6 py-3 text-sm font-semibold text-[#02131b] shadow-[0_10px_30px_rgba(106,215,255,0.3)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_34px_rgba(106,215,255,0.4)]`}
+                          >
+                            <svg className={`w-4 h-4 ${isArabic ? 'rtl-flip' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M15 3h6v6M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M10 14L21 3" />
+                            </svg>
+                            {content.link.label}
+                          </a>
+                        </div>
+                      )}
                     </div>
 
                     {content.disclaimer && (
@@ -207,6 +223,23 @@ export default function UXResearchRenderer({ project, locale }: UXResearchRender
                         </div>
                       ))}
                     </div>
+                  </section>
+                );
+
+              case 'image':
+                return (
+                  <section key={block.id} className="mx-auto w-full max-w-5xl overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.02] shadow-2xl">
+                    <img 
+                      src={content.src} 
+                      alt={content.alt || ''} 
+                      className="w-full h-auto object-cover"
+                      loading="lazy"
+                    />
+                    {content.caption && (
+                      <p className={`p-4 text-center text-sm text-slate-400 ${isArabic ? 'text-right' : ''}`}>
+                        {content.caption}
+                      </p>
+                    )}
                   </section>
                 );
 
