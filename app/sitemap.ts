@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { createStaticClient } from '@/utils/supabase/static';
+import { localProjects } from '@/data/projects/local-projects';
 
 const BASE_URL = 'https://ahmed-essam.com';
 const LOCALES = ['en', 'ar'] as const;
@@ -28,9 +29,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: route === '' ? 1.0 : 0.8,
     }))
   );
-
   // Dynamic project pages
-  const projectEntries: MetadataRoute.Sitemap = (projects ?? []).flatMap(({ slug, updated_at }) =>
+  const dbProjectEntries: MetadataRoute.Sitemap = (projects ?? []).flatMap(({ slug, updated_at }) =>
     LOCALES.map((locale) => ({
       url: `${BASE_URL}/${locale}/projects/${slug}`,
       lastModified: updated_at ?? now,
@@ -38,6 +38,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     }))
   );
+
+  const localProjectEntries: MetadataRoute.Sitemap = localProjects.flatMap(({ slug }) =>
+    LOCALES.map((locale) => ({
+      url: `${BASE_URL}/${locale}/projects/${slug}`,
+      lastModified: now,
+      changeFrequency: 'monthly' as const,
+      priority: 0.7,
+    }))
+  );
+
+  const projectEntries = [...dbProjectEntries, ...localProjectEntries];
 
   // Dynamic article pages
   const articleEntries: MetadataRoute.Sitemap = (articles ?? []).flatMap(({ slug, updated_at }) =>

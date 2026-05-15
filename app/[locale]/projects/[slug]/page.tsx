@@ -8,6 +8,8 @@ import { getLocaleDateFormat, isArabicLocale, localizedValue } from '@/utils/loc
 import { getProjectRoleLabel, getProjectTypeLabel, normalizeProjectType } from '@/utils/project-type';
 import { createClient } from '@/utils/supabase/server';
 import { createStaticClient } from '@/utils/supabase/static';
+import { localProjects } from '@/data/projects/local-projects';
+import UXResearchRenderer from '@/components/projects/UXResearchRenderer';
 
 export const revalidate = 3600;
 export const dynamicParams = true;
@@ -16,7 +18,11 @@ export async function generateStaticParams() {
   const supabase = createStaticClient();
   const { data: projects } = await supabase.from('projects').select('slug');
   const locales = ['en', 'ar'];
-  return (projects ?? []).flatMap(({ slug }) =>
+  const dbSlugs = (projects ?? []).map((p) => p.slug);
+  const localSlugs = localProjects.map((p) => p.slug);
+  const allSlugs = [...new Set([...dbSlugs, ...localSlugs])];
+  
+  return allSlugs.flatMap((slug) =>
     locales.map((locale) => ({ locale, slug }))
   );
 }
@@ -82,9 +88,18 @@ function getVideoPresentation(url: string) {
   return { kind: 'direct' as const, src: value }
 }
 
-export default async function ProjectCaseStudyPage(props: { params: Promise<{ slug: string; locale: string }> }) {
-  const { slug, locale } = await props.params;
+export default async function ProjectCaseStudyPage({ params }: { params: Promise<{ slug: string; locale: string }> }) {
+  const { slug, locale } = await params;
   const isArabic = isArabicLocale(locale);
+
+  // Check if it's a local project (UX Research)
+  const localProject = localProjects.find((p) => p.slug === slug);
+  if (localProject) {
+    if (localProject.projectType === 'ux_research') {
+      return <UXResearchRenderer project={localProject} locale={locale} />;
+    }
+  }
+
   const supabase = await createClient();
 
   const { data: project } = await supabase.from('projects').select('*').eq('slug', slug).single();

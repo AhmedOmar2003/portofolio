@@ -5,13 +5,13 @@ import SectionHeading from '@/components/ui/SectionHeading';
 import { getLocaleDateFormat, localizedValue } from '@/utils/locale-content';
 import { getProjectFilterType, getProjectRoleLabel, getProjectTypeLabel, normalizeProjectType, type ProjectType } from '@/utils/project-type';
 import { createClient } from '@/utils/supabase/server';
+import { localProjects } from '@/data/projects/local-projects';
 
 export const revalidate = 3600;
 
 export function generateStaticParams() {
   return [{ locale: 'en' }, { locale: 'ar' }];
 }
-
 
 type ProjectsFilterItem = {
   title: string;
@@ -54,7 +54,7 @@ export default async function ProjectsPage({ params }: { params: Promise<{ local
 
   const projectsData = orderedProjectsQuery.error ? (fallbackProjectsQuery?.data || []) : (orderedProjectsQuery.data || []);
 
-  const allProjects: ProjectsFilterItem[] = (projectsData || []).map((p, index) => {
+  const dbProjects: ProjectsFilterItem[] = (projectsData || []).map((p, index) => {
     const externalLinks = (p.external_links || {}) as Record<string, unknown>;
     const projectType = normalizeProjectType(externalLinks.project_type);
     const localizedTitle = localizedValue(p as Record<string, unknown>, 'name', locale);
@@ -90,6 +90,26 @@ export default async function ProjectsPage({ params }: { params: Promise<{ local
       index,
     };
   });
+
+  const staticProjects: ProjectsFilterItem[] = localProjects.map((p, index) => {
+    const projectType = normalizeProjectType(p.projectType);
+    return {
+      title: locale === 'ar' ? p.titleAr : p.titleEn,
+      type: projectType,
+      filterType: getProjectFilterType(projectType),
+      typeLabel: getProjectTypeLabel(projectType, locale),
+      category: getProjectTypeLabel(projectType, locale),
+      year: p.year,
+      description: formatPreview(locale === 'ar' ? p.descriptionAr : p.descriptionEn),
+      href: `/projects/${p.slug}`,
+      imageUrl: p.thumbnailUrl,
+      role: getProjectRoleLabel(projectType, locale),
+      impact: formatPreview(locale === 'ar' ? p.impactAr : p.impactEn),
+      index: dbProjects.length + index,
+    };
+  });
+
+  const allProjects = [...dbProjects, ...staticProjects];
 
   const fallbackProjects: ProjectsFilterItem[] = [
     {
@@ -130,6 +150,10 @@ export default async function ProjectsPage({ params }: { params: Promise<{ local
             design: getProjectTypeLabel('design', locale),
             programming: getProjectTypeLabel('programming', locale),
             empty: locale === 'ar' ? 'لا توجد مشاريع في هذا التصنيف حاليًا.' : 'No projects found in this type yet.',
+            designAll: home('designAll'),
+            designUI: home('designUI'),
+            designBranding: home('designBranding'),
+            designUX: home('designUX'),
           }}
         />
 
