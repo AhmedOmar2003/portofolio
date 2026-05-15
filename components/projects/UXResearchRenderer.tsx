@@ -230,15 +230,12 @@ export default function UXResearchRenderer({ project, locale }: UXResearchRender
               case 'image':
                 return (
                   <section key={block.id} className="mx-auto w-full max-w-5xl overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.02] shadow-2xl">
-                    <div className="relative w-full aspect-video">
-                      <Image 
-                        src={content.src} 
-                        alt={content.alt || ''} 
-                        fill
-                        sizes="(max-width: 1024px) 100vw, 1024px"
-                        className="object-cover"
-                      />
-                    </div>
+                    <img 
+                      src={content.src} 
+                      alt={content.alt || ''} 
+                      className="w-full h-auto object-cover"
+                      loading="lazy"
+                    />
                     {content.caption && (
                       <p className={`p-4 text-center text-sm text-slate-400 ${isArabic ? 'text-right' : ''}`}>
                         {content.caption}
