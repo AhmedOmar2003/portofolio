@@ -2,7 +2,7 @@ import { amazonFirstPurchase } from './amazon-first-purchase';
 
 export type LocalProjectBlock = {
   id: string;
-  type: 'hero' | 'text' | 'image' | 'quote' | 'cards' | 'timeline' | 'before-after';
+  type: 'hero' | 'text' | 'image' | 'quote' | 'cards' | 'timeline' | 'before-after' | 'list' | 'participants';
   contentEn: any;
   contentAr: any;
 };

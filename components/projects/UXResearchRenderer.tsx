@@ -157,6 +157,59 @@ export default function UXResearchRenderer({ project, locale }: UXResearchRender
                   </section>
                 );
 
+              case 'list':
+                return (
+                  <section key={block.id} className={`max-w-4xl ${isArabic ? 'text-right' : ''}`}>
+                    {content.heading && (
+                      <h2 className={`mb-6 text-2xl font-semibold text-white ${isArabic ? 'leading-tight' : 'tracking-[-0.04em]'}`}>
+                        {content.heading}
+                      </h2>
+                    )}
+                    <ul className={`grid gap-4 ${content.items?.length > 4 ? 'sm:grid-cols-2' : ''}`}>
+                      {content.items?.map((item: string, i: number) => (
+                        <li key={i} className={`flex items-start gap-3 rounded-2xl border border-white/5 bg-white/[0.01] p-4 text-slate-300 ${isArabic ? 'flex-row-reverse' : ''}`}>
+                          <div className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-[#8df6c8]" />
+                          <span className={`text-base ${isArabic ? 'leading-relaxed' : 'leading-relaxed'}`}>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
+                );
+
+              case 'participants':
+                return (
+                  <section key={block.id} className={`max-w-5xl ${isArabic ? 'text-right' : ''}`}>
+                    {content.heading && (
+                      <h2 className={`mb-8 text-2xl font-semibold text-white ${isArabic ? 'leading-tight' : 'tracking-[-0.04em]'}`}>
+                        {content.heading}
+                      </h2>
+                    )}
+                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                      {content.profiles?.map((profile: any, i: number) => (
+                        <div key={i} className="flex flex-col rounded-3xl border border-white/10 bg-white/[0.02] p-6 transition-colors hover:bg-white/[0.04]">
+                          <div className={`mb-4 flex items-center gap-4 ${isArabic ? 'flex-row-reverse' : ''}`}>
+                            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#8df6c8]/10 text-xl font-bold text-[#8df6c8]">
+                              {profile.name.charAt(0)}
+                            </div>
+                            <div className={`${isArabic ? 'text-right' : ''}`}>
+                              <h3 className="text-lg font-semibold text-white">{profile.name}</h3>
+                              <p className="text-sm text-slate-400">{profile.age}</p>
+                            </div>
+                          </div>
+                          <div className={`space-y-3 text-sm text-slate-300 flex-1 ${isArabic ? 'text-right' : ''}`}>
+                            {profile.details?.map((detail: string, j: number) => (
+                              <div key={j} className={`flex items-start gap-2 ${isArabic ? 'flex-row-reverse' : ''}`}>
+                                <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-white/20" />
+                                <span>{detail}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+                );
+
               default:
                 return null;
             }
