@@ -494,7 +494,7 @@ export const amazonFirstPurchase: LocalProject = {
       id: 'design-improvement',
       type: 'cards',
       contentEn: {
-        heading: 'Suggested Design Improvement: First-Time Buyer Confidence Box',
+        heading: 'Suggested Design Improvement: First-Time Buyer Confidence Component',
         cards: [
           { title: 'Rating Summary', description: 'Clear aggregate of reviews.' },
           { title: 'Delivery Estimate', description: 'Upfront delivery dates.' },
@@ -505,7 +505,7 @@ export const amazonFirstPurchase: LocalProject = {
         ]
       },
       contentAr: {
-        heading: 'التحسين التصميمي المقترح: صندوق ثقة المشتري الجديد',
+        heading: 'التحسين التصميمي المقترح: وحدة تعزيز ثقة المشتري الجديد',
         cards: [
           { title: 'ملخص التقييمات', description: 'تجميع واضح للمراجعات.' },
           { title: 'توقع التوصيل', description: 'مواعيد التوصيل بشكل مبكر.' },
@@ -542,32 +542,7 @@ export const amazonFirstPurchase: LocalProject = {
         ]
       }
     },
-    {
-      id: 'learned',
-      type: 'list',
-      contentEn: {
-        heading: 'What I Learned',
-        items: [
-          'How to plan UX research',
-          'How to write research goals and questions',
-          'How to choose KPIs',
-          'How to run a usability study',
-          'How to consider accessibility',
-          'How to turn findings into useful recommendations'
-        ]
-      },
-      contentAr: {
-        heading: 'ماذا تعلمت',
-        items: [
-          'كيفية التخطيط لأبحاث تجربة المستخدم',
-          'كيفية صياغة أهداف وأسئلة البحث',
-          'كيفية اختيار مؤشرات الأداء',
-          'كيفية إدارة دراسة قابلية الاستخدام',
-          'كيفية أخذ إمكانية الوصول بعين الاعتبار',
-          'كيفية تحويل النتائج إلى توصيات مفيدة'
-        ]
-      }
-    },
+
     {
       id: 'conclusion',
       type: 'text',
