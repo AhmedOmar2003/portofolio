@@ -47,6 +47,18 @@ function formatPhoneDisplay(value: string) {
   return value;
 }
 
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const isArabic = locale === 'ar';
+  
+  return {
+    title: isArabic ? 'تواصل معي' : 'Contact Me',
+    description: isArabic 
+      ? 'يسعدني تواصلك لمناقشة أي مشروع جديد أو استشارة تصميمية وبرمجية. يمكنك مراسلتي مباشرة عبر النموذج.'
+      : 'I am always open to discussing new projects, creative ideas, or opportunities to be part of your visions. Contact me directly.',
+  };
+}
+
 export default async function ContactPage(props: { params: Promise<{ locale: string }> }) {
   const { locale } = await props.params;
   const isArabic = locale === 'ar';

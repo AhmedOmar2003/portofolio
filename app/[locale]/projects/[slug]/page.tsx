@@ -88,6 +88,42 @@ function getVideoPresentation(url: string) {
   return { kind: 'direct' as const, src: value }
 }
 
+export async function generateMetadata({ params }: { params: Promise<{ slug: string; locale: string }> }) {
+  const { slug, locale } = await params;
+  const isArabic = isArabicLocale(locale);
+  
+  const localProject = localProjects.find((p) => p.slug === slug);
+  if (localProject) {
+    const title = isArabic ? localProject.titleAr : localProject.titleEn;
+    const description = isArabic ? localProject.descriptionAr : localProject.descriptionEn;
+    const imageUrl = localProject.thumbnailUrl ? `https://ahmed-essam.com${localProject.thumbnailUrl}` : 'https://ahmed-essam.com/apple-icon.svg';
+    return {
+      title,
+      description,
+      openGraph: { title, description, images: [imageUrl] },
+      twitter: { title, description, images: [imageUrl] },
+    };
+  }
+
+  const supabase = createStaticClient();
+  const { data: project } = await supabase.from('projects').select('name_en, name_ar, description_en, description_ar, images').eq('slug', slug).single();
+  if (!project) return {};
+
+  const title = localizedValue(project as Record<string, unknown>, 'name', locale);
+  const description = localizedValue(project as Record<string, unknown>, 'description', locale);
+  const rawProjectImages = Array.isArray(project.images) ? project.images : [];
+  const imageUrl = rawProjectImages.length > 0 && typeof rawProjectImages[0] === 'string' 
+    ? rawProjectImages[0] 
+    : 'https://ahmed-essam.com/apple-icon.svg';
+
+  return {
+    title,
+    description,
+    openGraph: { title, description, images: [imageUrl] },
+    twitter: { title, description, images: [imageUrl] },
+  };
+}
+
 export default async function ProjectCaseStudyPage({ params }: { params: Promise<{ slug: string; locale: string }> }) {
   const { slug, locale } = await params;
   const isArabic = isArabicLocale(locale);

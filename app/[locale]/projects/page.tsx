@@ -33,6 +33,18 @@ function formatPreview(text?: string | null, fallback = '', maxLength = 136) {
   return clean.length > maxLength ? `${clean.slice(0, maxLength).trimEnd()}…` : clean;
 }
 
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const isArabic = locale === 'ar';
+  
+  return {
+    title: isArabic ? 'الأعمال والمشاريع' : 'Projects & Work',
+    description: isArabic 
+      ? 'تصفح أحدث مشاريعي في تصميم وتطوير المنتجات الرقمية، دراسات حالة أبحاث تجربة المستخدم، والهوية البصرية.'
+      : 'Explore my latest projects in digital product design, software development, UX research case studies, and branding.',
+  };
+}
+
 export default async function ProjectsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const nav  = await getTranslations({ locale, namespace: 'Navigation' });

@@ -22,6 +22,18 @@ type ServiceCardItem = {
   typeLabel: string;
 };
 
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const isArabic = locale === 'ar';
+  
+  return {
+    title: isArabic ? 'الخدمات' : 'Services',
+    description: isArabic 
+      ? 'أقدم خدمات تصميم وتطوير متكاملة تبدأ من دراسة احتياجك وحتى إطلاق منتج رقمي متكامل وفعّال.'
+      : 'I provide end-to-end design and development services, starting from understanding your needs to launching a fully functional digital product.',
+  };
+}
+
 export default async function ServicesPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const isArabic = locale === 'ar';

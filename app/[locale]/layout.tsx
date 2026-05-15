@@ -55,13 +55,25 @@ export async function generateMetadata({
       : 'I design and build modern digital products, web applications, and mobile experiences that combine strong UX, elegant interfaces, and fast performance to solve real problems.';
 
   return {
-    title,
+    title: {
+      template: locale === 'ar' ? '%s | أحمد عصام ماهر' : '%s | Ahmed Essam Maher',
+      default: title,
+    },
     description,
-    metadataBase: new URL('https://ahmedessamuiux.vercel.app'),
+    metadataBase: new URL('https://ahmed-essam.com'),
+    alternates: {
+      canonical: './',
+      languages: {
+        'en': '/en',
+        'ar': '/ar',
+        'x-default': '/en',
+      },
+    },
     openGraph: {
       title,
       description,
       type: 'website',
+      url: './',
       locale: locale === 'ar' ? 'ar_EG' : 'en_US',
       siteName: locale === 'ar' ? 'أحمد عصام ماهر منصور' : 'Ahmed Essam Maher',
     },
@@ -112,6 +124,31 @@ export default async function LocaleLayout({
           <div className="flex-grow">{children}</div>
           <Footer socialLinks={socialLinks} />
           <WhatsAppButton />
+          
+          {/* JSON-LD Structured Data for Person and WebSite */}
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify([
+                {
+                  "@context": "https://schema.org",
+                  "@type": "WebSite",
+                  "name": locale === 'ar' ? "موقع أحمد عصام ماهر" : "Ahmed Essam Maher Portfolio",
+                  "url": "https://ahmed-essam.com",
+                  "inLanguage": locale === 'ar' ? "ar" : "en",
+                  "description": description
+                },
+                {
+                  "@context": "https://schema.org",
+                  "@type": "Person",
+                  "name": locale === 'ar' ? "أحمد عصام ماهر" : "Ahmed Essam Maher",
+                  "url": "https://ahmed-essam.com",
+                  "jobTitle": locale === 'ar' ? "مطور برمجيات ومصمم منتجات رقمية" : "Software Developer & Product Designer",
+                  "sameAs": socialLinks.map(link => link.value).filter(val => val.startsWith('http'))
+                }
+              ])
+            }}
+          />
         </NextIntlClientProvider>
       </body>
     </html>

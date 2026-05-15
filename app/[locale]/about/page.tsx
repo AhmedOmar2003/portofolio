@@ -16,6 +16,18 @@ export function generateStaticParams() {
   return [{ locale: 'en' }, { locale: 'ar' }];
 }
 
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const isArabic = locale === 'ar';
+  
+  return {
+    title: isArabic ? 'نبذة عني' : 'About Me',
+    description: isArabic 
+      ? 'تعرف أكثر على رحلتي وفلسفتي في تطوير البرمجيات وتصميم المنتجات الرقمية.'
+      : 'Learn more about my journey and philosophy in software development and digital product design.',
+  };
+}
+
 
 const skills = [
   'Flutter',

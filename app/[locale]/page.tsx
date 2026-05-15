@@ -51,6 +51,18 @@ function normalizeName(entry: unknown, fallback = '') {
   return fallback;
 }
 
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const isArabic = locale === 'ar';
+  
+  return {
+    title: isArabic ? 'الرئيسية' : 'Home',
+    description: isArabic 
+      ? 'أصمم وأبني منتجات رقمية وتطبيقات حديثة تجمع بين تجربة المستخدم القوية، والواجهة الأنيقة، والأداء السريع لحل مشاكل حقيقية.'
+      : 'I design and build modern digital products, web applications, and mobile experiences that combine strong UX, elegant interfaces, and fast performance to solve real problems.',
+  };
+}
+
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const isArabic = locale === 'ar';

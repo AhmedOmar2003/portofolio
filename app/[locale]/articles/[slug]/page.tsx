@@ -26,6 +26,25 @@ function splitParagraphs(content?: string | null) {
   return (content || '').split('\n').map((s) => s.trim()).filter(Boolean);
 }
 
+export async function generateMetadata({ params }: { params: Promise<{ slug: string; locale: string }> }) {
+  const { slug, locale } = await params;
+  
+  const supabase = createStaticClient();
+  const { data: article } = await supabase.from('articles').select('title_en, title_ar, excerpt_en, excerpt_ar, cover_image_url, image_url, image').eq('slug', slug).single();
+  if (!article) return {};
+
+  const title = localizedValue(article as Record<string, unknown>, 'title', locale);
+  const description = localizedValue(article as Record<string, unknown>, 'excerpt', locale) || title;
+  const imageUrl = article.cover_image_url || article.image_url || article.image || 'https://ahmed-essam.com/apple-icon.svg';
+
+  return {
+    title,
+    description,
+    openGraph: { title, description, type: 'article', images: [imageUrl] },
+    twitter: { title, description, images: [imageUrl] },
+  };
+}
+
 export default async function ArticleDetailPage(props: { params: Promise<{ slug: string; locale: string }> }) {
   const { slug, locale } = await props.params;
   const isArabic = isArabicLocale(locale);
@@ -55,7 +74,7 @@ export default async function ArticleDetailPage(props: { params: Promise<{ slug:
         {/* Back link */}
         <Link
           href="/articles"
-          className={`mb-10 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2.5 text-sm text-slate-300 transition hover:border-white/20 hover:text-white ${isArabic ? 'flex-row-reverse' : ''}`}
+          className={`mb-10 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2.5 text-sm text-slate-300 transition hover:border-white/20 hover:text-white`}
         >
           <ArrowLeft className={`h-4 w-4 ${isArabic ? 'rtl-flip' : ''}`} aria-hidden="true" />
           {isArabic ? 'رجوع للمقالات' : 'Back to articles'}

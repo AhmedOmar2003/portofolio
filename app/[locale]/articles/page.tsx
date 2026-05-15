@@ -22,6 +22,18 @@ function formatDate(dateValue: string | null | undefined, locale: string) {
   });
 }
 
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const isArabic = locale === 'ar';
+  
+  return {
+    title: isArabic ? 'المقالات' : 'Articles',
+    description: isArabic 
+      ? 'أفكار ومقالات حول تصميم واجهات المستخدم، تطوير البرمجيات، وتجربة المستخدم.'
+      : 'Thoughts and articles on UI/UX design, software engineering, and product development.',
+  };
+}
+
 export default async function ArticlesPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const isArabic = isArabicLocale(locale);
