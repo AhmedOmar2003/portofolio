@@ -101,10 +101,10 @@ export default function UXResearchRenderer({ project, locale }: UXResearchRender
                         {content.heading}
                       </h2>
                     )}
-                    <div className="space-y-8 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-white/10 before:to-transparent">
+                    <div className="space-y-8 relative before:absolute before:inset-0 before:ms-5 md:before:mx-auto before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-white/10 before:to-transparent">
                       {content.steps?.map((step: any, i: number) => (
-                        <div key={i} className={`relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active ${isArabic ? 'flex-row-reverse' : ''}`}>
-                          <div className={`flex items-center justify-center w-10 h-10 rounded-full border border-white/10 bg-[#050816] text-[#8df6c8] shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 ${isArabic ? 'mr-0 ml-4 md:mr-0 md:ml-0' : 'ml-0 mr-4 md:ml-0 md:mr-0'}`}>
+                        <div key={i} className={`relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active`}>
+                          <div className={`flex items-center justify-center w-10 h-10 rounded-full border border-white/10 bg-[#050816] text-[#8df6c8] shadow shrink-0 md:order-1 ${isArabic ? 'md:group-odd:translate-x-1/2 md:group-even:-translate-x-1/2' : 'md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2'} me-4 md:me-0 z-10`}>
                             {i + 1}
                           </div>
                           <div className={`w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] rounded-2xl border border-white/10 bg-white/[0.02] p-6 shadow-xl`}>
@@ -167,9 +167,9 @@ export default function UXResearchRenderer({ project, locale }: UXResearchRender
                     )}
                     <ul className={`grid gap-4 ${content.items?.length > 4 ? 'sm:grid-cols-2' : ''}`}>
                       {content.items?.map((item: string, i: number) => (
-                        <li key={i} className={`flex items-start gap-3 rounded-2xl border border-white/5 bg-white/[0.01] p-4 text-slate-300 ${isArabic ? 'flex-row-reverse' : ''}`}>
-                          <div className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-[#8df6c8]" />
-                          <span className={`text-base ${isArabic ? 'leading-relaxed' : 'leading-relaxed'}`}>{item}</span>
+                        <li key={i} className={`flex items-start gap-3 rounded-2xl border border-white/5 bg-white/[0.01] p-4 text-slate-300`}>
+                          <div className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#8df6c8]" />
+                          <span className={`text-base leading-relaxed`}>{item}</span>
                         </li>
                       ))}
                     </ul>
@@ -187,18 +187,18 @@ export default function UXResearchRenderer({ project, locale }: UXResearchRender
                     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                       {content.profiles?.map((profile: any, i: number) => (
                         <div key={i} className="flex flex-col rounded-3xl border border-white/10 bg-white/[0.02] p-6 transition-colors hover:bg-white/[0.04]">
-                          <div className={`mb-4 flex items-center gap-4 ${isArabic ? 'flex-row-reverse' : ''}`}>
+                          <div className={`mb-4 flex items-center gap-4`}>
                             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#8df6c8]/10 text-xl font-bold text-[#8df6c8]">
                               {profile.name.charAt(0)}
                             </div>
-                            <div className={`${isArabic ? 'text-right' : ''}`}>
+                            <div>
                               <h3 className="text-lg font-semibold text-white">{profile.name}</h3>
                               <p className="text-sm text-slate-400">{profile.age}</p>
                             </div>
                           </div>
-                          <div className={`space-y-3 text-sm text-slate-300 flex-1 ${isArabic ? 'text-right' : ''}`}>
+                          <div className={`space-y-3 text-sm text-slate-300 flex-1`}>
                             {profile.details?.map((detail: string, j: number) => (
-                              <div key={j} className={`flex items-start gap-2 ${isArabic ? 'flex-row-reverse' : ''}`}>
+                              <div key={j} className={`flex items-start gap-2`}>
                                 <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-white/20" />
                                 <span>{detail}</span>
                               </div>
