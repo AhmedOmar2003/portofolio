@@ -9,7 +9,7 @@ export const amazonFirstPurchase: LocalProject = {
   descriptionAr: 'دراسة حالة مستقلة في أبحاث تجربة المستخدم تستكشف نقاط الاحتكاك التي يواجهها المستخدم الجديد عند محاولة الشراء من أمازون.',
   impactEn: 'Identified key usability issues and provided actionable, accessible design recommendations.',
   impactAr: 'تحديد المشكلات الرئيسية في قابلية الاستخدام وتقديم توصيات تصميمية عملية.',
-  year: '2024',
+  year: '2026',
   thumbnailUrl: '/image-amazon.png',
   blocks: [
     {
