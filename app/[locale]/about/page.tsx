@@ -45,16 +45,16 @@ const content = {
     eyebrow: 'نبذة عني',
     title: 'أحمد عصام ماهر منصور',
     subtitle:
-      'مطور برمجيات ومصمم منتجات رقمية أدمج بين التفكير الإبداعي والخبرة التقنية لبناء منتجات حديثة، واضحة، ومفيدة.',
+      'مصمم منتجات رقمية بستخدم الذكاء الاصطناعي وخلفية علوم الحاسب لبناء حلول تنافسية بتجربة مستخدم قوية.',
     roleLabel: 'الدور',
-    roleValue: 'مطور برمجيات ومصمم منتجات رقمية',
+    roleValue: 'مصمم منتجات وفايب كودينج بالـ AI',
     educationLabel: 'التعليم',
     educationValue: 'كلية الحاسبات والمعلومات — قسم علوم الحاسب',
     introductionTitle: 'من أنا',
     introductionBody: [
-      'أنا أحمد عصام، مطور برمجيات ومصمم منتجات رقمية أدمج التفكير الإبداعي مع المنطق البرمجي لبناء حلول رقمية قوية وسهلة الاستخدام.',
-      'تخرجت من كلية الحاسبات والمعلومات، وأكملت رحلتي بتعلم مستمر في تطوير البرمجيات وتصميم منتجات رقمية احترافية.',
-      'أهتم ببناء تطبيقات ومواقع بأداء عالٍ، تصميم أنيق، وتجربة مستخدم سلسة تضيف قيمة حقيقية للناس.',
+      'أنا أحمد عصام، مصمم منتجات رقمية بستخدم الذكاء الاصطناعي وخلفية علوم الحاسب لبناء حلول رقمية تنافسية وسهلة الاستخدام.',
+      'تخرجت من كلية الحاسبات والمعلومات، وأكملت رحلتي بتعلم مستمر في تصميم المنتجات وتوظيف أدوات الـ AI في بناء المنتجات الرقمية.',
+      'بهتم ببناء منتجات رقمية ذكية بتجربة مستخدم مدروسة، أداء سريع، وتصميم أنيق بيضيف قيمة حقيقية.',
     ],
     workTitle: 'ما الذي أقدمه',
     workAreas: [
@@ -108,16 +108,16 @@ const content = {
     eyebrow: 'About Me',
     title: 'Ahmed Essam Maher Mansour',
     subtitle:
-      'Software Developer and Product Designer blending creative thinking with technical expertise to build modern, clear, and useful products.',
+      'Product Designer leveraging AI and a CS background to build competitive, smart digital products with strong UX foundations.',
     roleLabel: 'Role',
-    roleValue: 'Software Developer & Product Designer',
+    roleValue: 'Product Designer & AI Vibe Coder',
     educationLabel: 'Education',
     educationValue: 'Faculty of Computers and Information — Computer Science',
     introductionTitle: 'Who I Am',
     introductionBody: [
-      'I am Ahmed Essam, a software developer and product designer who blends creative thinking with programming logic to build strong and user-friendly digital products.',
-      'I graduated from the Faculty of Computers and Information and continued learning through focused courses in software development and digital product design.',
-      'I focus on building applications and websites with high performance, elegant design, and a smooth user experience that creates real value for people.',
+      'I am Ahmed Essam, a product designer who leverages AI and a Computer Science background to build competitive, smart digital products with strong UX principles.',
+      'I graduated from the Faculty of Computers and Information and continued my journey by mastering product design and AI-powered development workflows.',
+      'I focus on building intelligent digital products with thoughtful user experience, fast performance, and elegant design that creates real value.',
     ],
     workTitle: 'What I Do',
     workAreas: [

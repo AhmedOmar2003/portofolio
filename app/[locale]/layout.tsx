@@ -41,8 +41,8 @@ export const viewport: Viewport = {
 
 function getSiteDescription(locale: string) {
   return locale === 'ar'
-    ? 'أصمم وأبني منتجات رقمية وتطبيقات حديثة تجمع بين تجربة المستخدم القوية، والواجهة الأنيقة، والأداء السريع لحل مشاكل حقيقية.'
-    : 'I design and build modern digital products, web applications, and mobile experiences that combine strong UX, elegant interfaces, and fast performance to solve real problems.';
+    ? 'مصمم منتجات رقمية وفايب كودينج باستخدام AI — ببني منتجات رقمية تنافسية وذكية بتجربة مستخدم قوية وأداء سريع.'
+    : 'Product Designer & AI Vibe Coder — I leverage AI to build competitive, smart digital products and systems with strong UX principles, elegant interfaces, and fast performance.';
 }
 
 export async function generateMetadata({
@@ -53,8 +53,8 @@ export async function generateMetadata({
   const { locale } = await params;
   const title =
     locale === 'ar'
-      ? 'أحمد عصام ماهر منصور | مطور برمجيات ومصمم منتجات رقمية'
-      : 'Ahmed Essam Maher | Software Developer & Product Designer';
+      ? 'أحمد عصام ماهر | مصمم منتجات وفايب كودينج بالـ AI'
+      : 'Ahmed Essam Maher | Product Designer & AI Vibe Coder';
   const description = getSiteDescription(locale);
 
   return {
@@ -147,7 +147,7 @@ export default async function LocaleLayout({
                   "@type": "Person",
                   "name": locale === 'ar' ? "أحمد عصام ماهر" : "Ahmed Essam Maher",
                   "url": "https://ahmed-essam.com",
-                  "jobTitle": locale === 'ar' ? "مطور برمجيات ومصمم منتجات رقمية" : "Software Developer & Product Designer",
+                  "jobTitle": locale === 'ar' ? "مصمم منتجات وفايب كودينج بالـ AI" : "Product Designer & AI Vibe Coder",
                   "sameAs": socialLinks.map(link => link.value).filter(val => val.startsWith('http'))
                 }
               ])
