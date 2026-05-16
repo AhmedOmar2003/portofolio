@@ -1,6 +1,5 @@
 import Image from 'next/image';
-import { ArrowLeft } from 'lucide-react';
-import { Link } from '@/i18n/routing';
+import BackButton from '@/components/ui/BackButton';
 import type { LocalProject } from '@/data/projects/local-projects';
 import React from 'react';
 
@@ -17,13 +16,7 @@ export default function UXResearchRenderer({ project, locale }: UXResearchRender
       <div className="mx-auto max-w-[1080px] space-y-24">
         
         {/* Back link */}
-        <Link
-          href="/projects"
-          className={`inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2.5 text-sm text-slate-300 transition hover:border-white/20 hover:text-white`}
-        >
-          <ArrowLeft className={`h-4 w-4 ${isArabic ? 'rtl-flip' : ''}`} aria-hidden="true" />
-          {isArabic ? 'رجوع للمشاريع' : 'Back to projects'}
-        </Link>
+        <BackButton href="/projects" />
 
         {/* Blocks Renderer */}
         <div className="space-y-24">

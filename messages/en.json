@@ -9,7 +9,8 @@
     "eyebrow": "Designer & Software Developer",
     "toggleLanguage": "Toggle Language",
     "openMenu": "Menu",
-    "closeMenu": "Close"
+    "closeMenu": "Close",
+    "backToProjects": "Back to Projects"
   },
   "Hero": {
     "greeting": "I am",

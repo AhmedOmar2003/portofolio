@@ -1,7 +1,8 @@
-import { ArrowLeft, ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 import { notFound } from 'next/navigation';
 
 import AppInstallLinks from '@/components/projects/AppInstallLinks';
+import BackButton from '@/components/ui/BackButton';
 import { Link } from '@/i18n/routing';
 import ProjectGalleryCarousel from '@/components/projects/ProjectGalleryCarousel';
 import { getLocaleDateFormat, isArabicLocale, localizedValue } from '@/utils/locale-content';
@@ -216,13 +217,7 @@ export default async function ProjectCaseStudyPage({ params }: { params: Promise
       <div className="mx-auto max-w-[1280px] space-y-16">
 
         {/* Back link */}
-        <Link
-          href="/projects"
-          className={`inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2.5 text-sm text-slate-300 transition hover:border-white/20 hover:text-white ${isArabic ? 'flex-row-reverse' : ''}`}
-        >
-          <ArrowLeft className={`h-4 w-4 ${isArabic ? 'rtl-flip' : ''}`} aria-hidden="true" />
-          {isArabic ? 'رجوع للمشاريع' : 'Back to projects'}
-        </Link>
+        <BackButton href="/projects" />
 
         {/* Hero */}
         <section>
