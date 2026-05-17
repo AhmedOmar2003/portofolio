@@ -22,6 +22,18 @@ export default function Hero({ title, subtitle, projectCount, serviceCount }: He
   const displayTitle = title || t('title');
   const displaySubtitle = subtitle || t('positioning');
   const heroTitle = displayTitle.split('\n');
+  const ctaButtons = (
+    <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+      <a href="#projects" className="btn btn-primary w-full px-8 py-3.5 text-base sm:w-auto">
+        {t('ctaPrimary')}
+        <ArrowDownRight className={`h-4 w-4 ${isArabic ? 'mr-2 ml-0 rtl-flip' : 'ml-2 mr-0'}`} aria-hidden="true" />
+      </a>
+      <Link href="/contact" className="btn btn-secondary w-full px-8 py-3.5 text-base transition-colors hover:bg-white/[0.05] sm:w-auto">
+        <Mail className={`h-4 w-4 ${isArabic ? 'ml-2 mr-0' : 'mr-2 ml-0'}`} aria-hidden="true" />
+        {t('ctaSecondary')}
+      </Link>
+    </div>
+  );
 
 
 
@@ -68,16 +80,7 @@ export default function Hero({ title, subtitle, projectCount, serviceCount }: He
             </p>
           </div>
 
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-            <a href="#projects" className="btn btn-primary w-full px-8 py-3.5 text-base sm:w-auto">
-              {t('ctaPrimary')}
-              <ArrowDownRight className={`h-4 w-4 ${isArabic ? 'mr-2 ml-0 rtl-flip' : 'ml-2 mr-0'}`} aria-hidden="true" />
-            </a>
-            <Link href="/contact" className="btn btn-secondary w-full px-8 py-3.5 text-base transition-colors hover:bg-white/[0.05] sm:w-auto">
-              <Mail className={`h-4 w-4 ${isArabic ? 'ml-2 mr-0' : 'mr-2 ml-0'}`} aria-hidden="true" />
-              {t('ctaSecondary')}
-            </Link>
-          </div>
+          {!isArabic ? ctaButtons : null}
         </motion.div>
 
         <motion.div
@@ -127,10 +130,20 @@ export default function Hero({ title, subtitle, projectCount, serviceCount }: He
             </motion.div>
           </div>
 
-          <div className="mt-5 hidden items-center gap-3 text-sm text-slate-400 sm:flex">
-            <span className="inline-flex h-2.5 w-2.5 rounded-full bg-[#8df6c8] shadow-[0_0_18px_rgba(141,246,200,0.9)]" />
-            <span>{t('scrollLabel')}</span>
-          </div>
+          {isArabic ? (
+            <div className="mt-8 hidden w-full items-center justify-between gap-6 sm:flex">
+              <div className="flex items-center gap-3 text-sm text-slate-400">
+                <span>{t('scrollLabel')}</span>
+                <span className="inline-flex h-2.5 w-2.5 rounded-full bg-[#8df6c8] shadow-[0_0_18px_rgba(141,246,200,0.9)]" />
+              </div>
+              {ctaButtons}
+            </div>
+          ) : (
+            <div className="mt-5 hidden items-center gap-3 text-sm text-slate-400 sm:flex">
+              <span className="inline-flex h-2.5 w-2.5 rounded-full bg-[#8df6c8] shadow-[0_0_18px_rgba(141,246,200,0.9)]" />
+              <span>{t('scrollLabel')}</span>
+            </div>
+          )}
         </motion.div>
       </div>
     </section>
