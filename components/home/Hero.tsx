@@ -132,11 +132,11 @@ export default function Hero({ title, subtitle, projectCount, serviceCount }: He
 
           {isArabic ? (
             <div className="mt-8 hidden w-full items-center justify-between gap-6 sm:flex">
+              {ctaButtons}
               <div className="flex items-center gap-3 text-sm text-slate-400">
                 <span>{t('scrollLabel')}</span>
                 <span className="inline-flex h-2.5 w-2.5 rounded-full bg-[#8df6c8] shadow-[0_0_18px_rgba(141,246,200,0.9)]" />
               </div>
-              {ctaButtons}
             </div>
           ) : (
             <div className="mt-5 hidden items-center gap-3 text-sm text-slate-400 sm:flex">
