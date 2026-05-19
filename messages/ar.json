@@ -184,8 +184,14 @@
     "messagePlaceholder": "إزاي أقدر أساعدك؟",
     "submit": "إرسال",
     "sending": "جاري الإرسال...",
-    "success": "تم الإرسال بنجاح!",
-    "error": "حصل خطأ. الرجاء المحاولة مرة أخرى."
+    "success": "تم إرسال رسالتك بنجاح! هرد عليك قريباً.",
+    "error": "حصل خطأ. الرجاء المحاولة مرة أخرى.",
+    "errorNameRequired": "من فضلك أدخل اسمك.",
+    "errorNameTooLong": "الاسم يجب أن يكون 100 حرف أو أقل.",
+    "errorEmailRequired": "من فضلك أدخل بريدك الإلكتروني.",
+    "errorEmailInvalid": "من فضلك أدخل بريداً إلكترونياً صحيحاً.",
+    "errorMessageRequired": "من فضلك اكتب رسالتك.",
+    "errorMessageTooLong": "الرسالة يجب أن تكون 5,000 حرف أو أقل."
   },
   "ArticlesPage": {
     "eyebrow": "المدونة",

@@ -25,7 +25,8 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
-    setIsMobileMenuOpen(false);
+    const id = setTimeout(() => setIsMobileMenuOpen(false), 0);
+    return () => clearTimeout(id);
   }, [pathname]);
 
   const navLinks = [

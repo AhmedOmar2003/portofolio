@@ -123,6 +123,13 @@ export default function ProjectsFilterGrid({ projects, isArabic, labels }: Proje
         )}
       </div>
 
+      {/* Screen reader: announce result count on filter change */}
+      <div aria-live="polite" aria-atomic="true" className="sr-only">
+        {isArabic
+          ? `${filteredProjects.length} مشروع`
+          : `${filteredProjects.length} project${filteredProjects.length !== 1 ? 's' : ''}`}
+      </div>
+
       {filteredProjects.length > 0 ? (
         <div className="grid gap-8 lg:grid-cols-2">
           {filteredProjects.map((project, index) => (
@@ -149,7 +156,10 @@ export default function ProjectsFilterGrid({ projects, isArabic, labels }: Proje
           ))}
         </div>
       ) : (
-        <div className="rounded-[1.5rem] border border-white/10 bg-white/[0.02] px-6 py-10 text-sm text-slate-300">
+        <div
+          role="status"
+          className="rounded-[1.5rem] border border-white/10 bg-white/[0.02] px-6 py-10 text-center text-sm text-slate-400"
+        >
           {labels.empty}
         </div>
       )}

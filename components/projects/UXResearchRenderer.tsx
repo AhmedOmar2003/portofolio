@@ -53,7 +53,7 @@ export default function UXResearchRenderer({ project, locale }: UXResearchRender
                     </div>
 
                     <div className={`flex flex-wrap items-center gap-x-12 gap-y-6 border-t border-white/10 pt-8 ${isArabic ? 'text-right' : ''}`}>
-                      {content.metadata?.map((meta: any, i: number) => (
+                      {content.metadata?.map((meta: { label: string; value: string }, i: number) => (
                         <div key={i}>
                           <p className="text-xs font-semibold uppercase tracking-widest text-slate-600">{meta.label}</p>
                           <p className="mt-1.5 text-sm font-medium text-white">{meta.value}</p>
@@ -112,7 +112,7 @@ export default function UXResearchRenderer({ project, locale }: UXResearchRender
                       </h2>
                     )}
                     <div className="space-y-8 relative before:absolute before:inset-0 before:ms-5 md:before:mx-auto before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-white/10 before:to-transparent">
-                      {content.steps?.map((step: any, i: number) => (
+                      {content.steps?.map((step: { title: string; description: string }, i: number) => (
                         <div key={i} className={`relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active`}>
                           <div className={`flex items-center justify-center w-10 h-10 rounded-full border border-white/10 bg-[#050816] text-[#8df6c8] shadow shrink-0 md:order-1 ${isArabic ? 'md:group-odd:translate-x-1/2 md:group-even:-translate-x-1/2' : 'md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2'} me-4 md:me-0 z-10`}>
                             {i + 1}
@@ -136,7 +136,7 @@ export default function UXResearchRenderer({ project, locale }: UXResearchRender
                       </h2>
                     )}
                     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                      {content.cards?.map((card: any, i: number) => (
+                      {content.cards?.map((card: { title: string; description: string }, i: number) => (
                         <div key={i} className="rounded-3xl border border-white/10 bg-white/[0.02] p-8 transition-colors hover:bg-white/[0.04]">
                           <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[#8df6c8]/10 text-[#8df6c8]">
                             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -156,7 +156,7 @@ export default function UXResearchRenderer({ project, locale }: UXResearchRender
                   <section key={block.id} className="mx-auto max-w-3xl">
                     <blockquote className="rounded-[2.5rem] bg-gradient-to-br from-[#8df6c8]/10 to-transparent border border-[#8df6c8]/20 p-10 md:p-14 text-center">
                       <p className={`text-2xl md:text-3xl font-medium text-white ${isArabic ? 'leading-relaxed' : 'leading-tight'}`}>
-                        "{content.quote}"
+                        &ldquo;{content.quote}&rdquo;
                       </p>
                       {content.author && (
                         <footer className="mt-8 text-sm font-semibold tracking-wider text-[#8df6c8] uppercase">
@@ -195,7 +195,7 @@ export default function UXResearchRenderer({ project, locale }: UXResearchRender
                       </h2>
                     )}
                     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                      {content.profiles?.map((profile: any, i: number) => (
+                      {content.profiles?.map((profile: { name: string; age?: string; details?: string[] }, i: number) => (
                         <div key={i} className="flex flex-col rounded-3xl border border-white/10 bg-white/[0.02] p-6 transition-colors hover:bg-white/[0.04]">
                           <div className={`mb-4 flex items-center gap-4`}>
                             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#8df6c8]/10 text-xl font-bold text-[#8df6c8]">
@@ -223,12 +223,18 @@ export default function UXResearchRenderer({ project, locale }: UXResearchRender
               case 'image':
                 return (
                   <section key={block.id} className="mx-auto w-full max-w-5xl overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.02] shadow-2xl">
-                    <img 
-                      src={content.src} 
-                      alt={content.alt || ''} 
-                      className="w-full h-auto object-cover"
-                      loading="lazy"
-                    />
+                    {content.src ? (
+                      <div className="relative w-full" style={{ aspectRatio: '16/9' }}>
+                        <Image
+                          src={content.src}
+                          alt={content.alt || (isArabic ? 'صورة من المشروع' : 'Project image')}
+                          fill
+                          sizes="(max-width: 768px) 100vw, (max-width: 1280px) 90vw, 1080px"
+                          className="object-cover"
+                          loading="lazy"
+                        />
+                      </div>
+                    ) : null}
                     {content.caption && (
                       <p className={`p-4 text-center text-sm text-slate-400 ${isArabic ? 'text-right' : ''}`}>
                         {content.caption}

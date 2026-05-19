@@ -119,15 +119,30 @@ export default async function LocaleLayout({
     label: localizedValue(method as Record<string, unknown>, 'label', locale) as string,
   }));
 
+  const whatsappContact = (contactsData || []).find(
+    (m) => m.type.toLowerCase() === 'whatsapp'
+  );
+  const whatsappHref = whatsappContact?.value
+    ? whatsappContact.value.startsWith('http')
+      ? whatsappContact.value
+      : `https://wa.me/${whatsappContact.value.replace(/\D/g, '')}`
+    : 'https://wa.me/201050242285';
+
   return (
     <html lang={locale} dir={isArabicLocale(locale) ? 'rtl' : 'ltr'}>
       <body className={`${geistSans.variable} ${geistMono.variable} ${cairo.variable} ${isArabicLocale(locale) ? 'font-ar' : ''} antialiased bg-zinc-950 text-zinc-50 font-sans flex min-h-screen flex-col`}>
         <NextIntlClientProvider locale={locale} messages={messages}>
+          <a
+            href="#main-content"
+            className="skip-link"
+          >
+            {locale === 'ar' ? 'انتقل للمحتوى الرئيسي' : 'Skip to main content'}
+          </a>
           <AnalyticsTracker />
           <Navbar />
-          <div className="flex-grow">{children}</div>
+          <div id="main-content" className="flex-grow" tabIndex={-1}>{children}</div>
           <Footer socialLinks={socialLinks} />
-          <WhatsAppButton />
+          <WhatsAppButton href={whatsappHref} />
           
           {/* JSON-LD Structured Data for Person and WebSite */}
           <script

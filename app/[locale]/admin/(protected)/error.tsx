@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import NextLink from 'next/link';
 
 export default function AdminError({
   error,
@@ -46,9 +47,9 @@ export default function AdminError({
           >
             Try Again
           </button>
-          <a href="/en/admin" className="btn btn-secondary px-6 text-sm">
+          <NextLink href="/en/admin" className="btn btn-secondary px-6 text-sm">
             Back to Dashboard
-          </a>
+          </NextLink>
         </div>
       </div>
     </div>

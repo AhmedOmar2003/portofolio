@@ -3,7 +3,6 @@ import { notFound } from 'next/navigation';
 
 import AppInstallLinks from '@/components/projects/AppInstallLinks';
 import BackButton from '@/components/ui/BackButton';
-import { Link } from '@/i18n/routing';
 import ProjectGalleryCarousel from '@/components/projects/ProjectGalleryCarousel';
 import { getLocaleDateFormat, isArabicLocale, localizedValue } from '@/utils/locale-content';
 import { getProjectRoleLabel, getProjectTypeLabel, normalizeProjectType } from '@/utils/project-type';

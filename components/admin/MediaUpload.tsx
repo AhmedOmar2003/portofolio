@@ -1,8 +1,11 @@
 'use client'
 
-import { useState } from 'react'
-import { UploadCloud, X, Loader2 } from 'lucide-react'
+import { useId, useState } from 'react'
+import { UploadCloud, X, Loader2, AlertCircle } from 'lucide-react'
 import Image from 'next/image'
+
+const MAX_FILE_SIZE_MB = 10
+const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024
 
 interface MediaUploadProps {
   bucket: string
@@ -11,6 +14,7 @@ interface MediaUploadProps {
   onUploadSuccess: (url: string) => void
   onRemove?: () => void
   accept?: string
+  label?: string
 }
 
 export default function MediaUpload({
@@ -19,8 +23,10 @@ export default function MediaUpload({
   currentUrl,
   onUploadSuccess,
   onRemove,
-  accept = 'image/*'
+  accept = 'image/*',
+  label = 'Upload file',
 }: MediaUploadProps) {
+  const uid = useId()
   const [isUploading, setIsUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -44,7 +50,8 @@ export default function MediaUpload({
 
       const context = canvas.getContext('2d')
       if (!context) {
-        throw new Error('WebP conversion is not supported in this browser.')
+        // Canvas not supported — upload original
+        return file
       }
 
       context.drawImage(image, 0, 0, canvas.width, canvas.height)
@@ -53,9 +60,7 @@ export default function MediaUpload({
         canvas.toBlob(resolve, 'image/webp', 0.86)
       })
 
-      if (!webpBlob) {
-        throw new Error('Failed to convert the image to WebP.')
-      }
+      if (!webpBlob) return file
 
       const baseName = file.name.replace(/\.[^/.]+$/, '')
       return new File([webpBlob], `${baseName}.webp`, { type: 'image/webp' })
@@ -69,8 +74,16 @@ export default function MediaUpload({
     if (!file) return
 
     const isImageUpload = accept.includes('image')
+
     if (isImageUpload && !file.type.startsWith('image/')) {
       setError('Please upload an image file (PNG, JPG, JPEG, or WebP).')
+      e.target.value = ''
+      return
+    }
+
+    if (file.size > MAX_FILE_SIZE_BYTES) {
+      setError(`File is too large. Maximum allowed size is ${MAX_FILE_SIZE_MB} MB.`)
+      e.target.value = ''
       return
     }
 
@@ -92,80 +105,114 @@ export default function MediaUpload({
       const result = await response.json().catch(() => null)
 
       if (!response.ok) {
-        throw new Error(result?.error || 'Error uploading file')
+        throw new Error(result?.error || 'Upload failed. Please try again.')
       }
 
       if (!result?.url) {
-        throw new Error('Upload finished but no public URL was returned.')
+        throw new Error('Upload succeeded but no URL was returned. Please refresh.')
       }
 
       onUploadSuccess(result.url)
-    } catch (err: any) {
-      setError(err.message || 'Error uploading file')
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Upload failed. Please try again.')
     } finally {
       setIsUploading(false)
+      e.target.value = ''
     }
   }
 
   return (
     <div className="w-full">
-      {error && (
-        <div className="mb-2 text-sm text-red-400 bg-red-400/10 p-3 rounded-lg border border-red-500/20">
-          {error}
+      {error ? (
+        <div
+          role="alert"
+          aria-live="assertive"
+          className="mb-3 flex items-start gap-2 rounded-xl border border-red-500/20 bg-red-400/10 p-3 text-sm text-red-300"
+        >
+          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+          <span>{error}</span>
         </div>
-      )}
-      
+      ) : null}
+
       {currentUrl ? (
-        <div className="relative group inline-block rounded-xl overflow-hidden border border-white/10 bg-white/5">
+        <div className="relative inline-block overflow-hidden rounded-xl border border-white/10 bg-white/5">
           {accept.includes('video') ? (
-            <video src={currentUrl} className="max-h-48 object-cover rounded-xl" controls />
+            <video
+              src={currentUrl}
+              className="max-h-48 rounded-xl object-cover"
+              controls
+              aria-label="Uploaded video preview"
+            />
           ) : accept.includes('pdf') || accept.includes('document') ? (
-            <div className="h-48 w-48 flex items-center justify-center p-4 text-center text-sm text-white/60">
-              Document Uploaded<br/>
-              <span className="text-xs break-all mt-2 max-w-[150px]">{currentUrl}</span>
+            <div className="flex h-48 w-48 flex-col items-center justify-center p-4 text-center text-sm text-white/60">
+              <span>Document uploaded</span>
+              <span className="mt-2 max-w-[150px] break-all text-xs">{currentUrl.split('/').pop()}</span>
             </div>
           ) : (
-            <Image 
-              src={currentUrl} 
-              alt="Uploaded media" 
-              width={300} 
-              height={300} 
-              className="max-h-48 w-auto object-cover rounded-xl"
+            <Image
+              src={currentUrl}
+              alt="Uploaded media preview"
+              width={300}
+              height={300}
+              className="max-h-48 w-auto rounded-xl object-cover"
             />
           )}
-          
-          <button
-            type="button"
-            onClick={onRemove}
-            className="absolute top-2 right-2 p-1.5 bg-black/60 hover:bg-red-500/80 text-white rounded-lg transition-colors opacity-0 group-hover:opacity-100 backdrop-blur-sm"
-            title="Remove file"
-          >
-            <X className="w-4 h-4" />
-          </button>
+
+          {onRemove ? (
+            <button
+              type="button"
+              onClick={onRemove}
+              aria-label="Remove uploaded file"
+              className="absolute right-2 top-2 rounded-lg bg-black/60 p-1.5 text-white opacity-0 backdrop-blur-sm transition-all hover:bg-red-500/80 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400 group-hover:opacity-100"
+            >
+              <X className="h-4 w-4" aria-hidden="true" />
+            </button>
+          ) : null}
         </div>
       ) : (
-        <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-white/20 hover:border-brand-primary/50 bg-white/5 hover:bg-brand-primary/5 rounded-2xl cursor-pointer transition-all duration-300">
-          <div className="flex flex-col items-center justify-center pt-5 pb-6 text-white/60 group-hover:text-brand-primary">
-            {isUploading ? (
-              <Loader2 className="w-10 h-10 mb-3 animate-spin text-brand-primary" />
-            ) : (
-              <UploadCloud className="w-10 h-10 mb-3" />
-            )}
-            <p className="mb-2 text-sm font-medium">
-              <span className="font-semibold text-white">Click to upload</span> or drag and drop
-            </p>
-            <p className="text-xs">
-              {accept.includes('image') ? 'PNG, JPG, JPEG, WebP (auto-converted to WebP)' : accept}
-            </p>
-          </div>
-          <input
-            type="file"
-            className="hidden"
-            accept={accept}
-            onChange={handleUpload}
-            disabled={isUploading}
-          />
-        </label>
+        <div className="group relative">
+          <label
+            htmlFor={uid}
+            className={`flex h-48 w-full cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed transition-all duration-300 ${
+              isUploading
+                ? 'border-[#8df6c8]/40 bg-[#8df6c8]/5'
+                : 'border-white/20 bg-white/5 hover:border-[#8df6c8]/40 hover:bg-[#8df6c8]/5'
+            }`}
+          >
+            <div className="flex flex-col items-center justify-center text-white/60">
+              {isUploading ? (
+                <>
+                  <Loader2 className="mb-3 h-10 w-10 animate-spin text-[#8df6c8]" aria-hidden="true" />
+                  <p className="text-sm font-medium text-white/80">Uploading…</p>
+                </>
+              ) : (
+                <>
+                  <UploadCloud className="mb-3 h-10 w-10" aria-hidden="true" />
+                  <p className="mb-1 text-sm font-medium">
+                    <span className="font-semibold text-white">Click to upload</span>
+                    {' '}or drag and drop
+                  </p>
+                  <p className="text-xs text-white/40">
+                    {accept.includes('image')
+                      ? `PNG, JPG, WebP — max ${MAX_FILE_SIZE_MB} MB`
+                      : `Max ${MAX_FILE_SIZE_MB} MB`}
+                  </p>
+                </>
+              )}
+            </div>
+
+            <input
+              id={uid}
+              type="file"
+              className="sr-only"
+              accept={accept}
+              onChange={handleUpload}
+              disabled={isUploading}
+              aria-label={label}
+              aria-describedby={error ? `${uid}-error` : undefined}
+            />
+          </label>
+        </div>
       )}
     </div>
   )

@@ -127,7 +127,7 @@ export default function AboutAdminPage() {
           <p className="admin-kicker">About</p>
           <h1 className="mt-2 text-3xl font-semibold tracking-[-0.05em] text-white">عني والمحتوى</h1>
           <p className="mt-3 max-w-xl text-base leading-7 text-slate-400">
-            اكتب رحلتك، مبادئك، وما تقدمه لمشروع العميل. هذا المحتوى يظهر مباشرة في صفحة "عني".
+            اكتب رحلتك، مبادئك، وما تقدمه لمشروع العميل. هذا المحتوى يظهر مباشرة في صفحة &quot;عني&quot;.
           </p>
         </div>
         <button type="button" onClick={handleSave} disabled={saving} className="btn btn-primary w-fit text-sm">

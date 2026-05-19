@@ -217,7 +217,7 @@ export default function SiteSettingsAdminPage() {
 
           <section className="admin-card px-6 py-6">
             <h2 className="text-xl font-semibold text-white">رقم واتساب</h2>
-            <p className="mt-1 text-sm text-slate-500">يُستخدم في زر "طلب خدمة" في صفحة الخدمات.</p>
+            <p className="mt-1 text-sm text-slate-500">يُستخدم في زر &quot;طلب خدمة&quot; في صفحة الخدمات.</p>
             <div className="mt-5">
               <label className="admin-label">WhatsApp number (with country code)</label>
               <input

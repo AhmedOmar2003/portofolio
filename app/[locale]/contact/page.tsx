@@ -61,7 +61,6 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 
 export default async function ContactPage(props: { params: Promise<{ locale: string }> }) {
   const { locale } = await props.params;
-  const isArabic = locale === 'ar';
   const t = await getTranslations({ locale, namespace: 'ContactPage' });
   const supabase = await createClient();
   const fallbackPhoneValue = '+(20) 1036925982';

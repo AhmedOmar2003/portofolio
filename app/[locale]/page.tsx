@@ -1,4 +1,4 @@
-import { ArrowUpRight, CheckCircle2, MoveRight, Figma, Code2, Sparkles } from 'lucide-react';
+import { MoveRight, Figma, Code2, Sparkles } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 
 import Hero from '@/components/home/Hero';
@@ -100,7 +100,6 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
   const principleCards = splitLines(localizedValue(aboutData as Record<string, unknown>, 'philosophy', locale)).slice(0, 3);
   const principles = principleCards.length ? principleCards : [t('principle1'), t('principle2'), t('principle3')];
-  const condensedPrinciples = principles.slice(0, 2);
   const projectDescriptionFallback = isArabic
     ? t('projectDescriptionFallbackAr')
     : t('projectDescriptionFallbackEn');
@@ -178,7 +177,6 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const dynamicSkills = Array.isArray(aboutData?.skills) ? aboutData.skills.map((item) => normalizeName(item)).filter(Boolean) : [];
   const dynamicTools = Array.isArray(aboutData?.tools) ? aboutData.tools.map((item) => normalizeName(item)).filter(Boolean) : [];
   const skillClusters = [...dynamicSkills, ...dynamicTools].slice(0, 6);
-  const finalSkillClusters = skillClusters.length ? skillClusters : [t('skill1'), t('skill2'), t('skill3'), t('skill4'), t('skill5'), t('skill6')];
 
   const primaryContact = (contactsData || [])[0] as ContactMethod | undefined;
 

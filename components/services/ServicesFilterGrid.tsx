@@ -65,6 +65,13 @@ export default function ServicesFilterGrid({ services, isArabic, labels }: Servi
         })}
       </div>
 
+      {/* Screen reader: announce result count on filter change */}
+      <div aria-live="polite" aria-atomic="true" className="sr-only">
+        {isArabic
+          ? `${filteredServices.length} خدمة`
+          : `${filteredServices.length} service${filteredServices.length !== 1 ? 's' : ''}`}
+      </div>
+
       {filteredServices.length > 0 ? (
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           {filteredServices.map((service, index) => (
@@ -110,7 +117,10 @@ export default function ServicesFilterGrid({ services, isArabic, labels }: Servi
           ))}
         </div>
       ) : (
-        <div className="rounded-[1.5rem] border border-white/10 bg-white/[0.02] px-6 py-10 text-sm text-slate-300">
+        <div
+          role="status"
+          className="rounded-[1.5rem] border border-white/10 bg-white/[0.02] px-6 py-10 text-center text-sm text-slate-400"
+        >
           {labels.empty}
         </div>
       )}
