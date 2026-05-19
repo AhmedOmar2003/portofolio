@@ -57,8 +57,11 @@ export default function ArticlesListPage() {
 
     setDeletingId(id)
     try {
-      const { error } = await supabase.from('articles').delete().eq('id', id)
-      if (error) throw error
+      const response = await fetch(`/api/admin/articles/${id}`, {
+        method: 'DELETE',
+      })
+      const result = await response.json().catch(() => null)
+      if (!response.ok) throw new Error(result?.error || 'Failed to delete the article.')
       setArticles((current) => current.filter((article) => article.id !== id))
     } catch (error) {
       console.error('Error deleting article:', error)

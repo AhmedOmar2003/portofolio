@@ -212,8 +212,13 @@ export default function ServiceEditorPage({ params }: { params: Promise<{ locale
 
     setMediaSyncing(true)
     try {
-      const { error } = await supabase.from('services').update({ [field]: null }).eq('id', id)
-      if (error) throw error
+      const response = await fetch(`/api/admin/services/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ [field]: null }),
+      })
+      const result = await response.json().catch(() => null)
+      if (!response.ok) throw new Error(result?.error || 'Could not remove image.')
       setMessage({ type: 'success', text: 'Image removed and saved.' })
       setTimeout(() => setMessage(null), 1800)
     } catch (error) {
@@ -253,13 +258,23 @@ export default function ServiceEditorPage({ params }: { params: Promise<{ locale
 
     try {
       if (isNew) {
-        const { error } = await supabase.from('services').insert([payload])
-        if (error) throw error
+        const response = await fetch('/api/admin/services', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        })
+        const result = await response.json().catch(() => null)
+        if (!response.ok) throw new Error(result?.error || 'Failed to create the service.')
         setMessage({ type: 'success', text: 'Service created successfully.' })
         setTimeout(() => router.push(`/${locale}/admin/services`), 1200)
       } else {
-        const { error } = await supabase.from('services').update(payload).eq('id', id)
-        if (error) throw error
+        const response = await fetch(`/api/admin/services/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        })
+        const result = await response.json().catch(() => null)
+        if (!response.ok) throw new Error(result?.error || 'Failed to save the service.')
         setMessage({ type: 'success', text: 'Service updated successfully.' })
       }
     } catch (error) {

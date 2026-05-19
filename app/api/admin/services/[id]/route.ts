@@ -14,7 +14,7 @@ export async function GET(
 
   const { id } = await params
   const supabase = createAdminClient()
-  const { data, error } = await supabase.from('articles').select('*').eq('id', id).single()
+  const { data, error } = await supabase.from('services').select('*').eq('id', id).single()
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 400 })
@@ -40,7 +40,7 @@ export async function PUT(
 
   const supabase = createAdminClient()
   const { data, error } = await supabase
-    .from('articles')
+    .from('services')
     .update(body)
     .eq('id', id)
     .select('*')
@@ -64,7 +64,7 @@ export async function DELETE(
 
   const { id } = await params
   const supabase = createAdminClient()
-  const { error } = await supabase.from('articles').delete().eq('id', id)
+  const { error } = await supabase.from('services').delete().eq('id', id)
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 400 })

@@ -224,8 +224,19 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
     const normalized = normalizeImages(nextImages)
 
     try {
-      const { error } = await supabase.from('projects').update({ images: normalized }).eq('id', id)
-      if (error) throw error
+      const response = await fetch(`/api/admin/projects/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ images: normalized }),
+      })
+
+      const result = await response.json().catch(() => null)
+      if (!response.ok) {
+        throw new Error(result?.error || 'Could not save image changes.')
+      }
+
       setMessage({ type: 'success', text: 'Image changes saved.' })
       setTimeout(() => setMessage(null), 1800)
       return true
@@ -309,13 +320,35 @@ export default function ProjectEditorPage({ params }: { params: Promise<{ locale
 
     try {
       if (isNew) {
-        const { error } = await supabase.from('projects').insert([payload])
-        if (error) throw error
+        const response = await fetch('/api/admin/projects', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        })
+
+        const result = await response.json().catch(() => null)
+        if (!response.ok) {
+          throw new Error(result?.error || 'Failed to create the project.')
+        }
+
         setMessage({ type: 'success', text: 'Project created successfully.' })
         setTimeout(() => router.push(`/${locale}/admin/projects`), 1200)
       } else {
-        const { error } = await supabase.from('projects').update(payload).eq('id', id)
-        if (error) throw error
+        const response = await fetch(`/api/admin/projects/${id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        })
+
+        const result = await response.json().catch(() => null)
+        if (!response.ok) {
+          throw new Error(result?.error || 'Failed to update the project.')
+        }
+
         setMessage({ type: 'success', text: 'Project updated successfully.' })
         setTimeout(() => setMessage(null), 3000)
       }

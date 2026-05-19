@@ -70,8 +70,11 @@ export default function ServicesListPage() {
     if (!confirm('Delete this service?')) return
     setDeletingId(id)
     try {
-      const { error } = await supabase.from('services').delete().eq('id', id)
-      if (error) throw error
+      const response = await fetch(`/api/admin/services/${id}`, {
+        method: 'DELETE',
+      })
+      const result = await response.json().catch(() => null)
+      if (!response.ok) throw new Error(result?.error || 'Failed to delete the service.')
       setServices((prev) => prev.filter((service) => service.id !== id))
     } catch (error) {
       console.error('Error deleting service:', error)
@@ -91,8 +94,16 @@ export default function ServicesListPage() {
     setServices(updated)
 
     await Promise.all([
-      supabase.from('services').update({ view_order: updated[index].view_order }).eq('id', updated[index].id),
-      supabase.from('services').update({ view_order: updated[swapIndex].view_order }).eq('id', updated[swapIndex].id),
+      fetch(`/api/admin/services/${updated[index].id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ view_order: updated[index].view_order }),
+      }),
+      fetch(`/api/admin/services/${updated[swapIndex].id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ view_order: updated[swapIndex].view_order }),
+      }),
     ])
   }
 

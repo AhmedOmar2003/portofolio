@@ -77,7 +77,14 @@ export default function ContactMethodsPage() {
 
     if (!method._isNew) {
       if (!confirm('Delete this contact method?')) return
-      await supabase.from('contact_methods').delete().eq('id', method.id)
+      const response = await fetch(`/api/admin/contact-methods/${method.id}`, {
+        method: 'DELETE',
+      })
+      const result = await response.json().catch(() => null)
+      if (!response.ok) {
+        console.error('Error deleting contact method:', result?.error || 'Delete failed.')
+        return
+      }
     }
 
     setMethods((prev) => prev.filter((_, itemIndex) => itemIndex !== index))
@@ -101,12 +108,21 @@ export default function ContactMethodsPage() {
           }
 
           return method._isNew
-            ? supabase.from('contact_methods').insert([payload])
-            : supabase.from('contact_methods').update(payload).eq('id', method.id)
+            ? fetch('/api/admin/contact-methods', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+              })
+            : fetch(`/api/admin/contact-methods/${method.id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+              })
         })
       )
 
-      if (results.some((result) => result.error)) {
+      const parsed = await Promise.all(results.map((response) => response.json().catch(() => null)))
+      if (results.some((response) => !response.ok) || parsed.some((result) => result?.error)) {
         throw new Error('One or more contact methods failed to save.')
       }
 
