@@ -57,7 +57,7 @@ export default function ProjectCard({
         className="flex w-full flex-col overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.02] outline-none transition-colors hover:border-white/20 hover:bg-white/[0.04] focus-visible:ring-2 focus-visible:ring-[#8df6c8] focus-visible:ring-offset-4 focus-visible:ring-offset-[#050816]"
         aria-label={`${title} - ${category}`}
       >
-        <div className="relative aspect-[4/3] w-full overflow-hidden border-b border-white/10 sm:aspect-[1.3]">
+        <div className="relative aspect-[4/3] w-full overflow-hidden border-b border-white/10 sm:aspect-[1.3]" style={{ willChange: 'transform' }}>
           {imageUrl ? (
             <Image
               src={imageUrl}

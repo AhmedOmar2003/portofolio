@@ -100,7 +100,7 @@ export default function ProjectsFilterGrid({ projects, isArabic, labels }: Proje
         </div>
 
         {activeFilter === 'design' && (
-          <div className={`flex flex-wrap gap-2 pt-2 animate-in fade-in slide-in-from-top-2 duration-300 ${isArabic ? 'ml-auto w-fit justify-start' : 'justify-start'}`}>
+          <div className={`flex flex-wrap gap-2 pt-2 sub-filter-appear ${isArabic ? 'ml-auto w-fit justify-start' : 'justify-start'}`}>
             {designSubFilterButtons.map((filter) => {
               const isActive = activeDesignSubFilter === filter.key;
               return (

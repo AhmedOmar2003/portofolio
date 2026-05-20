@@ -7,7 +7,7 @@ import { getLocaleDateFormat, isArabicLocale, localizedValue } from '@/utils/loc
 import { createClient } from '@/utils/supabase/server';
 import { createStaticClient } from '@/utils/supabase/static';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 3600;
 export const dynamicParams = true;
 
 export async function generateStaticParams() {

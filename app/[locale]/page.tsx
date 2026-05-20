@@ -38,19 +38,6 @@ function formatContactHref(method: ContactMethod) {
   return method.value;
 }
 
-function normalizeName(entry: unknown, fallback = '') {
-  if (typeof entry === 'string') {
-    return entry;
-  }
-
-  if (entry && typeof entry === 'object') {
-    const candidate = entry as Record<string, unknown>;
-    return String(candidate.name_en || candidate.name || candidate.title || fallback);
-  }
-
-  return fallback;
-}
-
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const isArabic = locale === 'ar';
@@ -98,8 +85,6 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     ? (await supabase.from('projects').select('id, name_en, name_ar, slug, category, description_en, description_ar, solution_en, solution_ar, images, start_date, external_links').order('created_at', { ascending: false }).limit(2)).data
     : projectsQuery.data;
 
-  const principleCards = splitLines(localizedValue(aboutData as Record<string, unknown>, 'philosophy', locale)).slice(0, 3);
-  const principles = principleCards.length ? principleCards : [t('principle1'), t('principle2'), t('principle3')];
   const projectDescriptionFallback = isArabic
     ? t('projectDescriptionFallbackAr')
     : t('projectDescriptionFallbackEn');
@@ -174,10 +159,6 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           { id: 'systems', title: t('serviceTitle3'), desc: t('serviceDesc3') },
         ];
 
-  const dynamicSkills = Array.isArray(aboutData?.skills) ? aboutData.skills.map((item) => normalizeName(item)).filter(Boolean) : [];
-  const dynamicTools = Array.isArray(aboutData?.tools) ? aboutData.tools.map((item) => normalizeName(item)).filter(Boolean) : [];
-  const skillClusters = [...dynamicSkills, ...dynamicTools].slice(0, 6);
-
   const primaryContact = (contactsData || [])[0] as ContactMethod | undefined;
 
   return (
@@ -192,8 +173,6 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       <Hero
         title={localizedValue(settingsData as Record<string, unknown>, 'hero_title', locale)}
         subtitle={localizedValue(settingsData as Record<string, unknown>, 'hero_subtitle', locale)}
-        projectCount={finalFeaturedProjects.length}
-        serviceCount={finalServices.length}
       />
 
       <div id="main-content" className="px-6 pb-10 md:px-10 lg:px-12">

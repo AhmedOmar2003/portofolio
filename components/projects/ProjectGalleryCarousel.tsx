@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import Image from 'next/image';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -33,8 +33,8 @@ export default function ProjectGalleryCarousel({ images, title, isArabic }: Proj
   // Keyboard navigation on the region
   function handleKeyDown(e: React.KeyboardEvent) {
     if (!canNavigate) return;
-    if (e.key === 'ArrowLeft') { isArabic ? goToNext() : goToPrev(); e.preventDefault(); }
-    if (e.key === 'ArrowRight') { isArabic ? goToPrev() : goToNext(); e.preventDefault(); }
+    if (e.key === 'ArrowLeft') { if (isArabic) goToNext(); else goToPrev(); e.preventDefault(); }
+    if (e.key === 'ArrowRight') { if (isArabic) goToPrev(); else goToNext(); e.preventDefault(); }
     if (e.key === 'Home') { setActiveIndex(0); e.preventDefault(); }
     if (e.key === 'End') { setActiveIndex(images.length - 1); e.preventDefault(); }
   }
@@ -62,7 +62,6 @@ export default function ProjectGalleryCarousel({ images, title, isArabic }: Proj
 
   return (
     <div className="space-y-4">
-      {/* eslint-disable-next-line jsx-a11y/interactive-supports-focus */}
       <div
         ref={regionRef}
         role="group"

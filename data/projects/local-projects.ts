@@ -3,7 +3,9 @@ import { amazonFirstPurchase } from './amazon-first-purchase';
 export type LocalProjectBlock = {
   id: string;
   type: 'hero' | 'text' | 'image' | 'quote' | 'cards' | 'timeline' | 'before-after' | 'list' | 'participants';
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   contentEn: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   contentAr: any;
 };
 

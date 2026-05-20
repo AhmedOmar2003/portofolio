@@ -9,11 +9,9 @@ import { Link } from '@/i18n/routing';
 interface HeroProps {
   title?: string;
   subtitle?: string;
-  projectCount: number;
-  serviceCount: number;
 }
 
-export default function Hero({ title, subtitle, projectCount, serviceCount }: HeroProps) {
+export default function Hero({ title, subtitle }: HeroProps) {
   const t = useTranslations('Hero');
   const locale = useLocale();
   const isArabic = locale === 'ar';
@@ -95,8 +93,9 @@ export default function Hero({ title, subtitle, projectCount, serviceCount }: He
           <div className="flex-1 flex flex-col justify-center w-full">
             <div className="relative aspect-[0.84] sm:aspect-[0.9] w-full">
               <motion.div
-                animate={shouldReduceMotion ? undefined : { y: [-8, 8, -8] }}
-                transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+                animate={shouldReduceMotion ? undefined : { y: [-6, 6, -6] }}
+                transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
+                style={{ willChange: 'transform' }}
                 className="absolute inset-x-4 bottom-4 top-12 overflow-hidden rounded-[1.8rem] border border-white/10 bg-slate-950/60 shadow-[0_28px_80px_rgba(2,8,23,0.48)] sm:inset-x-8 sm:bottom-8 sm:top-10 sm:rounded-[2.2rem] sm:shadow-[0_40px_120px_rgba(2,8,23,0.55)] lg:inset-x-10 lg:bottom-10 lg:top-10"
               >
                 <Image
@@ -111,8 +110,9 @@ export default function Hero({ title, subtitle, projectCount, serviceCount }: He
               </motion.div>
 
               <motion.div
-                animate={shouldReduceMotion ? undefined : { y: [0, -10, 0] }}
-                transition={{ duration: 6.5, repeat: Infinity, ease: 'easeInOut' }}
+                animate={shouldReduceMotion ? undefined : { y: [0, -8, 0] }}
+                transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
+                style={{ willChange: 'transform' }}
                 className={`absolute top-2 max-w-[210px] rounded-[1.35rem] border border-white/12 bg-[rgba(10,16,27,0.78)] px-4 py-4 backdrop-blur-xl sm:top-8 sm:max-w-[250px] sm:rounded-[1.6rem] sm:px-5 sm:py-5 lg:max-w-[270px] lg:rounded-[1.75rem] ${isArabic ? 'right-1 sm:right-0 text-right' : 'left-1 sm:left-0'}`}
               >
                 <p className="text-xs uppercase tracking-[0.3em] text-slate-400">{t('introLabel')}</p>
@@ -125,8 +125,9 @@ export default function Hero({ title, subtitle, projectCount, serviceCount }: He
               </motion.div>
 
               <motion.div
-                animate={shouldReduceMotion ? undefined : { y: [0, 12, 0] }}
-                transition={{ duration: 7.2, repeat: Infinity, ease: 'easeInOut' }}
+                animate={shouldReduceMotion ? undefined : { y: [0, 10, 0] }}
+                transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+                style={{ willChange: 'transform' }}
                 className={`absolute bottom-0 max-w-[205px] rounded-[1.35rem] border border-[#8df6c8]/20 bg-gradient-to-br from-[#8df6c8]/12 via-[rgba(10,16,27,0.8)] to-[#6ad7ff]/10 px-4 py-4 backdrop-blur-xl sm:bottom-4 sm:max-w-[240px] sm:rounded-[1.6rem] sm:px-5 sm:py-5 lg:max-w-[260px] ${isArabic ? 'left-0 sm:left-2 text-right' : 'right-0 sm:right-2'}`}
               >
                 <p className="text-[0.7rem] uppercase tracking-[0.24em] text-slate-300">{t('impactLabel')}</p>

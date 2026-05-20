@@ -11,7 +11,6 @@ import {
   Mail,
   MessageSquare,
   Search,
-  Settings,
   Sparkles,
   User
 } from 'lucide-react'

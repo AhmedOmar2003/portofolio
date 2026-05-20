@@ -1,12 +1,26 @@
 @import "tailwindcss";
 
 @theme inline {
+  /* ── Accent palette ─────────────────────────────── */
   --color-green-accent: #8df6c8;
+  --color-green-light: #c7f9e2;
   --color-green-glow: rgba(141, 246, 200, 0.2);
+  --color-blue-accent: #6ad7ff;
+  --color-blue-light: #d8eafe;
+  --color-sky-accent: #52c4ff;
+
+  /* ── Surfaces ────────────────────────────────────── */
   --color-surface: rgba(15, 23, 42, 0.72);
   --color-surface-strong: rgba(9, 14, 24, 0.94);
-  --color-border-soft: rgba(255, 255, 255, 0.1);
-  
+  --color-card: rgba(10, 15, 27, 0.80);
+  --color-card-strong: rgba(10, 15, 27, 0.96);
+
+  /* ── Borders ─────────────────────────────────────── */
+  --color-border-soft:   rgba(255, 255, 255, 0.08);
+  --color-border-medium: rgba(255, 255, 255, 0.12);
+  --color-border-strong: rgba(255, 255, 255, 0.20);
+
+  /* ── Typography ──────────────────────────────────── */
   --font-sans: var(--font-geist-sans), sans-serif;
   --font-mono: var(--font-geist-mono), monospace;
 }
@@ -15,9 +29,12 @@
   --background: #050816;
   --foreground: #f8fafc;
   --muted: #94a3b8;
-  --card: rgba(10, 15, 27, 0.8);
-  --card-strong: rgba(10, 15, 27, 0.96);
   --ring: rgba(141, 246, 200, 0.65);
+
+  /* Gradient shortcuts – used repeatedly across components */
+  --gradient-accent: linear-gradient(135deg, #8df6c8 0%, #6ad7ff 100%);
+  --gradient-hero-title: linear-gradient(90deg, #f8fafc, #c7f9e2, #7dd3fc);
+  --gradient-hero-alt:   linear-gradient(90deg, #f8fafc, #d8eafe, #8df6c8);
 }
 
 html {
@@ -375,6 +392,21 @@ html[dir='rtl'] input[type='date'] {
 .skip-link-anchor {
   inset-inline-start: 1rem;
   top: 1rem;
+}
+
+@keyframes sub-filter-appear {
+  from {
+    opacity: 0;
+    transform: translateY(-0.4rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.sub-filter-appear {
+  animation: sub-filter-appear 280ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .rtl-flip {
