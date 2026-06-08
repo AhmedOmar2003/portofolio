@@ -1,6 +1,3 @@
-'use client';
-
-import { motion, useReducedMotion } from 'framer-motion';
 import { useLocale } from 'next-intl';
 
 interface SectionHeadingProps {
@@ -18,7 +15,6 @@ export default function SectionHeading({
   alignment = 'left',
   overline,
 }: SectionHeadingProps) {
-  const shouldReduceMotion = useReducedMotion();
   const locale = useLocale();
   const isArabic = locale === 'ar';
   const isCentered = alignment === 'center';
@@ -28,13 +24,7 @@ export default function SectionHeading({
   const textBlockClass = isCentered ? 'text-center' : 'text-start';
 
   return (
-    <motion.div
-      initial={shouldReduceMotion ? false : { opacity: 0, y: 24 }}
-      whileInView={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-80px' }}
-      transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
-      className={`mb-9 flex flex-col gap-4 sm:mb-10 sm:gap-5 ${alignmentClass}`}
-    >
+    <div className={`mb-9 flex flex-col gap-4 sm:mb-10 sm:gap-5 ${alignmentClass}`}>
       {overline ? <span className="eyebrow">{overline}</span> : null}
 
       <div className={`max-w-3xl ${textBlockClass}`}>
@@ -47,6 +37,6 @@ export default function SectionHeading({
           </p>
         ) : null}
       </div>
-    </motion.div>
+    </div>
   );
 }

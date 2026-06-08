@@ -50,8 +50,8 @@ const nextConfig: import('next').NextConfig = {
         ],
       },
       {
-        // Favicons / apple-icon
-        source: '/(favicon.ico|icon.svg|apple-icon.svg)',
+        // Public image assets keep a short browser TTL and can refresh in the background.
+        source: '/(.*)\\.(svg|png|jpg|jpeg|gif|webp|avif|ico)',
         headers: [
           {
             key: 'Cache-Control',

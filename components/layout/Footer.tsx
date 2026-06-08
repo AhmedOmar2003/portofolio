@@ -1,6 +1,3 @@
-'use client';
-
-import { motion, useReducedMotion } from 'framer-motion';
 import { Dribbble, Github, Link as LinkIcon, Mail, MessageCircle, Twitter } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 
@@ -12,7 +9,6 @@ export default function Footer({ socialLinks = [] }: FooterProps) {
   const locale = useLocale();
   const isArabic = locale === 'ar';
   const t = useTranslations('Footer');
-  const shouldReduceMotion = useReducedMotion();
   const currentYear = new Date().getFullYear();
 
   const getIcon = (type: string) => {
@@ -67,13 +63,7 @@ export default function Footer({ socialLinks = [] }: FooterProps) {
 
   return (
     <footer className="site-footer px-6 pb-8 pt-12 md:px-10 lg:px-12">
-      <motion.div
-        initial={shouldReduceMotion ? false : { opacity: 0, y: 30 }}
-        whileInView={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: '-80px' }}
-        transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
-        className="section-shell mx-auto max-w-[1380px] px-6 py-10 md:px-10"
-      >
+      <div className="section-shell mx-auto max-w-[1380px] px-6 py-10 md:px-10">
         <div className="flex flex-col items-center text-center max-w-3xl mx-auto">
           <span className="eyebrow mb-5">{t('eyebrow')}</span>
           <h2 className={`text-balance font-semibold text-white ${isArabic ? 'text-4xl leading-tight sm:text-5xl lg:text-6xl' : 'text-3xl sm:text-4xl lg:text-[3.2rem] tracking-[-0.05em] leading-tight'}`}>
@@ -116,7 +106,7 @@ export default function Footer({ socialLinks = [] }: FooterProps) {
           </p>
           <p>{t('designBy')}</p>
         </div>
-      </motion.div>
+      </div>
     </footer>
   );
 }

@@ -4,7 +4,7 @@ import ProjectsFilterGrid from '@/components/projects/ProjectsFilterGrid';
 import SectionHeading from '@/components/ui/SectionHeading';
 import { getLocaleDateFormat, localizedValue } from '@/utils/locale-content';
 import { getProjectFilterType, getProjectRoleLabel, getProjectTypeLabel, normalizeProjectType, type ProjectType } from '@/utils/project-type';
-import { createClient } from '@/utils/supabase/server';
+import { createStaticClient } from '@/utils/supabase/static';
 import { localProjects } from '@/data/projects/local-projects';
 
 export const revalidate = 3600;
@@ -49,7 +49,7 @@ export default async function ProjectsPage({ params }: { params: Promise<{ local
   const { locale } = await params;
   const nav  = await getTranslations({ locale, namespace: 'Navigation' });
   const home = await getTranslations({ locale, namespace: 'HomePage' });
-  const supabase = await createClient();
+  const supabase = createStaticClient();
 
   const orderedProjectsQuery = await supabase
     .from('projects')

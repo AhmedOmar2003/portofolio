@@ -4,7 +4,7 @@ import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/routing';
 import SectionHeading from '@/components/ui/SectionHeading';
 import { getLocaleDateFormat, isArabicLocale, localizedValue } from '@/utils/locale-content';
-import { createClient } from '@/utils/supabase/server';
+import { createStaticClient } from '@/utils/supabase/static';
 
 export const revalidate = 3600;
 
@@ -38,7 +38,7 @@ export default async function ArticlesPage({ params }: { params: Promise<{ local
   const { locale } = await params;
   const isArabic = isArabicLocale(locale);
   const t = await getTranslations({ locale, namespace: 'ArticlesPage' });
-  const supabase = await createClient();
+  const supabase = createStaticClient();
 
   const { data: articlesData } = await supabase
     .from('articles')

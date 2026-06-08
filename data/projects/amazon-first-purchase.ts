@@ -10,7 +10,7 @@ export const amazonFirstPurchase: LocalProject = {
   impactEn: 'Identified key usability issues and provided actionable, accessible design recommendations.',
   impactAr: 'تحديد المشكلات الرئيسية في قابلية الاستخدام وتقديم توصيات تصميمية عملية.',
   year: '2026',
-  thumbnailUrl: '/image-amazon.png',
+  thumbnailUrl: '/image-amazon.webp',
   blocks: [
     {
       id: 'hero',
@@ -54,11 +54,11 @@ export const amazonFirstPurchase: LocalProject = {
       id: 'cover-image',
       type: 'image',
       contentEn: {
-        src: '/image-amazon.png',
+        src: '/image-amazon.webp',
         alt: 'Amazon UX Research Case Study Cover'
       },
       contentAr: {
-        src: '/image-amazon.png',
+        src: '/image-amazon.webp',
         alt: 'غلاف دراسة تجربة المستخدم لأمازون'
       }
     },

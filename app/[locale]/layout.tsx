@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Cairo, Geist, Geist_Mono } from 'next/font/google';
 import { NextIntlClientProvider } from 'next-intl';
-import { getMessages } from 'next-intl/server';
+import { getMessages, setRequestLocale } from 'next-intl/server';
 
 import '../globals.css';
 import AnalyticsTracker from '@/components/analytics/AnalyticsTracker';
@@ -39,9 +39,13 @@ export const viewport: Viewport = {
   maximumScale: 5,
 };
 
+export function generateStaticParams() {
+  return [{ locale: 'en' }, { locale: 'ar' }];
+}
+
 function getSiteDescription(locale: string) {
   return locale === 'ar'
-    ? 'مصمم منتجات رقمية وفايب كودينج باستخدام AI — ببني منتجات رقمية تنافسية وذكية بتجربة مستخدم قوية وأداء سريع.'
+    ? 'مصمم منتجات رقمية وفايب كودر باستخدام AI — ببني منتجات رقمية تنافسية وذكية بتجربة مستخدم قوية وأداء سريع.'
     : 'Product Designer & AI Vibe Coder — I leverage AI to build competitive, smart digital products and systems with strong UX principles, elegant interfaces, and fast performance.';
 }
 
@@ -53,7 +57,7 @@ export async function generateMetadata({
   const { locale } = await params;
   const title =
     locale === 'ar'
-      ? 'أحمد عصام ماهر | مصمم منتجات وفايب كودينج بالـ AI'
+      ? 'أحمد عصام ماهر | مصمم منتجات وفايب كودر بالـ AI'
       : 'Ahmed Essam Maher | Product Designer & AI Vibe Coder';
   const description = getSiteDescription(locale);
 
@@ -103,10 +107,15 @@ export default async function LocaleLayout({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
+  setRequestLocale(locale);
   const description = getSiteDescription(locale);
   const messages = await getMessages();
-  const { createClient } = await import('@/utils/supabase/server');
-  const supabase = await createClient();
+  const clientMessages = {
+    Navigation: messages.Navigation,
+    ContactForm: messages.ContactForm,
+  };
+  const { createStaticClient } = await import('@/utils/supabase/static');
+  const supabase = createStaticClient();
   const { data: contactsData } = await supabase
     .from('contact_methods')
     .select('type, value, label_en, label_ar')
@@ -131,7 +140,7 @@ export default async function LocaleLayout({
   return (
     <html lang={locale} dir={isArabicLocale(locale) ? 'rtl' : 'ltr'}>
       <body className={`${geistSans.variable} ${geistMono.variable} ${cairo.variable} ${isArabicLocale(locale) ? 'font-ar' : ''} antialiased bg-zinc-950 text-zinc-50 font-sans flex min-h-screen flex-col`}>
-        <NextIntlClientProvider locale={locale} messages={messages}>
+        <NextIntlClientProvider locale={locale} messages={clientMessages}>
           <a
             href="#main-content"
             className="skip-link"
@@ -162,7 +171,7 @@ export default async function LocaleLayout({
                   "@type": "Person",
                   "name": locale === 'ar' ? "أحمد عصام ماهر" : "Ahmed Essam Maher",
                   "url": "https://ahmed-essam.com",
-                  "jobTitle": locale === 'ar' ? "مصمم منتجات وفايب كودينج بالـ AI" : "Product Designer & AI Vibe Coder",
+                  "jobTitle": locale === 'ar' ? "مصمم منتجات وفايب كودر بالـ AI" : "Product Designer & AI Vibe Coder",
                   "sameAs": socialLinks.map(link => link.value).filter(val => val.startsWith('http'))
                 }
               ])

@@ -17,7 +17,7 @@ export default async function OGImage({
     ? 'أحمد عصام ماهر'
     : 'Ahmed Essam Maher';
   const subtitle = isArabic
-    ? 'مصمم منتجات رقمية وفايب كودينج بالـ AI'
+    ? 'مصمم منتجات رقمية وفايب كودر بالـ AI'
     : 'Product Designer & AI Vibe Coder';
   const tagline = isArabic
     ? 'أبني منتجات رقمية ذكية بتجربة مستخدم قوية وأداء سريع'

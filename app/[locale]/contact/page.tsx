@@ -4,7 +4,9 @@ import { getTranslations } from 'next-intl/server';
 import ContactForm from '@/components/contact/ContactForm';
 import SectionHeading from '@/components/ui/SectionHeading';
 import { localizedValue } from '@/utils/locale-content';
-import { createClient } from '@/utils/supabase/server';
+import { createStaticClient } from '@/utils/supabase/static';
+
+export const revalidate = 3600;
 
 type ContactMethod = {
   id: string;
@@ -62,7 +64,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 export default async function ContactPage(props: { params: Promise<{ locale: string }> }) {
   const { locale } = await props.params;
   const t = await getTranslations({ locale, namespace: 'ContactPage' });
-  const supabase = await createClient();
+  const supabase = createStaticClient();
   const fallbackPhoneValue = '+(20) 1036925982';
 
   const { data: contactsData } = await supabase

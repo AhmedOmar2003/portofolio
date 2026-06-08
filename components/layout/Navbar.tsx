@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { Menu, X } from 'lucide-react';
-import { AnimatePresence, motion } from 'framer-motion';
 import { useLocale, useTranslations } from 'next-intl';
 
 import { Link, usePathname } from '@/i18n/routing';
@@ -79,10 +78,8 @@ export default function Navbar() {
                   }`}
                 >
                   {active ? (
-                    <motion.span
-                      layoutId="nav-active-pill"
+                    <span
                       className="absolute inset-0 rounded-full border border-[#8df6c8]/20 bg-[linear-gradient(135deg,rgba(141,246,200,0.14),rgba(106,215,255,0.1))]"
-                      transition={{ type: 'spring', stiffness: 420, damping: 34 }}
                     />
                   ) : null}
                   <span className="relative z-10">{link.label}</span>
@@ -113,15 +110,10 @@ export default function Navbar() {
           </div>
         </div>
 
-        <AnimatePresence initial={false}>
-          {isMobileMenuOpen ? (
-            <motion.div
+        {isMobileMenuOpen ? (
+            <div
               id="mobile-navigation"
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-              className="overflow-hidden border-t border-white/8 lg:hidden"
+              className="mobile-menu-enter overflow-hidden border-t border-white/8 lg:hidden"
             >
               <div className={`flex flex-col gap-2 px-4 py-4 ${isArabic ? 'text-right' : ''}`}>
                 {navLinks.map((link) => {
@@ -150,9 +142,8 @@ export default function Navbar() {
                   <LocaleSwitcher />
                 </div>
               </div>
-            </motion.div>
-          ) : null}
-        </AnimatePresence>
+            </div>
+        ) : null}
       </div>
     </header>
   );

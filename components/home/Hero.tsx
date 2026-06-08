@@ -1,6 +1,3 @@
-'use client';
-
-import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowDownRight, ArrowUpRight, Mail } from 'lucide-react';
 import Image from 'next/image';
 import { useLocale, useTranslations } from 'next-intl';
@@ -15,7 +12,6 @@ export default function Hero({ title, subtitle }: HeroProps) {
   const t = useTranslations('Hero');
   const locale = useLocale();
   const isArabic = locale === 'ar';
-  const shouldReduceMotion = useReducedMotion();
 
   const displayTitle = title || t('title');
   const displaySubtitle = subtitle || t('positioning');
@@ -28,20 +24,15 @@ export default function Hero({ title, subtitle }: HeroProps) {
       aria-labelledby="hero-heading"
     >
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute left-[8%] top-20 h-32 w-32 rounded-full bg-emerald-300/10 blur-[90px] sm:h-48 sm:w-48 sm:blur-[120px] transform-gpu" style={{ willChange: 'filter, transform' }} />
-        <div className="absolute right-[8%] top-16 h-48 w-48 rounded-full bg-sky-400/10 blur-[100px] sm:top-20 sm:h-72 sm:w-72 sm:blur-[140px] transform-gpu" style={{ willChange: 'filter, transform' }} />
-        <div className="absolute bottom-0 left-1/2 h-44 w-[20rem] -translate-x-1/2 rounded-full bg-cyan-300/10 blur-[110px] sm:h-64 sm:w-[40rem] sm:blur-[160px] transform-gpu" style={{ willChange: 'filter, transform' }} />
+        <div className="absolute left-[8%] top-20 hidden h-48 w-48 rounded-full bg-emerald-300/10 blur-[120px] sm:block" />
+        <div className="absolute right-[8%] top-16 h-48 w-48 rounded-full bg-sky-400/10 blur-[90px] sm:top-20 sm:h-72 sm:w-72 sm:blur-[140px]" />
+        <div className="absolute bottom-0 left-1/2 hidden h-64 w-[40rem] -translate-x-1/2 rounded-full bg-cyan-300/10 blur-[160px] sm:block" />
       </div>
 
       <div className="mx-auto grid max-w-[1380px] gap-12 lg:grid-cols-[minmax(0,1.1fr)_minmax(420px,0.9fr)] lg:items-stretch">
         
         {/* ─── Text Column ─── */}
-        <motion.div
-          initial={shouldReduceMotion ? false : { opacity: 0, y: 32 }}
-          animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="flex flex-col h-full"
-        >
+        <div className="hero-enter flex h-full flex-col">
           <div className={`flex-1 flex flex-col justify-center relative z-10 ${isArabic ? 'text-right' : ''}`}>
             <div>
               <div className="eyebrow mb-5">{t('eyebrow')}</div>
@@ -81,23 +72,13 @@ export default function Hero({ title, subtitle }: HeroProps) {
               {t('ctaSecondary')}
             </Link>
           </div>
-        </motion.div>
+        </div>
 
         {/* ─── Image Column ─── */}
-        <motion.div
-          initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.96, y: 24 }}
-          animate={shouldReduceMotion ? undefined : { opacity: 1, scale: 1, y: 0 }}
-          transition={{ duration: 0.85, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-          className="relative flex flex-col h-full mx-auto w-full max-w-[560px] lg:mx-0"
-        >
+        <div className="hero-enter hero-enter-delayed relative mx-auto flex h-full w-full max-w-[560px] flex-col lg:mx-0">
           <div className="flex-1 flex flex-col justify-center w-full">
             <div className="relative aspect-[0.84] sm:aspect-[0.9] w-full">
-              <motion.div
-                animate={shouldReduceMotion ? undefined : { y: [-6, 6, -6] }}
-                transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
-                style={{ willChange: 'transform' }}
-                className="absolute inset-x-4 bottom-4 top-12 overflow-hidden rounded-[1.8rem] border border-white/10 bg-slate-950/60 shadow-[0_28px_80px_rgba(2,8,23,0.48)] sm:inset-x-8 sm:bottom-8 sm:top-10 sm:rounded-[2.2rem] sm:shadow-[0_40px_120px_rgba(2,8,23,0.55)] lg:inset-x-10 lg:bottom-10 lg:top-10"
-              >
+              <div className="hero-float-slow absolute inset-x-4 bottom-4 top-12 overflow-hidden rounded-[1.8rem] border border-white/10 bg-slate-950/60 shadow-[0_28px_80px_rgba(2,8,23,0.48)] sm:inset-x-8 sm:bottom-8 sm:top-10 sm:rounded-[2.2rem] sm:shadow-[0_40px_120px_rgba(2,8,23,0.55)] lg:inset-x-10 lg:bottom-10 lg:top-10">
                 <Image
                   src="/profile.webp"
                   alt="Ahmed Essam Maher portrait"
@@ -107,14 +88,9 @@ export default function Hero({ title, subtitle }: HeroProps) {
                   className="object-cover object-top"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#04070f] via-transparent to-transparent" />
-              </motion.div>
+              </div>
 
-              <motion.div
-                animate={shouldReduceMotion ? undefined : { y: [0, -8, 0] }}
-                transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
-                style={{ willChange: 'transform' }}
-                className={`absolute top-2 max-w-[210px] rounded-[1.35rem] border border-white/12 bg-[rgba(10,16,27,0.78)] px-4 py-4 backdrop-blur-xl sm:top-8 sm:max-w-[250px] sm:rounded-[1.6rem] sm:px-5 sm:py-5 lg:max-w-[270px] lg:rounded-[1.75rem] ${isArabic ? 'right-1 sm:right-0 text-right' : 'left-1 sm:left-0'}`}
-              >
+              <div className={`hero-float-fast absolute top-2 max-w-[210px] rounded-[1.35rem] border border-white/12 bg-[rgba(10,16,27,0.9)] px-4 py-4 sm:top-8 sm:max-w-[250px] sm:rounded-[1.6rem] sm:px-5 sm:py-5 lg:max-w-[270px] lg:rounded-[1.75rem] ${isArabic ? 'right-1 sm:right-0 text-right' : 'left-1 sm:left-0'}`}>
                 <p className="text-xs uppercase tracking-[0.3em] text-slate-400">{t('introLabel')}</p>
                 <div className="mt-3 flex items-start justify-between gap-4">
                   <p className="text-xs font-medium leading-6 text-white sm:text-sm sm:leading-7">{t('availability')}</p>
@@ -122,17 +98,12 @@ export default function Hero({ title, subtitle }: HeroProps) {
                     <ArrowUpRight className={`h-4 w-4 ${isArabic ? 'rtl-flip' : ''}`} aria-hidden="true" />
                   </span>
                 </div>
-              </motion.div>
+              </div>
 
-              <motion.div
-                animate={shouldReduceMotion ? undefined : { y: [0, 10, 0] }}
-                transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
-                style={{ willChange: 'transform' }}
-                className={`absolute bottom-0 max-w-[205px] rounded-[1.35rem] border border-[#8df6c8]/20 bg-gradient-to-br from-[#8df6c8]/12 via-[rgba(10,16,27,0.8)] to-[#6ad7ff]/10 px-4 py-4 backdrop-blur-xl sm:bottom-4 sm:max-w-[240px] sm:rounded-[1.6rem] sm:px-5 sm:py-5 lg:max-w-[260px] ${isArabic ? 'left-0 sm:left-2 text-right' : 'right-0 sm:right-2'}`}
-              >
+              <div className={`hero-float-reverse absolute bottom-0 max-w-[205px] rounded-[1.35rem] border border-[#8df6c8]/20 bg-gradient-to-br from-[rgba(141,246,200,0.18)] via-[rgba(10,16,27,0.94)] to-[rgba(106,215,255,0.14)] px-4 py-4 sm:bottom-4 sm:max-w-[240px] sm:rounded-[1.6rem] sm:px-5 sm:py-5 lg:max-w-[260px] ${isArabic ? 'left-0 sm:left-2 text-right' : 'right-0 sm:right-2'}`}>
                 <p className="text-[0.7rem] uppercase tracking-[0.24em] text-slate-300">{t('impactLabel')}</p>
                 <p className="mt-3 text-sm font-semibold leading-6 text-white sm:text-base sm:leading-7">{t('impactTitle')}</p>
-              </motion.div>
+              </div>
             </div>
           </div>
 
@@ -148,7 +119,7 @@ export default function Hero({ title, subtitle }: HeroProps) {
               <span>{t('scrollLabel')}</span>
             </div>
           )}
-        </motion.div>
+        </div>
       </div>
     </section>
   );

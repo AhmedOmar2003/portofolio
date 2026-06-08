@@ -4,7 +4,7 @@ import ServicesFilterGrid from '@/components/services/ServicesFilterGrid';
 import SectionHeading from '@/components/ui/SectionHeading';
 import { localizedValue } from '@/utils/locale-content';
 import { getServiceTypeLabel, normalizeServiceType, type ServiceType } from '@/utils/service-type';
-import { createClient } from '@/utils/supabase/server';
+import { createStaticClient } from '@/utils/supabase/static';
 
 export const revalidate = 3600;
 
@@ -38,7 +38,7 @@ export default async function ServicesPage({ params }: { params: Promise<{ local
   const { locale } = await params;
   const isArabic = locale === 'ar';
   const t = await getTranslations({ locale, namespace: 'ServicesPage' });
-  const supabase = await createClient();
+  const supabase = createStaticClient();
 
   const servicesWithTypeQuery = await supabase
     .from('services')

@@ -1,6 +1,3 @@
-'use client';
-
-import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
 import Image from 'next/image';
 import { useLocale } from 'next-intl';
@@ -40,24 +37,17 @@ export default function ProjectCard({
   projectTypeBadge,
   priority = false,
 }: ProjectCardProps) {
-  const shouldReduceMotion = useReducedMotion();
   const locale = useLocale();
   const isArabic = locale === 'ar';
 
   return (
-    <motion.article
-      initial={shouldReduceMotion ? false : { opacity: 0, y: 36 }}
-      whileInView={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-60px' }}
-      transition={{ duration: 0.7, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
-      className="group flex h-full"
-    >
+    <article data-card-index={index} className="group flex h-full">
       <Link
         href={href}
         className="flex w-full flex-col overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.02] outline-none transition-colors hover:border-white/20 hover:bg-white/[0.04] focus-visible:ring-2 focus-visible:ring-[#8df6c8] focus-visible:ring-offset-4 focus-visible:ring-offset-[#050816]"
         aria-label={`${title} - ${category}`}
       >
-        <div className="relative aspect-[4/3] w-full overflow-hidden border-b border-white/10 sm:aspect-[1.3]" style={{ willChange: 'transform' }}>
+        <div className="relative aspect-[4/3] w-full overflow-hidden border-b border-white/10 sm:aspect-[1.3]">
           {imageUrl ? (
             <Image
               src={imageUrl}
@@ -117,6 +107,6 @@ export default function ProjectCard({
           </div>
         </div>
       </Link>
-    </motion.article>
+    </article>
   );
 }

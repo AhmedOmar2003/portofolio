@@ -6,7 +6,6 @@ import BackButton from '@/components/ui/BackButton';
 import ProjectGalleryCarousel from '@/components/projects/ProjectGalleryCarousel';
 import { getLocaleDateFormat, isArabicLocale, localizedValue } from '@/utils/locale-content';
 import { getProjectRoleLabel, getProjectTypeLabel, normalizeProjectType } from '@/utils/project-type';
-import { createClient } from '@/utils/supabase/server';
 import { createStaticClient } from '@/utils/supabase/static';
 import { localProjects } from '@/data/projects/local-projects';
 import UXResearchRenderer from '@/components/projects/UXResearchRenderer';
@@ -136,7 +135,7 @@ export default async function ProjectCaseStudyPage({ params }: { params: Promise
     }
   }
 
-  const supabase = await createClient();
+  const supabase = createStaticClient();
 
   const { data: project } = await supabase.from('projects').select('*').eq('slug', slug).single();
   if (!project) notFound();

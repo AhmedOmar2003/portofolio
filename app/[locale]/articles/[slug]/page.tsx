@@ -4,7 +4,6 @@ import { notFound } from 'next/navigation';
 
 import { Link } from '@/i18n/routing';
 import { getLocaleDateFormat, isArabicLocale, localizedValue } from '@/utils/locale-content';
-import { createClient } from '@/utils/supabase/server';
 import { createStaticClient } from '@/utils/supabase/static';
 
 export const revalidate = 3600;
@@ -48,7 +47,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function ArticleDetailPage(props: { params: Promise<{ slug: string; locale: string }> }) {
   const { slug, locale } = await props.params;
   const isArabic = isArabicLocale(locale);
-  const supabase = await createClient();
+  const supabase = createStaticClient();
 
   const { data: article } = await supabase.from('articles').select('*').eq('slug', slug).single();
   if (!article) notFound();

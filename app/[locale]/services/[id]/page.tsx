@@ -4,7 +4,6 @@ import { notFound } from 'next/navigation';
 
 import { Link } from '@/i18n/routing';
 import { isArabicLocale, localizedValue } from '@/utils/locale-content';
-import { createClient } from '@/utils/supabase/server';
 import { createStaticClient } from '@/utils/supabase/static';
 
 export const revalidate = 3600;
@@ -101,7 +100,7 @@ export default async function ServiceDetailPage(props: {
 }) {
   const { id, locale } = await props.params;
   const isArabic = isArabicLocale(locale);
-  const supabase = await createClient();
+  const supabase = createStaticClient();
 
   const [{ data: service }, { data: siteSettings }] = await Promise.all([
     supabase.from('services').select('*').eq('id', id).single(),
