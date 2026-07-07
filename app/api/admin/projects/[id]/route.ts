@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 import { getAdminSession } from '@/utils/admin-auth'
+import { revalidateProjectPaths } from '@/utils/revalidate-project-paths'
 import { createAdminClient } from '@/utils/supabase/admin'
 
 export async function GET(
@@ -39,6 +40,16 @@ export async function PUT(
   }
 
   const supabase = createAdminClient()
+  const { data: currentProject, error: currentProjectError } = await supabase
+    .from('projects')
+    .select('slug')
+    .eq('id', id)
+    .maybeSingle()
+
+  if (currentProjectError) {
+    return NextResponse.json({ error: currentProjectError.message }, { status: 400 })
+  }
+
   const { data, error } = await supabase
     .from('projects')
     .update(body)
@@ -49,6 +60,9 @@ export async function PUT(
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 400 })
   }
+
+  revalidateProjectPaths(currentProject?.slug)
+  revalidateProjectPaths(data.slug)
 
   return NextResponse.json({ data })
 }
@@ -64,11 +78,23 @@ export async function DELETE(
 
   const { id } = await params
   const supabase = createAdminClient()
+  const { data: currentProject, error: currentProjectError } = await supabase
+    .from('projects')
+    .select('slug')
+    .eq('id', id)
+    .maybeSingle()
+
+  if (currentProjectError) {
+    return NextResponse.json({ error: currentProjectError.message }, { status: 400 })
+  }
+
   const { error } = await supabase.from('projects').delete().eq('id', id)
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 400 })
   }
+
+  revalidateProjectPaths(currentProject?.slug)
 
   return NextResponse.json({ ok: true })
 }

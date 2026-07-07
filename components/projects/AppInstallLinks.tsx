@@ -6,7 +6,6 @@ import { ArrowUpRight, Check, Copy } from 'lucide-react';
 type AppInstallLinksProps = {
   isArabic: boolean;
   androidUrl?: string;
-  iosUrl?: string;
 };
 
 function shortenUrl(url: string, max = 48) {
@@ -14,13 +13,12 @@ function shortenUrl(url: string, max = 48) {
   return `${url.slice(0, max).trimEnd()}...`;
 }
 
-export default function AppInstallLinks({ isArabic, androidUrl, iosUrl }: AppInstallLinksProps) {
+export default function AppInstallLinks({ isArabic, androidUrl }: AppInstallLinksProps) {
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [copiedMessage, setCopiedMessage] = useState<string | null>(null);
 
   const appLinks = [
     { key: 'android', label: isArabic ? 'نسخة Android' : 'Android Demo', url: androidUrl },
-    { key: 'ios', label: isArabic ? 'نسخة iOS' : 'iOS Demo', url: iosUrl },
   ].filter((item): item is { key: string; label: string; url: string } => Boolean(item.url && item.url.trim().length > 0));
 
   const handleCopy = async (key: string, url: string) => {
@@ -51,7 +49,7 @@ export default function AppInstallLinks({ isArabic, androidUrl, iosUrl }: AppIns
         {isArabic ? 'النسخة التجريبية للتطبيق' : 'App Demo'}
       </p>
 
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid gap-3">
         {appLinks.map((item) => (
           <div key={item.key} className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3">
             <a

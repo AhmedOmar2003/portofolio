@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 import { getAdminSession } from '@/utils/admin-auth'
+import { revalidateProjectPaths } from '@/utils/revalidate-project-paths'
 import { createAdminClient } from '@/utils/supabase/admin'
 
 export async function POST(request: NextRequest) {
@@ -24,6 +25,8 @@ export async function POST(request: NextRequest) {
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 400 })
   }
+
+  revalidateProjectPaths(data.slug)
 
   return NextResponse.json({ data })
 }

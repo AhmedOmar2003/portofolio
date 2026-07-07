@@ -157,8 +157,7 @@ export default async function ProjectCaseStudyPage({ params }: { params: Promise
   const projectType = normalizeProjectType(externalLinks.project_type);
   const isApplicationProject = projectType === 'applications';
   const androidUrl = typeof externalLinks.android === 'string' ? externalLinks.android.trim() : '';
-  const iosUrl = typeof externalLinks.ios === 'string' ? externalLinks.ios.trim() : '';
-  const hasAppInstallLinks = androidUrl.length > 0 || iosUrl.length > 0;
+  const hasAppInstallLinks = androidUrl.length > 0;
   const technologies = Array.isArray(project.technologies) ? project.technologies : [];
   const showTechnologies = technologies.length > 0;
   const availableLinks = Object.entries(externalLinks).filter(
@@ -248,7 +247,6 @@ export default async function ProjectCaseStudyPage({ params }: { params: Promise
               <AppInstallLinks
                 isArabic={isArabic}
                 androidUrl={androidUrl || undefined}
-                iosUrl={iosUrl || undefined}
               />
             ) : null}
 
